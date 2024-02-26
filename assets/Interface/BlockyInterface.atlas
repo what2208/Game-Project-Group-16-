@@ -1,0 +1,70 @@
+
+BlockyInterface.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+button_disabled
+  rotate: false
+  xy: 515, 946
+  size: 84, 84
+  split: 13, 13, 13, 25
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+button_over
+  rotate: false
+  xy: 1023, 1219
+  size: 84, 84
+  split: 13, 13, 13, 25
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+button_pressed
+  rotate: false
+  xy: 1, 1
+  size: 84, 84
+  split: 13, 13, 19, 18
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+button_up
+  rotate: false
+  xy: 515, 860
+  size: 84, 84
+  split: 13, 13, 12, 25
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+KiwiSoda_0
+  rotate: false
+  xy: 1, 791
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+KiwiSoda_1
+  rotate: false
+  xy: 1, 277
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+W95FA(1)
+  rotate: false
+  xy: 1, 87
+  size: 505, 188
+  orig: 505, 188
+  offset: 0, 0
+  index: -1
+W95FA(3)
+  rotate: false
+  xy: 515, 1032
+  size: 506, 271
+  orig: 506, 271
+  offset: 0, 0
+  index: -1
