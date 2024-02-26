@@ -6,8 +6,8 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 		markupEnabled: false
 		flip: false
 	}
-	title_font: {
-		file: KiwiSoda.fnt
+	Title_font: {
+		file: MotorolaScreentype.fnt
 		scaledSize: -1
 		markupEnabled: false
 		flip: false
@@ -73,10 +73,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
-		font: W95FA3
-	}
-	title: {
-		font: title_font
+		font: Title_font
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {

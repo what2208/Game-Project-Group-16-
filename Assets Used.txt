@@ -1,0 +1,18 @@
+Libraries:
+Main game engine
+LibGDX - https://libgdx.com/
+
+Tools:
+For compiling UI features together I used LibGDX's skin composer to generate an atlas file of all the components
+https://libgdx.com/wiki/tools/skin-composer
+
+For compiling textures I used GDX Texture Packer, which just takes pre-made sprites and merges them into one image
+https://libgdx.com/wiki/tools/texture-packer
+
+Assets:
+Player sprite - https://cuddle-bug.itch.io/apocalypse
+Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download (These have been resized and may be edited)
+
+Fonts:
+Font on the buttons - https://www.dafont.com/w95fa.font
+Title font - https://www.dafont.com/motorola-screentype.font?fpp=100&text=Heslington+Hustle
