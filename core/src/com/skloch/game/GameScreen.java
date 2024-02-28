@@ -7,6 +7,10 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
@@ -31,6 +35,8 @@ public class GameScreen implements Screen {
     private Viewport viewport;
     private Texture testBuilding;
     private Rectangle testBuildingHitBox;
+    private boolean showEscapeMenu;
+    boolean paused = false;
 
 
 
@@ -38,8 +44,7 @@ public class GameScreen implements Screen {
     public GameScreen(final HustleGame game) {
         this.game = game;
         // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
-        gameStage =  new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(gameStage);
+        gameStage = new Stage(new ScreenViewport());
 
         // Camera and viewport
         camera = new OrthographicCamera();
@@ -48,15 +53,59 @@ public class GameScreen implements Screen {
 
         player = new Player(game);
 
+
         // Escape menu
         escapeMenu = new Window("", game.skin);
-        escapeMenu.setModal(true);
-        escapeMenu.setMovable(true);
-        escapeMenu.setResizable(true);
-        escapeMenu.setWidth(1000);
-        escapeMenu.pack();
-        escapeMenu.setPosition(400, 300);
         gameStage.addActor(escapeMenu);
+        escapeMenu.setModal(true);
+
+        Table escapeTable = new Table();
+        escapeTable.setFillParent(true);
+
+         escapeMenu.add(escapeTable);
+
+        TextButton resumeButton = new TextButton("Resume", game.skin);
+        TextButton settingsButton = new TextButton("Settings", game.skin);
+        TextButton exitButton = new TextButton("Exit", game.skin);
+
+        escapeTable.add(resumeButton).pad(60, 80, 10, 80).width(300);
+        escapeTable.row();
+        escapeTable.add(settingsButton).pad(10, 50, 10, 50).width(300);
+        escapeTable.row();
+        escapeTable.add(exitButton).pad(10, 50, 60, 50).width(300);
+
+        escapeMenu.pack();
+
+        // Centre
+        escapeMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (escapeMenu.getWidth() / 2));
+        escapeMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (escapeMenu.getHeight() / 2));
+
+        // Create button listeners
+
+        resumeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showEscapeMenu = false;
+                paused = false;
+            }
+        });
+
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // Show options screen
+            }
+        });
+
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // this.dispose();
+                game.setScreen(new MenuScreen(game));
+            }
+        });
+
+
 
         // Load some textures
         testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
@@ -66,16 +115,25 @@ public class GameScreen implements Screen {
         player.addCollidable(testBuildingHitBox);
 
         // Button presses
-        Gdx.input.setInputProcessor(new InputAdapter() {
+        InputAdapter gameKeyBoardInput = new InputAdapter() {
             @Override
             public boolean keyDown (int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    System.out.println("Escape");
+                    showEscapeMenu = !showEscapeMenu;
+                    paused = !paused;
+                    // Return true to indicate the keydown event was handled
                     return true;
                 }
                 return false;
             }
-        });
+        };
+
+        // Since we need to listen to inputs from the stage and from the keyboard
+        // Use an input multiplexer to listen for one inputadapter and then the other
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(gameKeyBoardInput);
+        multiplexer.addProcessor(gameStage);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     @Override
@@ -94,7 +152,9 @@ public class GameScreen implements Screen {
 
         // Handles movement based on key presses
         // Also handles the player's collision
-        player.move();
+        if (!paused) {
+            player.move();
+        }
 
         // LibGDX is based on openGL, which likes to draw everything at once
         // So game.batch stores everything renderable and the renders it all at once
@@ -113,9 +173,13 @@ public class GameScreen implements Screen {
 
         game.batch.end();
 
-        // Draw UI elements
-//        gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-//        gameStage.draw();
+        // Draw popup screen
+        if (showEscapeMenu) {
+            gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+            gameStage.draw();
+        }
+
+
     }
 
     @Override
@@ -138,8 +202,6 @@ public class GameScreen implements Screen {
     public void hide() {
 
     }
-
-
 
     @Override
     public void dispose () {
