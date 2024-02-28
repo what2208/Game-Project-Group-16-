@@ -1,11 +1,10 @@
 package com.skloch.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class HustleGame extends Game {
 	public SpriteBatch batch;
@@ -13,6 +12,7 @@ public class HustleGame extends Game {
 	public BitmapFont smallinfoFont;
 	public int WIDTH;
 	public int HEIGHT;
+	public Skin skin;
 
 	// Constructor to grab width and height of the game
 	public HustleGame (int width, int height) {
@@ -23,6 +23,7 @@ public class HustleGame extends Game {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
 		this.setScreen(new MenuScreen(this));
 	}
 
@@ -36,5 +37,6 @@ public class HustleGame extends Game {
 		batch.dispose();
 		infoFont.dispose();
 		smallinfoFont.dispose();
+		skin.dispose();
 	}
 }

@@ -4,40 +4,11 @@ size: 1024, 1024
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
-button_disabled
+MotorolaScreentype
   rotate: false
-  xy: 1, 374
-  size: 84, 84
-  split: 13, 13, 13, 25
-  pad: 0, 0, 0, 0
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
-button_over
-  rotate: false
-  xy: 509, 738
-  size: 84, 84
-  split: 13, 13, 13, 25
-  pad: 0, 0, 0, 0
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
-button_pressed
-  rotate: false
-  xy: 1, 288
-  size: 84, 84
-  split: 13, 13, 19, 18
-  pad: 0, 0, 0, 0
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
-button_up
-  rotate: false
-  xy: 87, 374
-  size: 84, 84
-  split: 13, 13, 12, 25
-  pad: 0, 0, 0, 0
-  orig: 84, 84
+  xy: 1, 733
+  size: 506, 279
+  orig: 506, 279
   offset: 0, 0
   index: -1
 W95FA(1)
@@ -47,17 +18,55 @@ W95FA(1)
   orig: 505, 188
   offset: 0, 0
   index: -1
-MotorolaScreentype
-  rotate: false
-  xy: 1, 460
-  size: 506, 279
-  orig: 506, 279
-  offset: 0, 0
-  index: -1
 W95FA(3)
   rotate: false
-  xy: 1, 741
+  xy: 1, 460
   size: 506, 271
   orig: 506, 271
+  offset: 0, 0
+  index: -1
+button_disabled
+  rotate: false
+  xy: 509, 738
+  size: 84, 84
+  split: 13, 13, 13, 25
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+button_over
+  rotate: false
+  xy: 1, 228
+  size: 84, 84
+  split: 13, 13, 13, 25
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+button_pressed
+  rotate: false
+  xy: 147, 374
+  size: 84, 84
+  split: 13, 13, 19, 18
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+button_up
+  rotate: false
+  xy: 509, 652
+  size: 84, 84
+  split: 13, 13, 12, 25
+  pad: 0, 0, 0, 0
+  orig: 84, 84
+  offset: 0, 0
+  index: -1
+window
+  rotate: false
+  xy: 1, 314
+  size: 144, 144
+  split: 33, 33, 33, 34
+  pad: 0, 0, 0, 0
+  orig: 144, 144
   offset: 0, 0
   index: -1

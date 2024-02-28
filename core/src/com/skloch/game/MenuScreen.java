@@ -40,19 +40,16 @@ public class MenuScreen implements Screen {
         table.setFillParent(true);
         menuStage.addActor(table);
 
-        // Load skin
-        Skin skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
-
         // Get fonts
-        game.infoFont = skin.getFont("Button_white");
-        game.smallinfoFont = skin.getFont("Button_white");
+        game.infoFont = game.skin.getFont("Button_white");
+        game.smallinfoFont = game.skin.getFont("Button_white");
         game.smallinfoFont.getData().setScale(0.8f);
 
         // Creat the buttons and the title
-        Label title = new Label("Heslington Hustle", skin);
-        TextButton startButton = new TextButton("Start Game", skin);
-        TextButton optionsButton = new TextButton("Options", skin);
-        TextButton exitButton = new TextButton("Exit", skin);
+        Label title = new Label("Heslington Hustle", game.skin);
+        TextButton startButton = new TextButton("Start Game", game.skin);
+        TextButton optionsButton = new TextButton("Options", game.skin);
+        TextButton exitButton = new TextButton("Exit", game.skin);
 
         // Add everything to the table using row() to go to a new line
         int buttonWidth = 340;

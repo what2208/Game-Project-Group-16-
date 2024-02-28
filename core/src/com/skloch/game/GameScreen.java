@@ -1,6 +1,7 @@
 package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,6 +14,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+
+import java.awt.*;
 
 public class GameScreen implements Screen {
     final HustleGame game;
@@ -20,6 +27,7 @@ public class GameScreen implements Screen {
     private int score = 0;
     public Player player;
     public Stage gameStage;
+    private Window escapeMenu;
     private Viewport viewport;
     private Texture testBuilding;
     private Rectangle testBuildingHitBox;
@@ -40,6 +48,16 @@ public class GameScreen implements Screen {
 
         player = new Player(game);
 
+        // Escape menu
+        escapeMenu = new Window("", game.skin);
+        escapeMenu.setModal(true);
+        escapeMenu.setMovable(true);
+        escapeMenu.setResizable(true);
+        escapeMenu.setWidth(1000);
+        escapeMenu.pack();
+        escapeMenu.setPosition(400, 300);
+        gameStage.addActor(escapeMenu);
+
         // Load some textures
         testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
         testBuildingHitBox = new Rectangle(600, 300, 150, 100);
@@ -47,6 +65,17 @@ public class GameScreen implements Screen {
         // Add the building to the list of the player's collidable objects
         player.addCollidable(testBuildingHitBox);
 
+        // Button presses
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean keyDown (int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    System.out.println("Escape");
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -61,6 +90,7 @@ public class GameScreen implements Screen {
 
         // Set batch to use the same coordinate system as the camera
         game.batch.setProjectionMatrix(camera.combined);
+
 
         // Handles movement based on key presses
         // Also handles the player's collision
@@ -82,6 +112,10 @@ public class GameScreen implements Screen {
         game.smallinfoFont.draw(game.batch, String.format("Score: %d", score), 0f, game.HEIGHT-80);
 
         game.batch.end();
+
+        // Draw UI elements
+//        gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+//        gameStage.draw();
     }
 
     @Override
