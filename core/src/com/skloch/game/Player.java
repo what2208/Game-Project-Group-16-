@@ -20,6 +20,7 @@ public class Player {
     // Stats
     public float speed = 300f;
     public Array<Rectangle> collidables;
+    public int scale = 4;
 
     public Player (final HustleGame game) {
         this.game = game;
@@ -46,9 +47,9 @@ public class Player {
         collidables = new Array<Rectangle>();
 
         // Sprite is a rectangle covering the whole player
-        sprite = new Rectangle(0, 0, 17*4, 28*4);
+        sprite = new Rectangle(0, 0, 17*scale, 28*scale);
         // Feet is a rectangle just covering the player's feet, so is better for collision
-        feet = new Rectangle(4*4, 0, 9*4, 7*4);
+        feet = new Rectangle(4*scale, 0, 9*scale, 7*scale);
 
     }
 
@@ -133,6 +134,29 @@ public class Player {
     // Adds a rectangle for the player to collide with
     public void addCollidable (Rectangle object) {
         this.collidables.add(object);
+    }
+
+    public float getX () {
+        return sprite.getX();
+    }
+
+    public float getY () {
+        return sprite.getY();
+    }
+
+    public void setX (float x) {
+        this.sprite.setX(x);
+        this.feet.setX(x + 4*scale);
+    }
+
+    public void setY (float y) {
+        this.sprite.setY(y);
+        this.feet.setY(y + 4*scale);
+    }
+
+    public void setPos (float x, float y) {
+        this.setX(x);
+        this.setY(y);
     }
 
 

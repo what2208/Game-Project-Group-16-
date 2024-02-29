@@ -6,6 +6,11 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -22,6 +27,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+// import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 import java.awt.*;
 
@@ -36,7 +42,10 @@ public class GameScreen implements Screen {
     private Texture testBuilding;
     private Rectangle testBuildingHitBox;
     private boolean showEscapeMenu;
-    boolean paused = false;
+    private boolean paused = false;
+
+    public TiledMap map = new TmxMapLoader().load("Test Map/testmap.tmx");
+    public OrthogonalTiledMapRenderer renderer;
 
 
 
@@ -53,6 +62,9 @@ public class GameScreen implements Screen {
 
         player = new Player(game);
 
+        // Map
+        float unitScale = 50 / 16f;
+        renderer = new OrthogonalTiledMapRenderer(map, unitScale);
 
         // Escape menu
         escapeMenu = new Window("", game.skin);
@@ -62,7 +74,7 @@ public class GameScreen implements Screen {
         Table escapeTable = new Table();
         escapeTable.setFillParent(true);
 
-         escapeMenu.add(escapeTable);
+        escapeMenu.add(escapeTable);
 
         TextButton resumeButton = new TextButton("Resume", game.skin);
         TextButton settingsButton = new TextButton("Settings", game.skin);
@@ -134,6 +146,12 @@ public class GameScreen implements Screen {
         multiplexer.addProcessor(gameKeyBoardInput);
         multiplexer.addProcessor(gameStage);
         Gdx.input.setInputProcessor(multiplexer);
+
+        // Set the player to the middle of the map
+        // Get the dimensions of the top layer
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+
+        player.setPos((float) layer.getWidth() / 2, (float) layer.getHeight() / 2);
     }
 
     @Override
@@ -145,9 +163,10 @@ public class GameScreen implements Screen {
     public void render (float delta) {
         ScreenUtils.clear(0.07f, 0.43f, 0.08f, 1);
         camera.update();
-
         // Set batch to use the same coordinate system as the camera
         game.batch.setProjectionMatrix(camera.combined);
+
+        camera.position.set(player.getX(), player.getY(), 0);
 
 
         // Handles movement based on key presses
@@ -155,6 +174,9 @@ public class GameScreen implements Screen {
         if (!paused) {
             player.move();
         }
+
+        renderer.setView(camera);
+        renderer.render();
 
         // LibGDX is based on openGL, which likes to draw everything at once
         // So game.batch stores everything renderable and the renders it all at once
@@ -178,6 +200,8 @@ public class GameScreen implements Screen {
             gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
             gameStage.draw();
         }
+
+
 
 
     }
@@ -206,5 +230,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose () {
         testBuilding.dispose();
+        map.dispose();
     }
 }
