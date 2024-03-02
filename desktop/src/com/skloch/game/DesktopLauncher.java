@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		int WIDTH = 1280;
 		int HEIGHT = 720;
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setWindowSizeLimits(320, 180, 1280, 720);
+		config.setWindowSizeLimits(320, 180, 1920, 1080);
 		config.setTitle("Heslington Hustle DEMO!");
 		config.setWindowedMode(WIDTH, HEIGHT);
 		config.useVsync(true);
