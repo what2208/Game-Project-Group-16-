@@ -164,11 +164,12 @@ public class GameScreen implements Screen {
         // Handles movement based on key presses
         // Also handles the player's collision
         if (!paused) {
-            player.move();
+            player.move(delta);
         }
 
         renderer.setView(camera);
         renderer.render(backgroundLayers);
+        renderer.render(objectLayers);
 
         // LibGDX is based on openGL, which likes to draw everything at once
         // So game.batch stores everything renderable and the renders it all at once
@@ -195,6 +196,7 @@ public class GameScreen implements Screen {
 
         camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
+
 
     }
 
