@@ -9,9 +9,13 @@ https://libgdx.com/wiki/tools/skin-composer
 For compiling textures I used GDX Texture Packer, which just takes pre-made sprites and merges them into one image
 https://libgdx.com/wiki/tools/texture-packer
 
+For making maps:
+https://thorbjorn.itch.io/tiled
+
 Assets:
 Player sprite - https://cuddle-bug.itch.io/apocalypse
 Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download (These have been resized and may be edited)
+Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
 
 Fonts:
 Font on the buttons - https://www.dafont.com/w95fa.font
