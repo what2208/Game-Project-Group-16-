@@ -6,6 +6,8 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -43,12 +45,10 @@ public class GameScreen implements Screen {
     private Rectangle testBuildingHitBox;
     private boolean showEscapeMenu;
     private boolean paused = false;
-
-    public TiledMap map = new TmxMapLoader().load("Test Map/testmap.tmx");
     public OrthogonalTiledMapRenderer renderer;
-    private static int[] backgroundLayers;
-    private static int[] foregroundLayers;
-    private static int[] objectLayers;
+    private int[] backgroundLayers;
+    private int[] foregroundLayers ;
+    private int[] objectLayers;
 
 
 
@@ -70,14 +70,14 @@ public class GameScreen implements Screen {
 
         // Map
         float unitScale = 50 / 16f;
-        renderer = new OrthogonalTiledMapRenderer(map, unitScale);
+        renderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
 
         // Load some textures
-        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
-        testBuildingHitBox = new Rectangle(600, 300, 150, 100);
+//        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
+//        testBuildingHitBox = new Rectangle(600, 300, 150, 100);
 
         // Add the building to the list of the player's collidable objects
-        player.addCollidable(testBuildingHitBox);
+        // player.addCollidable(testBuildingHitBox);
 
         // Button presses
         InputAdapter gameKeyBoardInput = new InputAdapter() {
@@ -102,20 +102,36 @@ public class GameScreen implements Screen {
 
         // Set the player to the middle of the map
         // Get the dimensions of the top layer
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+        TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
 
-        player.setPos((float) layer.getWidth()*50 / 2, (float) layer.getHeight()*50 / 2);
-        System.out.println(player.getX());
-        System.out.println(player.getY());
+        player.setPos((float) layer0.getWidth()*50 / 2, (float) layer0.getHeight()*50 / 2);
 
         // Define background, foreground and object layers
         backgroundLayers = new int[] {0, 1};
         foregroundLayers = new int[] {3};
-        objectLayers = {2};
+        objectLayers = new int[] {2};
 
         // Give objects to player
-        for {int layer :objectLayers} {
+        // Loop through all objects layers
+        for (int layer : objectLayers) {
+            // Get all objects on the layer
+            MapObjects objects = game.map.getLayers().get(layer).getObjects();
 
+            // Loop through each, handing them to the player
+            for (int i = 0; i < objects.getCount(); i++) {
+                // Get the properties of each object
+                MapProperties properties = objects.get(i).getProperties();
+                // Make a new rect and pass this to the player
+                player.addCollidable(
+                        new Rectangle(
+                                (float) properties.get("x") * unitScale,
+                                (float) properties.get("y") * unitScale,
+                                (float) properties.get("width") * unitScale,
+                                (float) properties.get("height") * unitScale
+                        )
+                );
+                // Bosh
+            }
         }
     }
 
@@ -126,13 +142,13 @@ public class GameScreen implements Screen {
 
     @Override
     public void render (float delta) {
-        ScreenUtils.clear(0.07f, 0.43f, 0.08f, 1);
-        camera.update();
+        ScreenUtils.clear(0, 0, 0, 1);
+        // Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // Set batch to use the same coordinate system as the camera
-        game.batch.setProjectionMatrix(camera.combined);
 
-        camera.position.set(player.getX(), player.getY(), 0);
-
+        // Set delta to a constant value to minimise stuttering issues when moving the camera and player
+        // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
+        delta = 0.0167f;
 
         // Handles movement based on key presses
         // Also handles the player's collision
@@ -146,10 +162,8 @@ public class GameScreen implements Screen {
         // LibGDX is based on openGL, which likes to draw everything at once
         // So game.batch stores everything renderable and the renders it all at once
         // This is where we put anything we want to display to the screen
+        game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-
-        // Building(s)
-        game.batch.draw(testBuilding, testBuildingHitBox.x, testBuildingHitBox.y);
 
         // Player
         game.batch.draw(player.getCurrentFrame(), player.sprite.x, player.sprite.y, 0, 0, player.sprite.width, player.sprite.height, 1f, 1f, 1);
@@ -168,10 +182,8 @@ public class GameScreen implements Screen {
             gameStage.draw();
         }
 
-
-
-
-
+        camera.position.set(player.getX(), player.getY(), 0);
+        camera.update();
 
     }
 
@@ -223,8 +235,10 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // this.dispose();
-                game.setScreen(new MenuScreen(game));
+                if (paused) {
+                    dispose();
+                    game.setScreen(new MenuScreen(game));
+                }
             }
         });
     }
@@ -252,7 +266,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose () {
-        testBuilding.dispose();
-        map.dispose();
+        // testBuilding.dispose();
     }
 }

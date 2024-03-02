@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class HustleGame extends Game {
@@ -13,6 +15,7 @@ public class HustleGame extends Game {
 	public int WIDTH;
 	public int HEIGHT;
 	public Skin skin;
+	public TiledMap map;
 
 	// Constructor to grab width and height of the game
 	public HustleGame (int width, int height) {
@@ -24,6 +27,7 @@ public class HustleGame extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
+		map = new TmxMapLoader().load("Test Map/testmap.tmx");
 		this.setScreen(new MenuScreen(this));
 	}
 
@@ -38,5 +42,6 @@ public class HustleGame extends Game {
 		infoFont.dispose();
 		smallinfoFont.dispose();
 		skin.dispose();
+		map.dispose();
 	}
 }

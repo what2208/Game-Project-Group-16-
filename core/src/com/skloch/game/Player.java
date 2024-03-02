@@ -117,6 +117,12 @@ public class Player {
             currentFrame = idleAnimation.get(direction).getKeyFrame(stateTime);
         }
 
+        // Round
+//        sprite.x = Math.round(sprite.x);
+//        sprite.y = Math.round(sprite.y);
+//        feet.x = Math.round(feet.x);
+//        feet.y = Math.round(feet.y);
+
 
     }
 
