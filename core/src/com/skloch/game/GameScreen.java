@@ -133,6 +133,17 @@ public class GameScreen implements Screen {
                 // Bosh
             }
         }
+
+        // Set the player to not go outside the bounds of the map
+        // Assumes the bottom left corner of the map is at 0, 0
+        player.setBounds(
+                new Rectangle(
+                        0,
+                        0,
+                        layer0.getWidth()*50,
+                        layer0.getHeight()*50
+                )
+        );
     }
 
     @Override

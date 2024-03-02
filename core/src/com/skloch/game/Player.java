@@ -21,6 +21,7 @@ public class Player {
     public float speed = 300f;
     public Array<Rectangle> collidables;
     public int scale = 4;
+    private Rectangle bounds;
 
     public Player (final HustleGame game) {
         this.game = game;
@@ -106,6 +107,18 @@ public class Player {
 
         }
 
+        // Check the player is in bounds
+        if (bounds != null) {
+            // If player is out of bounds, move them back
+            if (!feet.overlaps(bounds)) {
+                sprite.x = oldX;
+                sprite.y = oldY;
+                feet.y = oldY;
+                feet.x = oldFeetX;
+                moving = false;
+            }
+        }
+
         // Increment the animation
         stateTime += Gdx.graphics.getDeltaTime();
 
@@ -122,6 +135,8 @@ public class Player {
 //        sprite.y = Math.round(sprite.y);
 //        feet.x = Math.round(feet.x);
 //        feet.y = Math.round(feet.y);
+
+
 
 
     }
@@ -165,6 +180,9 @@ public class Player {
         this.setY(y);
     }
 
-
+    public void setBounds (Rectangle bounds) {
+        // Set a rectangle that the player should not leave
+        this.bounds = bounds;
+    }
 
 }
