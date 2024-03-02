@@ -46,6 +46,9 @@ public class GameScreen implements Screen {
 
     public TiledMap map = new TmxMapLoader().load("Test Map/testmap.tmx");
     public OrthogonalTiledMapRenderer renderer;
+    private static int[] backgroundLayers;
+    private static int[] foregroundLayers;
+    private static int[] objectLayers;
 
 
 
@@ -62,10 +65,118 @@ public class GameScreen implements Screen {
 
         player = new Player(game);
 
+        // Escape menu
+        setupEscapeMenu();
+
         // Map
         float unitScale = 50 / 16f;
         renderer = new OrthogonalTiledMapRenderer(map, unitScale);
 
+        // Load some textures
+        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
+        testBuildingHitBox = new Rectangle(600, 300, 150, 100);
+
+        // Add the building to the list of the player's collidable objects
+        player.addCollidable(testBuildingHitBox);
+
+        // Button presses
+        InputAdapter gameKeyBoardInput = new InputAdapter() {
+            @Override
+            public boolean keyDown (int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    showEscapeMenu = !showEscapeMenu;
+                    paused = !paused;
+                    // Return true to indicate the keydown event was handled
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        // Since we need to listen to inputs from the stage and from the keyboard
+        // Use an input multiplexer to listen for one inputadapter and then the other
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(gameKeyBoardInput);
+        multiplexer.addProcessor(gameStage);
+        Gdx.input.setInputProcessor(multiplexer);
+
+        // Set the player to the middle of the map
+        // Get the dimensions of the top layer
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+
+        player.setPos((float) layer.getWidth()*50 / 2, (float) layer.getHeight()*50 / 2);
+        System.out.println(player.getX());
+        System.out.println(player.getY());
+
+        // Define background, foreground and object layers
+        backgroundLayers = new int[] {0, 1};
+        foregroundLayers = new int[] {3};
+        objectLayers = {2};
+
+        // Give objects to player
+        for {int layer :objectLayers} {
+
+        }
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void render (float delta) {
+        ScreenUtils.clear(0.07f, 0.43f, 0.08f, 1);
+        camera.update();
+        // Set batch to use the same coordinate system as the camera
+        game.batch.setProjectionMatrix(camera.combined);
+
+        camera.position.set(player.getX(), player.getY(), 0);
+
+
+        // Handles movement based on key presses
+        // Also handles the player's collision
+        if (!paused) {
+            player.move();
+        }
+
+        renderer.setView(camera);
+        renderer.render(backgroundLayers);
+
+        // LibGDX is based on openGL, which likes to draw everything at once
+        // So game.batch stores everything renderable and the renders it all at once
+        // This is where we put anything we want to display to the screen
+        game.batch.begin();
+
+        // Building(s)
+        game.batch.draw(testBuilding, testBuildingHitBox.x, testBuildingHitBox.y);
+
+        // Player
+        game.batch.draw(player.getCurrentFrame(), player.sprite.x, player.sprite.y, 0, 0, player.sprite.width, player.sprite.height, 1f, 1f, 1);
+
+        // Text
+        game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
+        game.smallinfoFont.draw(game.batch, String.format("Score: %d", score), 0f, game.HEIGHT-80);
+
+        game.batch.end();
+
+        renderer.render(foregroundLayers);
+
+        // Draw popup screen
+        if (showEscapeMenu) {
+            gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+            gameStage.draw();
+        }
+
+
+
+
+
+
+    }
+
+    public void setupEscapeMenu() {
+        // Configures an escape menu to display when hitting 'esc'
         // Escape menu
         escapeMenu = new Window("", game.skin);
         gameStage.addActor(escapeMenu);
@@ -116,94 +227,6 @@ public class GameScreen implements Screen {
                 game.setScreen(new MenuScreen(game));
             }
         });
-
-
-
-        // Load some textures
-        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
-        testBuildingHitBox = new Rectangle(600, 300, 150, 100);
-
-        // Add the building to the list of the player's collidable objects
-        player.addCollidable(testBuildingHitBox);
-
-        // Button presses
-        InputAdapter gameKeyBoardInput = new InputAdapter() {
-            @Override
-            public boolean keyDown (int keycode) {
-                if (keycode == Input.Keys.ESCAPE) {
-                    showEscapeMenu = !showEscapeMenu;
-                    paused = !paused;
-                    // Return true to indicate the keydown event was handled
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        // Since we need to listen to inputs from the stage and from the keyboard
-        // Use an input multiplexer to listen for one inputadapter and then the other
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(gameKeyBoardInput);
-        multiplexer.addProcessor(gameStage);
-        Gdx.input.setInputProcessor(multiplexer);
-
-        // Set the player to the middle of the map
-        // Get the dimensions of the top layer
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-
-        player.setPos((float) layer.getWidth() / 2, (float) layer.getHeight() / 2);
-    }
-
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void render (float delta) {
-        ScreenUtils.clear(0.07f, 0.43f, 0.08f, 1);
-        camera.update();
-        // Set batch to use the same coordinate system as the camera
-        game.batch.setProjectionMatrix(camera.combined);
-
-        camera.position.set(player.getX(), player.getY(), 0);
-
-
-        // Handles movement based on key presses
-        // Also handles the player's collision
-        if (!paused) {
-            player.move();
-        }
-
-        renderer.setView(camera);
-        renderer.render();
-
-        // LibGDX is based on openGL, which likes to draw everything at once
-        // So game.batch stores everything renderable and the renders it all at once
-        // This is where we put anything we want to display to the screen
-        game.batch.begin();
-
-        // Building(s)
-        game.batch.draw(testBuilding, testBuildingHitBox.x, testBuildingHitBox.y);
-
-        // Player
-        game.batch.draw(player.getCurrentFrame(), player.sprite.x, player.sprite.y, 0, 0, player.sprite.width, player.sprite.height, 1f, 1f, 1);
-
-        // Text
-        game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
-        game.smallinfoFont.draw(game.batch, String.format("Score: %d", score), 0f, game.HEIGHT-80);
-
-        game.batch.end();
-
-        // Draw popup screen
-        if (showEscapeMenu) {
-            gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-            gameStage.draw();
-        }
-
-
-
-
     }
 
     @Override
