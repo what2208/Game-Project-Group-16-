@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import org.w3c.dom.css.Rect;
 
 public class Player {
     public Rectangle sprite;
     public Rectangle feet;
+    public Rectangle eventHitbox;
     final HustleGame game;
     public int direction = 2; // 0 = up, 1 = right, 2 = down, 3 = left (like a clock)
     private TextureRegion currentFrame;
@@ -19,9 +21,10 @@ public class Player {
     private Array<Animation<TextureRegion>> idleAnimation;
     // Stats
     public float speed = 300f;
-    public Array<Rectangle> collidables;
+    public Array<GameObject> collidables;
     public int scale = 4;
     private Rectangle bounds;
+    private GameObject closestObject;
 
     public Player (final HustleGame game) {
         this.game = game;
@@ -45,12 +48,21 @@ public class Player {
                 new Animation<TextureRegion>(0.40f, playerAtlas.findRegions("idle_left"), Animation.PlayMode.LOOP)
         );
 
-        collidables = new Array<Rectangle>();
+        collidables = new Array<GameObject>();
 
         // Sprite is a rectangle covering the whole player
         sprite = new Rectangle(0, 0, 17*scale, 28*scale);
         // Feet is a rectangle just covering the player's feet, so is better for collision
         feet = new Rectangle(4*scale, 0, 9*scale, 7*scale);
+        // Hitbox for triggering events with objects
+        float hitboxScaleX = 2.2f;
+        float hitboxScaley = 1.7f;
+        eventHitbox = new Rectangle(
+                sprite.getX() - (sprite.getWidth()*hitboxScaleX - sprite.getWidth()) / 2,
+                sprite.getY() - (sprite.getHeight()*hitboxScaley - sprite.getHeight()) / 2,
+                sprite.getWidth()*hitboxScaleX,
+                sprite.getHeight()*hitboxScaley
+        );
 
     }
 
@@ -69,43 +81,41 @@ public class Player {
 
         boolean moving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-            sprite.x -= speed * delta; // Using Gdx.graphics.getDeltaTime() for both can cause the hitboxes to become desynced over time
-            feet.x -= speed * delta;   // So it's best to use a constant value
+            this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
             direction = 3;
             moving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-            sprite.x += speed * delta;
-            feet.x += speed * delta;
+            this.setX(sprite.getX() + speed * delta);
             direction = 1;
             moving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            sprite.y += speed * delta;
-            feet.y = sprite.y;
+            this.setY(sprite.getY() + speed * delta);
             direction = 0;
             moving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            sprite.y -= speed * delta;
-            feet.y = sprite.y;
+            this.setY(sprite.getY() - speed * delta);
             direction = 2;
             moving = true;
         }
 
         // Check if the player's feet are inside an object
-        for (Rectangle object : this.collidables) {
+        closestObject = null;
+        for (GameObject object : this.collidables) {
+            if (eventHitbox.overlaps(object)) {
+                closestObject = object;
+            }
             if (feet.overlaps(object)) {
                 // Find the direction that the player needs to be moved back to
                 // Reset x
                 if (!(oldFeetX < object.x + object.width && oldFeetX + feet.width > object.x)) {
-                    sprite.x = oldX;
-                    feet.x = sprite.x + 4 * scale;
+                    this.setX(oldX);
                 }
                 // If overlapping in y direction
                 if (!(oldY < object.y + object.height && oldY + feet.height > object.y)) {
-                    sprite.y = oldY;
-                    feet.y = sprite.y;
+                    this.setY(oldY);
                 }
                 // The above two are essentially the same code as Rectangle.overlaps()
                 // Just separated into the two dimensions
@@ -113,15 +123,6 @@ public class Player {
 
         }
 
-
-
-//        System.out.println("--");
-//        System.out.println("Before update\n Sprite");
-//        System.out.println(sprite.getX());
-//        System.out.println(sprite.getY());
-//        System.out.println("Feet");
-//        System.out.println(feet.getX());
-//        System.out.println(feet.getY());
 
         // Check the player is in bounds
         if (bounds != null) {
@@ -144,13 +145,6 @@ public class Player {
             }
         }
 
-//        System.out.println("--");
-//        System.out.println("After update\n Sprite");
-//        System.out.println(sprite.getX());
-//        System.out.println(sprite.getY());
-//        System.out.println("Feet");
-//        System.out.println(feet.getX());
-//        System.out.println(feet.getY());
 
         // Increment the animation
         stateTime += Gdx.graphics.getDeltaTime();
@@ -169,11 +163,11 @@ public class Player {
 //        feet.x = Math.round(feet.x);
 //        feet.y = Math.round(feet.y);
 
-
-
-
     }
 
+    public GameObject getClosestObject () {
+        return closestObject;
+    }
 
     public TextureRegion getCurrentFrame () {
         // Returns the current frame the player animation is on
@@ -181,12 +175,12 @@ public class Player {
     }
 
     // Sets the player's collidable objects as an array of rectangles
-    public void setCollidables (Array<Rectangle> collidables) {
+    public void setCollidables (Array<GameObject> collidables) {
         this.collidables = collidables;
     }
 
     // Adds a rectangle for the player to collide with
-    public void addCollidable (Rectangle object) {
+    public void addCollidable (GameObject object) {
         this.collidables.add(object);
     }
 
@@ -201,11 +195,13 @@ public class Player {
     public void setX (float x) {
         this.sprite.setX(x);
         this.feet.setX(x + 4*scale);
+        this.eventHitbox.setX(this.sprite.getX() - (this.eventHitbox.getWidth() - sprite.getWidth()) / 2);
     }
 
     public void setY (float y) {
         this.sprite.setY(y);
-        this.feet.setY(y + 4*scale);
+        this.feet.setY(y);
+        this.eventHitbox.setY(this.sprite.getY() - (this.eventHitbox.getHeight() - sprite.getHeight()) / 2);
     }
 
     public void setPos (float x, float y) {

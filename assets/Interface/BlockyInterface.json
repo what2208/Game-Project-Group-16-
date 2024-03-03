@@ -73,6 +73,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
+		font: Button_white
+	}
+	button: {
+		font: W95FA3
+	}
+	title: {
 		font: Title_font
 	}
 }

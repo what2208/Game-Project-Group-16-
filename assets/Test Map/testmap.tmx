@@ -113,13 +113,41 @@
 </data>
  </layer>
  <objectgroup id="3" name="Objects behind">
-  <object id="7" x="551" y="272" width="18" height="31.875"/>
-  <object id="17" x="135" y="336" width="18" height="32"/>
-  <object id="18" x="519" y="592" width="18" height="32"/>
-  <object id="19" x="214.364" y="704" width="18" height="32"/>
-  <object id="23" x="352" y="204.727" width="32" height="35.2727"/>
-  <object id="29" x="304" y="160.602" width="32" height="31.3977"/>
-  <object id="30" x="386.25" y="126" width="59" height="31.375"/>
+  <object id="7" x="551" y="272" width="18" height="31.875">
+   <properties>
+    <property name="event" value="tree"/>
+   </properties>
+  </object>
+  <object id="17" x="135" y="336" width="18" height="32">
+   <properties>
+    <property name="event" value="tree"/>
+   </properties>
+  </object>
+  <object id="18" x="519" y="592" width="18" height="32">
+   <properties>
+    <property name="event" value="tree"/>
+   </properties>
+  </object>
+  <object id="19" x="214.364" y="704" width="18" height="32">
+   <properties>
+    <property name="event" value="tree"/>
+   </properties>
+  </object>
+  <object id="23" x="352" y="204.727" width="32" height="35.2727">
+   <properties>
+    <property name="event" value="chest"/>
+   </properties>
+  </object>
+  <object id="29" x="304" y="160.602" width="32" height="31.3977">
+   <properties>
+    <property name="event" value="barrel"/>
+   </properties>
+  </object>
+  <object id="30" x="386.25" y="126" width="59" height="31.375">
+   <properties>
+    <property name="event" value="bench"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="5" name="trees" width="50" height="50">
   <data encoding="csv">
