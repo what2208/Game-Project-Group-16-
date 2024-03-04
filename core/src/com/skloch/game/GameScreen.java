@@ -57,12 +57,16 @@ public class GameScreen implements Screen {
     private int[] objectLayers;
     public Stage uiStage;
     public ShapeRenderer debugRenderer;
+    private Label interactionLabel;
+    private EventManager eventManager;
+    public Window dialogueMenu;
 
 
 
 
     public GameScreen(final HustleGame game) {
         this.game = game;
+        eventManager = new EventManager(this.game);
 
         // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
         escapeMenuStage = new Stage(new ScreenViewport());
@@ -82,11 +86,12 @@ public class GameScreen implements Screen {
 
         // Escape menu
         setupEscapeMenu();
+        setupDialoguemenu();
 
         // Other UI bits
         Table uiTable = new Table();
         uiTable.setFillParent(true);
-        Label interactionLabel = new Label("Press E to interact", game.skin, "default");
+        interactionLabel = new Label("Press E to interact", game.skin, "default");
         uiStage.addActor(interactionLabel);
 
         uiStage.addActor(uiTable);
@@ -118,6 +123,15 @@ public class GameScreen implements Screen {
                     // Return true to indicate the keydown event was handled
                     return true;
                 }
+
+                if (keycode == Input.Keys.E) {
+                    if (player.nearObject()) {
+                        eventManager.event((String) player.getClosestObject().get("event"));
+                        return true;
+                    }
+                }
+
+
                 return false;
             }
         };
@@ -217,22 +231,40 @@ public class GameScreen implements Screen {
 
 
         // uiStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        if (player.getClosestObject() != null) {
+        if (player.nearObject()) {
+            interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
             uiStage.draw();
         }
 
-        if (player.getClosestObject() != null) {
-            System.out.println(player.getClosestObject().get("event"));
-        }
 
         // Debug - Draw player hitboxes
-        drawHitboxes();
+        // drawHitboxes();
+        // Debug, print the event value of the closest object to the player if there is one
+//        if (player.getClosestObject() != null) {
+//            System.out.println(player.getClosestObject().get("event"));
+//        }
 
         camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
 
 
 
+
+    }
+
+    public void setupDialoguemenu() {
+        dialogueMenu = new Window("", game.skin);
+        uiStage.addActor(dialogueMenu);
+        dialogueMenu.setModal(true);
+
+        Table dialogueTable = new Table();
+        dialogueTable.setFillParent(true);
+        dialogueMenu.add(dialogueTable);
+
+        dialogueTable.add(new Label("Interact with tree?", game.skin, "button")).pad(60, 80, 10, 80);
+        dialogueTable.row();
+
+        dialogueMenu.pack();
 
     }
 

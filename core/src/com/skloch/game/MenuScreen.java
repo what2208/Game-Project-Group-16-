@@ -46,7 +46,7 @@ public class MenuScreen implements Screen {
         game.smallinfoFont.getData().setScale(0.8f);
 
         // Creat the buttons and the title
-        Label title = new Label("Heslington Hustle", game.skin, "title");
+        Label title = new Label("Heslington Hustle", game.skin);
         TextButton startButton = new TextButton("Start Game", game.skin);
         TextButton optionsButton = new TextButton("Options", game.skin);
         TextButton exitButton = new TextButton("Exit", game.skin);

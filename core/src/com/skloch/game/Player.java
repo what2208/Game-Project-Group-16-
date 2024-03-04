@@ -13,6 +13,8 @@ public class Player {
     public Rectangle sprite;
     public Rectangle feet;
     public Rectangle eventHitbox;
+    public float centreX;
+    public float centreY;
     final HustleGame game;
     public int direction = 2; // 0 = up, 1 = right, 2 = down, 3 = left (like a clock)
     private TextureRegion currentFrame;
@@ -102,11 +104,7 @@ public class Player {
         }
 
         // Check if the player's feet are inside an object
-        closestObject = null;
         for (GameObject object : this.collidables) {
-            if (eventHitbox.overlaps(object)) {
-                closestObject = object;
-            }
             if (feet.overlaps(object)) {
                 // Find the direction that the player needs to be moved back to
                 // Reset x
@@ -120,7 +118,6 @@ public class Player {
                 // The above two are essentially the same code as Rectangle.overlaps()
                 // Just separated into the two dimensions
             }
-
         }
 
 
@@ -145,6 +142,23 @@ public class Player {
             }
         }
 
+        // Find the closest object to the player so they can interact with it
+        recalcCentre();
+        float distance = -1;
+        closestObject = null;
+        for (GameObject object : this.collidables) {
+            if (eventHitbox.overlaps(object)) {
+                // Check if this is the closest object to the player
+//                System.out.println(object.get("event"));
+//                System.out.println(distanceFrom(object));
+                if (distance == -1 || distanceFrom(object) < distance) {
+                    closestObject = object;
+                    distance = distanceFrom(object);
+                }
+            }
+        }
+
+
 
         // Increment the animation
         stateTime += Gdx.graphics.getDeltaTime();
@@ -167,6 +181,10 @@ public class Player {
 
     public GameObject getClosestObject () {
         return closestObject;
+    }
+
+    public boolean nearObject() {
+        return closestObject != null;
     }
 
     public TextureRegion getCurrentFrame () {
@@ -212,6 +230,16 @@ public class Player {
     public void setBounds (Rectangle bounds) {
         // Set a rectangle that the player should not leave
         this.bounds = bounds;
+    }
+
+    private float distanceFrom (GameObject object) {
+        // Returns the distance from an object
+        return (float) Math.sqrt((Math.pow((centreX - object.centreX), 2) + Math.pow((centreY - object.centreY), 2)));
+    }
+
+    private void recalcCentre() {
+        centreX = sprite.getX() + sprite.getWidth() / 2;
+        centreY = sprite.getY() + sprite.getHeight() / 2;
     }
 
 }

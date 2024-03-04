@@ -5,11 +5,20 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class GameObject extends Rectangle {
     public MapProperties properties;
+    public float centreX;
+    public float centreY;
+
+
+
     // Create like a normal rectangle
     public GameObject(float x, float y, float width, float height) {
         super(x, y, width, height);
         properties = new MapProperties();
+
+        centreX = x + width / 2;
+        centreY = y + height / 2;
     }
+
     // Or create from a Mapobject's properties, and the scale of the game
     public GameObject(MapProperties objectProperties, float scale) {
         super(
@@ -19,6 +28,9 @@ public class GameObject extends Rectangle {
                 (float) objectProperties.get("height") * scale
         );
         properties = objectProperties;
+
+        centreX = x + width / 2;
+        centreY = y + height / 2;
     }
 
 
