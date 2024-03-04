@@ -82,6 +82,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: Title_font
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+	default-horizontal: {
+		background: progess_bar_big
+		knobBefore: progress_bar_yellow
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
 		font: W95FA3
