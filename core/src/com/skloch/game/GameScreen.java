@@ -6,7 +6,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,9 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
@@ -29,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
@@ -40,10 +37,17 @@ import java.awt.*;
 public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
+    private Sound buttonSound;
+    private Sound pauseSound;
     private int score = 0;
+    private int time = 200;
+    private long startTime = TimeUtils.millis();
+    private float timerX;
+    private float timerY;
+    private long elapsedTime;
+    private int day = 0;
     public Player player;
     public Stage gameStage;
-
     private Window escapeMenu;
     private Viewport viewport;
     private Texture testBuilding;
@@ -54,6 +58,8 @@ public class GameScreen implements Screen {
     private int[] backgroundLayers;
     private int[] foregroundLayers ;
     private int[] objectLayers;
+
+
 
 
     public GameScreen(final HustleGame game) {
@@ -75,7 +81,6 @@ public class GameScreen implements Screen {
         float unitScale = 50 / 16f;
         renderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
 
-
         // Load some textures
 //        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
 //        testBuildingHitBox = new Rectangle(600, 300, 150, 100);
@@ -88,6 +93,10 @@ public class GameScreen implements Screen {
             @Override
             public boolean keyDown (int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
+                    // Play pauseSound
+                    pauseSound = Gdx.audio.newSound(Gdx.files.internal("Sound/Pause01.wav"));
+                    pauseSound.play();
+
                     showEscapeMenu = !showEscapeMenu;
                     paused = !paused;
                     // Return true to indicate the keydown event was handled
@@ -109,6 +118,11 @@ public class GameScreen implements Screen {
         TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
 
         player.setPos((float) layer0.getWidth()*50 / 2, (float) layer0.getHeight()*50 / 2);
+
+        elapsedTime = TimeUtils.timeSinceMillis(startTime);
+        elapsedTime /= 1000;
+        timerX = (float) layer0.getWidth()*50 / 2;
+        timerY = (float) layer0.getHeight()*50 / 2;
 
         // Define background, foreground and object layers
         backgroundLayers = new int[] {0, 1};
@@ -165,14 +179,6 @@ public class GameScreen implements Screen {
         // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
         delta = 0.0167f;
 
-        // Load timer bar - needs fixing and drawing
-        //TextureAtlas blueBar = new TextureAtlas(Gdx.files.internal("Interface/BlueTimeBar/BlueBar.atlas"));
-        //Skin blueSkin = new Skin(blueBar);
-        //ProgressBar timeBar = new ProgressBar(0, 200, 1, false, blueSkin);
-        //timeBar.act(delta);
-
-
-
         // Handles movement based on key presses
         // Also handles the player's collision
         if (!paused) {
@@ -196,6 +202,10 @@ public class GameScreen implements Screen {
         game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
         game.smallinfoFont.draw(game.batch, String.format("Score: %d", score), 0f, game.HEIGHT-80);
 
+        // Timer
+        game.smallinfoFont.draw(game.batch, String.format("Time left: %d", time - elapsedTime), timerX, timerY);
+
+        game.batch.end();
 
         renderer.render(foregroundLayers);
 
@@ -210,7 +220,6 @@ public class GameScreen implements Screen {
 
 
     }
-
 
     public void setupEscapeMenu() {
         // Configures an escape menu to display when hitting 'esc'
@@ -236,6 +245,9 @@ public class GameScreen implements Screen {
 
         escapeMenu.pack();
 
+        // Load buttonSound
+        buttonSound = Gdx.audio.newSound(Gdx.files.internal("Sound/Button.wav"));
+
         // Centre
         escapeMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (escapeMenu.getWidth() / 2));
         escapeMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (escapeMenu.getHeight() / 2));
@@ -245,6 +257,7 @@ public class GameScreen implements Screen {
         resumeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                buttonSound.play();
                 showEscapeMenu = false;
                 paused = false;
             }
@@ -253,6 +266,7 @@ public class GameScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                buttonSound.play();
                 // Show options screen
             }
         });
@@ -261,6 +275,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (paused) {
+                    buttonSound.play();
                     dispose();
                     game.setScreen(new MenuScreen(game));
                 }
@@ -291,6 +306,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose () {
+        buttonSound.dispose();
+        pauseSound.dispose();
         // testBuilding.dispose();
     }
 }

@@ -14,6 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import javafx.concurrent.Task;
 
 // MENU SCREEN
 // First thing the player sees, launches them into the actual game
@@ -21,12 +24,24 @@ public class MenuScreen implements Screen {
     final HustleGame game;
     private Stage menuStage;
 
+    private Music menuMusic;
+
+    private Sound buttonSound;
+
     OrthographicCamera camera;
 
     private Viewport viewport;
 
     public MenuScreen(final HustleGame game) {
         this.game = game;
+        // Load and start main menu music
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/MainMenu.mp3"));
+        menuMusic.setLooping(true);
+        menuMusic.play();
+
+        // Load button sound
+        buttonSound = Gdx.audio.newSound(Gdx.files.internal("Sound/Button.wav"));
+
         // Create stage to draw UI on
         menuStage =  new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(menuStage);
@@ -68,7 +83,9 @@ public class MenuScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                buttonSound.play();
                 game.setScreen(new GameScreen(game));
+                menuMusic.stop();
             }
         }
         );
@@ -78,7 +95,9 @@ public class MenuScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
                @Override
                public void changed(ChangeEvent event, Actor actor) {
+                   buttonSound.play();
                    Gdx.app.exit();
+
                }
            }
         );
@@ -122,7 +141,8 @@ public class MenuScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        menuMusic.dispose();
+        buttonSound.dispose();
     }
 
 }

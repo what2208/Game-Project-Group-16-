@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.audio.Sound;
 
 public class Player {
     public Rectangle sprite;
@@ -22,6 +23,8 @@ public class Player {
     public Array<Rectangle> collidables;
     public int scale = 4;
     private Rectangle bounds;
+    private Sound walkSound;
+    private boolean isWalkSoundPlaying;
 
     public Player (final HustleGame game) {
         this.game = game;
@@ -30,6 +33,9 @@ public class Player {
 
         walkingAnimation = new Array<Animation<TextureRegion>>();
         idleAnimation = new Array<Animation<TextureRegion>>();
+
+        // Load walking sound
+        walkSound = Gdx.audio.newSound(Gdx.files.internal("Sound/Walking.wav"));
 
         // Load walking animation from Sprite atlas
         walkingAnimation.add(
@@ -64,6 +70,7 @@ public class Player {
         float oldY = sprite.y;
         float oldFeetX = feet.x;
 
+
         // Move the player and their feet
 
 
@@ -93,6 +100,13 @@ public class Player {
             moving = true;
         }
 
+        if (moving && !isWalkSoundPlaying) {
+            walkSound.play();
+            isWalkSoundPlaying = true;
+        } else if (!moving && isWalkSoundPlaying) {
+            walkSound.stop();
+            isWalkSoundPlaying = false;
+        }
         // Check if the player's feet are inside an object
         for (Rectangle object : this.collidables) {
             if (feet.overlaps(object)) {
@@ -159,8 +173,10 @@ public class Player {
         // Show a different animation if the player is moving vs idling
         if (moving) {
             currentFrame = walkingAnimation.get(direction).getKeyFrame(stateTime);
+            walkSound.play();
         } else {
             currentFrame = idleAnimation.get(direction).getKeyFrame(stateTime);
+            walkSound.stop();
         }
 
         // Round
@@ -216,6 +232,10 @@ public class Player {
     public void setBounds (Rectangle bounds) {
         // Set a rectangle that the player should not leave
         this.bounds = bounds;
+    }
+
+    public void dispose () {
+        walkSound.dispose();
     }
 
 }
