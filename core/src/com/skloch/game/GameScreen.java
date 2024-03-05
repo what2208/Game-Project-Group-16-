@@ -35,7 +35,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 
-
+import javax.swing.text.html.Option;
 import java.awt.*;
 import java.util.Iterator;
 
@@ -60,12 +60,15 @@ public class GameScreen implements Screen {
     private Label interactionLabel;
     private EventManager eventManager;
     public Window dialogueMenu;
+    private boolean showingQuery;
+    private OptionDialogue optionDialogue;
 
 
 
 
     public GameScreen(final HustleGame game) {
         this.game = game;
+        this.game.gameScreen = this;
         eventManager = new EventManager(this.game);
 
         // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
@@ -86,7 +89,6 @@ public class GameScreen implements Screen {
 
         // Escape menu
         setupEscapeMenu();
-        setupDialoguemenu();
 
         // Other UI bits
         Table uiTable = new Table();
@@ -96,10 +98,13 @@ public class GameScreen implements Screen {
 
         uiStage.addActor(uiTable);
 
-        uiTable.add(interactionLabel).padBottom(120);
-        uiTable.row().pad(0, 0, 100, 0);
+        uiTable.add(interactionLabel).padBottom(170);
+        uiTable.row().pad(0, 0, 0, 0);
 
         uiTable.bottom();
+        optionDialogue = new OptionDialogue("", "Yes", "No", this.game);
+        uiStage.addActor(optionDialogue.getWindow());
+        optionDialogue.setVisible(false);
 
 
         // Map
@@ -126,10 +131,27 @@ public class GameScreen implements Screen {
 
                 if (keycode == Input.Keys.E) {
                     if (player.nearObject()) {
-                        eventManager.event((String) player.getClosestObject().get("event"));
+                            if (optionDialogue.isVisible()) {
+                                optionDialogue.setVisible(false);
+                                player.setFrozen(false);
+
+                                if (optionDialogue.getChoice()) {
+                                    eventManager.event((String) player.getClosestObject().get("event"));
+                                }
+                            } else {
+                                optionDialogue.setVisible(true);
+                                player.setFrozen(true);
+                            }
+                        }
                         return true;
                     }
+
+                // If an option dialogue is open it should soak up all keypresses
+                if (optionDialogue.isVisible()) {
+                    optionDialogue.act(keycode);
+                    return true;
                 }
+
 
 
                 return false;
@@ -198,7 +220,7 @@ public class GameScreen implements Screen {
 
         // Handles movement based on key presses
         // Also handles the player's collision
-        if (!paused) {
+        if (!player.isFrozen()) {
             player.move(delta);
         }
 
@@ -231,10 +253,14 @@ public class GameScreen implements Screen {
 
 
         // uiStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        if (player.nearObject()) {
-            interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
-            uiStage.draw();
+        interactionLabel.setVisible(false);
+        if (!optionDialogue.isVisible()) {
+            if (player.nearObject()) {
+                interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
+                interactionLabel.setVisible(true);
+            }
         }
+        uiStage.draw();
 
 
         // Debug - Draw player hitboxes
@@ -248,23 +274,6 @@ public class GameScreen implements Screen {
         camera.update();
 
 
-
-
-    }
-
-    public void setupDialoguemenu() {
-        dialogueMenu = new Window("", game.skin);
-        uiStage.addActor(dialogueMenu);
-        dialogueMenu.setModal(true);
-
-        Table dialogueTable = new Table();
-        dialogueTable.setFillParent(true);
-        dialogueMenu.add(dialogueTable);
-
-        dialogueTable.add(new Label("Interact with tree?", game.skin, "button")).pad(60, 80, 10, 80);
-        dialogueTable.row();
-
-        dialogueMenu.pack();
 
     }
 

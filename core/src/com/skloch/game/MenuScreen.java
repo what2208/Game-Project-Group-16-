@@ -27,6 +27,7 @@ public class MenuScreen implements Screen {
 
     public MenuScreen(final HustleGame game) {
         this.game = game;
+        this.game.menuScreen = this;
         // Create stage to draw UI on
         menuStage =  new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(menuStage);
@@ -46,7 +47,7 @@ public class MenuScreen implements Screen {
         game.smallinfoFont.getData().setScale(0.8f);
 
         // Creat the buttons and the title
-        Label title = new Label("Heslington Hustle", game.skin);
+        Label title = new Label("Heslington Hustle", game.skin, "title");
         TextButton startButton = new TextButton("Start Game", game.skin);
         TextButton optionsButton = new TextButton("Options", game.skin);
         TextButton exitButton = new TextButton("Exit", game.skin);

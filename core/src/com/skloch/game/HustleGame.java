@@ -16,6 +16,9 @@ public class HustleGame extends Game {
 	public int HEIGHT;
 	public Skin skin;
 	public TiledMap map;
+	public GameScreen gameScreen;
+	public MenuScreen menuScreen;
+
 
 	// Constructor to grab width and height of the game
 	public HustleGame (int width, int height) {

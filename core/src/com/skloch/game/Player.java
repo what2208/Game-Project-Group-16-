@@ -27,6 +27,7 @@ public class Player {
     public int scale = 4;
     private Rectangle bounds;
     private GameObject closestObject;
+    public boolean frozen;
 
     public Player (final HustleGame game) {
         this.game = game;
@@ -149,8 +150,6 @@ public class Player {
         for (GameObject object : this.collidables) {
             if (eventHitbox.overlaps(object)) {
                 // Check if this is the closest object to the player
-//                System.out.println(object.get("event"));
-//                System.out.println(distanceFrom(object));
                 if (distance == -1 || distanceFrom(object) < distance) {
                     closestObject = object;
                     distance = distanceFrom(object);
@@ -240,6 +239,17 @@ public class Player {
     private void recalcCentre() {
         centreX = sprite.getX() + sprite.getWidth() / 2;
         centreY = sprite.getY() + sprite.getHeight() / 2;
+    }
+
+    public void setFrozen (boolean freeze) {
+        this.frozen = freeze;
+        if (freeze) {
+            // Set to non-moving frame
+            currentFrame = idleAnimation.get(direction).getKeyFrame(stateTime);
+        }
+    }
+    public boolean isFrozen () {
+        return this.frozen;
     }
 
 }
