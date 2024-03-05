@@ -139,8 +139,9 @@ public class GameScreen implements Screen {
                                     eventManager.event((String) player.getClosestObject().get("event"));
                                 }
                             } else {
-                                optionDialogue.setVisible(true);
+                                optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
                                 player.setFrozen(true);
+                                optionDialogue.setVisible(true);
                             }
                         }
                         return true;
@@ -260,6 +261,8 @@ public class GameScreen implements Screen {
                 interactionLabel.setVisible(true);
             }
         }
+
+        uiStage.act(delta);
         uiStage.draw();
 
 
@@ -272,8 +275,6 @@ public class GameScreen implements Screen {
 
         camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
-
-
 
     }
 

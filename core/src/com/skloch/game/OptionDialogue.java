@@ -6,42 +6,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.Align;
 
 public class OptionDialogue {
     private HustleGame game;
     private Window window;
-    private Label questionLabel;
+    public Label questionLabel;
     private Label leftArrow;
     private Label rightArrow;
-
     boolean visible = false;
     boolean choice = false;
     public OptionDialogue (String question, String option1, String option2, HustleGame game) {
         this.game = game;
         window = new Window("", game.skin);
-        // uiStage.addActor(dialogueMenu);
         window.setModal(true);
 
         Table dialogueTable = new Table();
-        dialogueTable.setFillParent(true);
-        window.add(dialogueTable);
+        // dialogueTable.setDebug(true);
 
-        questionLabel = new Label("Interact with tree?", game.skin, "interaction");
-
-        dialogueTable.add(questionLabel).pad(30, 40, 10, 40).colspan(4);
-        dialogueTable.row();
-        Table choiceTable = new Table();
-        choiceTable.bottom();
-
+        questionLabel = new Label("Interact", game.skin, "interaction");
         leftArrow = new Label(">", game.skin, "interaction");
         rightArrow = new Label(">", game.skin, "interaction");
+        Label option1Label = new Label(option1, game.skin, "interaction");
+        Label option2Label = new Label(option2, game.skin, "interaction");
 
+        // questionLabel.setAlignment(Align.center);
+
+        dialogueTable.add(questionLabel).top().colspan(4).expandX();
+        dialogueTable.row();
         dialogueTable.add(leftArrow).right();
-        dialogueTable.add(new Label(option1, game.skin, "interaction")).left().pad(0, 8, 0, 10);
+        dialogueTable.add(option1Label).left().padLeft(10);
         dialogueTable.add(rightArrow).right();
-        dialogueTable.add(new Label(option2, game.skin, "interaction")).left().pad(0, 10, 0, 10);
-        // dialogueMenu.add(choiceTable);
+        dialogueTable.add(option2Label).left().padLeft(10);
 
+        window.add(dialogueTable).top();
+
+        // window.setWidth(questionLabel.getWidth());
         window.pack();
 
         window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
@@ -49,6 +49,8 @@ public class OptionDialogue {
 
         this.updateArrow();
         this.setVisible(false);
+
+        this.setWidth(400);
     }
 
     public Window getWindow () {
@@ -57,6 +59,12 @@ public class OptionDialogue {
 
     public void setQuestionText (String text) {
         questionLabel.setText(text);
+    }
+
+    public void setWidth (int x) {
+        window.setWidth(x);
+        window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
+        window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
     }
 
     public void setVisible (boolean visible) {
