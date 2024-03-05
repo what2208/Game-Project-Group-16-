@@ -102,7 +102,7 @@ public class GameScreen implements Screen {
         uiTable.row().pad(0, 0, 0, 0);
 
         uiTable.bottom();
-        optionDialogue = new OptionDialogue("", "Yes", "No", this.game);
+        optionDialogue = new OptionDialogue("", 400, this.game);
         uiStage.addActor(optionDialogue.getWindow());
         optionDialogue.setVisible(false);
 
@@ -123,8 +123,17 @@ public class GameScreen implements Screen {
             @Override
             public boolean keyDown (int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
+                    if (optionDialogue.isVisible()) {
+                        optionDialogue.setVisible(false);
+                        player.setFrozen(false);
+                        return true;
+                    }
                     showEscapeMenu = !showEscapeMenu;
-                    paused = !paused;
+                    if (showEscapeMenu) {
+                        player.setFrozen(true);
+                    } else {
+                        player.setFrozen(false);
+                    }
                     // Return true to indicate the keydown event was handled
                     return true;
                 }
@@ -139,6 +148,7 @@ public class GameScreen implements Screen {
                                     eventManager.event((String) player.getClosestObject().get("event"));
                                 }
                             } else {
+                                optionDialogue.setChoice(false);
                                 optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
                                 player.setFrozen(true);
                                 optionDialogue.setVisible(true);
@@ -312,7 +322,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showEscapeMenu = false;
-                paused = false;
+                player.setFrozen(false);
             }
         });
 
@@ -326,10 +336,8 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (paused) {
-                    dispose();
-                    game.setScreen(new MenuScreen(game));
-                }
+                dispose();
+                game.setScreen(new MenuScreen(game));
             }
         });
     }

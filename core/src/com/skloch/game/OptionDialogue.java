@@ -16,32 +16,39 @@ public class OptionDialogue {
     private Label rightArrow;
     boolean visible = false;
     boolean choice = false;
-    public OptionDialogue (String question, String option1, String option2, HustleGame game) {
+    public OptionDialogue (String question, int width, HustleGame game) {
+        // Create an option dialogue to prompt the player for an input
+        // Attempted to make it as adaptable as possible
+        // Width can be changed and text wraps
+        // It will however go wrong up to a certain point
+
         this.game = game;
         window = new Window("", game.skin);
         window.setModal(true);
 
         Table dialogueTable = new Table();
+
         // dialogueTable.setDebug(true);
+        // window.setDebug(true);
 
         questionLabel = new Label("Interact", game.skin, "interaction");
+        questionLabel.setWrap(true);
         leftArrow = new Label(">", game.skin, "interaction");
         rightArrow = new Label(">", game.skin, "interaction");
-        Label option1Label = new Label(option1, game.skin, "interaction");
-        Label option2Label = new Label(option2, game.skin, "interaction");
+        Label option1Label = new Label("Yes", game.skin, "interaction");
+        Label option2Label = new Label("No", game.skin, "interaction");
 
-        // questionLabel.setAlignment(Align.center);
+        questionLabel.setAlignment(Align.center);
 
-        dialogueTable.add(questionLabel).top().colspan(4).expandX();
-        dialogueTable.row();
-        dialogueTable.add(leftArrow).right();
-        dialogueTable.add(option1Label).left().padLeft(10);
+        dialogueTable.add(questionLabel).top().colspan(4).fillX();
+        dialogueTable.row().pad(0, 0, 0, 0);
+        dialogueTable.add(leftArrow).right().padLeft(width-290);
+        dialogueTable.add(option1Label).left().padLeft(10).padRight(30);
         dialogueTable.add(rightArrow).right();
-        dialogueTable.add(option2Label).left().padLeft(10);
+        dialogueTable.add(option2Label).left().padLeft(10).padRight(width-290);
 
-        window.add(dialogueTable).top();
+        window.add(dialogueTable).fillX().left();
 
-        // window.setWidth(questionLabel.getWidth());
         window.pack();
 
         window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
@@ -50,7 +57,7 @@ public class OptionDialogue {
         this.updateArrow();
         this.setVisible(false);
 
-        this.setWidth(400);
+        this.setWidth(width);
     }
 
     public Window getWindow () {
@@ -106,6 +113,11 @@ public class OptionDialogue {
             rightArrow.setVisible(true);
             leftArrow.setVisible(false);
         }
+    }
+
+    public void setChoice (Boolean choice) {
+        this.choice = choice;
+        updateArrow();
     }
 
 

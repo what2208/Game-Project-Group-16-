@@ -48,21 +48,23 @@ public class MenuScreen implements Screen {
 
         // Creat the buttons and the title
         Label title = new Label("Heslington Hustle", game.skin, "title");
-        TextButton startButton = new TextButton("Start Game", game.skin);
+        TextButton startButton = new TextButton("New Game", game.skin);
         TextButton optionsButton = new TextButton("Options", game.skin);
+        TextButton creditsButton = new TextButton("Credits", game.skin);
         TextButton exitButton = new TextButton("Exit", game.skin);
 
         // Add everything to the table using row() to go to a new line
         int buttonWidth = 340;
         table.row().pad(80, 0, 10, 0);
-        table.add(title).uniformX();
-        table.row().pad(100, 0, 0, 0);
-        table.add(startButton).uniformX().width(buttonWidth);
-        table.row().pad(10, 0, 10, 0);
-        table.add(optionsButton).uniformX().width(buttonWidth);
-        table.row().pad(10, 0, 10, 0);
+        table.add(title).uniformX().padBottom(100);
+        table.row();
+        table.add(startButton).uniformX().width(buttonWidth).padBottom(10);
+        table.row();
+        table.add(optionsButton).uniformX().width(buttonWidth).padBottom(10);
+        table.row();
+        table.add(creditsButton).uniformX().width(buttonWidth).padBottom(30);
+        table.row();
         table.add(exitButton).uniformX().width(buttonWidth);
-        table.row().pad(10, 0, 10, 0);;
         table.top();
 
         // Add listeners to the buttons so they do things when pressed
@@ -75,6 +77,20 @@ public class MenuScreen implements Screen {
         );
 
         // OPTION BUTTON
+        optionsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
+
+        // CREDITS BUTTON
+        creditsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
 
         exitButton.addListener(new ChangeListener() {
                @Override
