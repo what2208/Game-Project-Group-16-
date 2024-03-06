@@ -38,34 +38,35 @@ public class OptionsScreen implements Screen {
         optionMenu.setModal(true);
 
         Table optionTable = new Table();
-        optionTable.setHeight(600);
-        // optionTable.setFillParent(true);
 
-        optionMenu.add(optionTable);
+        optionMenu.add(optionTable).prefHeight(600);
 
         TextButton exitButton = new TextButton("Exit", game.skin);
         Label title = new Label("Options", game.skin, "button");
-        Label musicTitle = new Label("Music", game.skin, "interaction");
+        Label musicTitle = new Label("Music Volume", game.skin, "interaction");
         Slider musicSlider = new Slider(0, 100, 1, false, game.skin, "default-horizontal");
-        Label sfxTitle = new Label("SFX", game.skin, "interaction");
+        Label sfxTitle = new Label("SFX Volume", game.skin, "interaction");
         Slider sfxSlider = new Slider(0, 100, 1, false, game.skin, "default-horizontal");
         Table sliderTable = new Table();
+        // optionTable.setDebug(true);
+        // sliderTable.setDebug(true);
 
         musicSlider.setValue(100);
         sfxSlider.setValue(100);
-        musicSlider.setValue(1000);
+        musicSlider.setWidth(1000);
+
 
         sliderTable.add(musicTitle).padRight(20);
-        sliderTable.add(musicSlider).padLeft(20);
-        sliderTable.row();
-        sliderTable.add(sfxTitle).padRight(20);
-        sliderTable.add(sfxSlider).padLeft(20);
+        sliderTable.add(musicSlider).prefWidth(250);
+        sliderTable.row().padTop(20);
+        sliderTable.add(sfxTitle).padRight(20).right();
+        sliderTable.add(sfxSlider).prefWidth(250);
 
-        optionTable.add(title).top().padTop(20);
+        optionTable.add(title).top().padTop(40).padBottom(50);
         optionTable.row();
-        optionTable.add(sliderTable);
+        optionTable.add(sliderTable).fillX();
         optionTable.row();
-        optionTable.add(exitButton).pad(40, 50, 60, 50).width(300);
+        optionTable.add(exitButton).pad(40, 50, 60, 50).width(300).bottom().expandY();
 
         optionMenu.pack();
 
