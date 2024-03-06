@@ -16,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -33,17 +34,22 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
+
+import javax.swing.text.html.Option;
 import java.awt.*;
+import java.util.Iterator;
 
 public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int score = 0;
     public Player player;
+    public Stage escapeMenuStage;
     public Stage gameStage;
-
     private Window escapeMenu;
     private Viewport viewport;
     private Texture testBuilding;
@@ -54,22 +60,55 @@ public class GameScreen implements Screen {
     private int[] backgroundLayers;
     private int[] foregroundLayers ;
     private int[] objectLayers;
+    public Stage uiStage;
+    public ShapeRenderer debugRenderer;
+    private Label interactionLabel;
+    private EventManager eventManager;
+    public Window dialogueMenu;
+    private boolean showingQuery;
+    private OptionDialogue optionDialogue;
 
 
     public GameScreen(final HustleGame game) {
         this.game = game;
+        this.game.gameScreen = this;
+        eventManager = new EventManager(this.game);
+
         // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
-        gameStage = new Stage(new ScreenViewport());
+        escapeMenuStage = new Stage(new ScreenViewport());
+        uiStage = new Stage(new ScreenViewport());
 
         // Camera and viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
+        // Debug - Used to draw hitboxes
+        // Uncomment drawHitboxes() from the bottom of render to enable
+        debugRenderer = new ShapeRenderer();
+        debugRenderer.setProjectionMatrix(camera.combined);
+
         player = new Player(game);
 
         // Escape menu
         setupEscapeMenu();
+
+        // Other UI bits
+        Table uiTable = new Table();
+        uiTable.setFillParent(true);
+        interactionLabel = new Label("Press E to interact", game.skin, "default");
+        uiStage.addActor(interactionLabel);
+
+        uiStage.addActor(uiTable);
+
+        uiTable.add(interactionLabel).padBottom(170);
+        uiTable.row().pad(0, 0, 0, 0);
+
+        uiTable.bottom();
+        optionDialogue = new OptionDialogue("", 400, this.game);
+        uiStage.addActor(optionDialogue.getWindow());
+        optionDialogue.setVisible(false);
+
 
         // Map
         float unitScale = 50 / 16f;
@@ -88,11 +127,48 @@ public class GameScreen implements Screen {
             @Override
             public boolean keyDown (int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
+                    if (optionDialogue.isVisible()) {
+                        optionDialogue.setVisible(false);
+                        player.setFrozen(false);
+                        return true;
+                    }
                     showEscapeMenu = !showEscapeMenu;
-                    paused = !paused;
+                    if (showEscapeMenu) {
+                        player.setFrozen(true);
+                    } else {
+                        player.setFrozen(false);
+                    }
                     // Return true to indicate the keydown event was handled
                     return true;
                 }
+
+                if (keycode == Input.Keys.E) {
+                    if (player.nearObject()) {
+                            if (optionDialogue.isVisible()) {
+                                optionDialogue.setVisible(false);
+                                player.setFrozen(false);
+
+                                if (optionDialogue.getChoice()) {
+                                    eventManager.event((String) player.getClosestObject().get("event"));
+                                }
+                            } else {
+                                optionDialogue.setChoice(false);
+                                optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
+                                player.setFrozen(true);
+                                optionDialogue.setVisible(true);
+                            }
+                        }
+                        return true;
+                    }
+
+                // If an option dialogue is open it should soak up all keypresses
+                if (optionDialogue.isVisible()) {
+                    optionDialogue.act(keycode);
+                    return true;
+                }
+
+
+
                 return false;
             }
         };
@@ -101,7 +177,7 @@ public class GameScreen implements Screen {
         // Use an input multiplexer to listen for one inputadapter and then the other
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(gameKeyBoardInput);
-        multiplexer.addProcessor(gameStage);
+        multiplexer.addProcessor(escapeMenuStage);
         Gdx.input.setInputProcessor(multiplexer);
 
         // Set the player to the middle of the map
@@ -125,16 +201,8 @@ public class GameScreen implements Screen {
             for (int i = 0; i < objects.getCount(); i++) {
                 // Get the properties of each object
                 MapProperties properties = objects.get(i).getProperties();
-                // Make a new rect and pass this to the player
-                player.addCollidable(
-                        new Rectangle(
-                                (float) properties.get("x") * unitScale,
-                                (float) properties.get("y") * unitScale,
-                                (float) properties.get("width") * unitScale,
-                                (float) properties.get("height") * unitScale
-                        )
-                );
-                // Bosh
+                // Make a new gameObject with these properties, passing along the scale the map is rendered at for accurate coordinates
+                player.addCollidable(new GameObject(properties, unitScale));
             }
         }
 
@@ -175,7 +243,7 @@ public class GameScreen implements Screen {
 
         // Handles movement based on key presses
         // Also handles the player's collision
-        if (!paused) {
+        if (!player.isFrozen()) {
             player.move(delta);
         }
 
@@ -201,13 +269,33 @@ public class GameScreen implements Screen {
 
         // Draw popup screen
         if (showEscapeMenu) {
-            gameStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-            gameStage.draw();
+            escapeMenuStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+            escapeMenuStage.draw();
         }
+
+
+        // uiStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        interactionLabel.setVisible(false);
+        if (!optionDialogue.isVisible()) {
+            if (player.nearObject()) {
+                interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
+                interactionLabel.setVisible(true);
+            }
+        }
+
+        uiStage.act(delta);
+        uiStage.draw();
+
+
+        // Debug - Draw player hitboxes
+        // drawHitboxes();
+        // Debug, print the event value of the closest object to the player if there is one
+//        if (player.getClosestObject() != null) {
+//            System.out.println(player.getClosestObject().get("event"));
+//        }
 
         camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
-
 
     }
 
@@ -216,7 +304,7 @@ public class GameScreen implements Screen {
         // Configures an escape menu to display when hitting 'esc'
         // Escape menu
         escapeMenu = new Window("", game.skin);
-        gameStage.addActor(escapeMenu);
+        escapeMenuStage.addActor(escapeMenu);
         escapeMenu.setModal(true);
 
         Table escapeTable = new Table();
@@ -246,7 +334,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 showEscapeMenu = false;
-                paused = false;
+                player.setFrozen(false);
             }
         });
 
@@ -260,10 +348,8 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (paused) {
-                    dispose();
-                    game.setScreen(new MenuScreen(game));
-                }
+                dispose();
+                game.setScreen(new MenuScreen(game));
             }
         });
     }
@@ -292,5 +378,23 @@ public class GameScreen implements Screen {
     @Override
     public void dispose () {
         // testBuilding.dispose();
+        if (debugRenderer != null) {
+            debugRenderer.dispose();
+        }
+    }
+
+    public void drawHitboxes () {
+        debugRenderer.setProjectionMatrix(camera.combined);
+        debugRenderer.begin(ShapeType.Line);
+        // Sprite
+        debugRenderer.setColor(1, 0, 0, 1);
+        debugRenderer.rect(player.sprite.x, player.sprite.y, player.sprite.width, player.sprite.height);
+        // Feet hitbox
+        debugRenderer.setColor(0, 0, 1, 1);
+        debugRenderer.rect(player.feet.x, player.feet.y, player.feet.width, player.feet.height);
+        // Event hitbox
+        debugRenderer.setColor(0, 1, 1, 1);
+        debugRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
+        debugRenderer.end();
     }
 }
