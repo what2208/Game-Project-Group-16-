@@ -11,16 +11,22 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "Tilesets/TX Props.tsx": {
+            "scaleInDock": 1
+        },
         "Tilesets/TX Tileset Grass.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 2
         },
+        "Tilesets/TX Tileset Stone Ground.tsx": {
+            "scaleInDock": 1
+        },
         "testmap.tmx": {
-            "scale": 1.5,
+            "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 369.33333333333337,
-                "y": 508.3333333333333
+                "x": 425.33333333333337,
+                "y": 420.6666666666667
             }
         }
     },

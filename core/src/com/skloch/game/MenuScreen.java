@@ -80,7 +80,7 @@ public class MenuScreen implements Screen {
         optionsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                game.setScreen(new OptionsScreen(game));
             }
         });
 
