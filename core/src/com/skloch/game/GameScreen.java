@@ -114,14 +114,6 @@ public class GameScreen implements Screen {
         float unitScale = 50 / 16f;
         renderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
 
-
-        // Load some textures
-//        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
-//        testBuildingHitBox = new Rectangle(600, 300, 150, 100);
-
-        // Add the building to the list of the player's collidable objects
-        // player.addCollidable(testBuildingHitBox);
-
         // Button presses
         InputAdapter gameKeyBoardInput = new InputAdapter() {
             @Override
@@ -350,8 +342,10 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                dispose();
-                game.setScreen(new MenuScreen(game));
+                if (showEscapeMenu) {
+                    dispose();
+                    game.setScreen(new MenuScreen(game));
+                }
             }
         });
     }
