@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
@@ -47,6 +48,13 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int score = 0;
+    private long startTime = TimeUtils.millis();
+    private long currentTime;
+    private double timeOutputHours;
+    private long timeOutputMins;
+    private Label timeLabel;
+    private int day = 1;
+    private Label dayLabel;
     public Player player;
     public Stage escapeMenuStage;
     public Stage gameStage;
@@ -109,6 +117,25 @@ public class GameScreen implements Screen {
         uiStage.addActor(optionDialogue.getWindow());
         optionDialogue.setVisible(false);
 
+
+
+        // Time table
+        Table timerTable = new Table();
+        timerTable.setFillParent(true);
+        timeLabel = new Label(String.format("Time - %.0f:%02d", timeOutputHours, timeOutputMins), game.skin);
+        timeLabel.setFontScale((float)1.3);
+        timerTable.add(timeLabel).padRight(5);
+        timerTable.right().top();
+        uiStage.addActor(timerTable);
+
+        // Day Table
+        Table dayTable = new Table();
+        dayTable.setFillParent(true);
+        dayLabel = new Label(String.format("Day %d", day), game.skin);
+        dayLabel.setFontScale((float)1.3);
+        dayTable.add(dayLabel).padLeft(5);
+        dayTable.left().top();
+        uiStage.addActor(dayTable);
 
         // Map
         float unitScale = 50 / 16f;
@@ -233,6 +260,7 @@ public class GameScreen implements Screen {
 
 
 
+
         // Handles movement based on key presses
         // Also handles the player's collision
         if (!player.isFrozen()) {
@@ -277,6 +305,7 @@ public class GameScreen implements Screen {
             }
         }
 
+
         uiStage.act(delta);
         uiStage.draw();
 
@@ -291,6 +320,7 @@ public class GameScreen implements Screen {
         camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
 
+        updateTime();
     }
 
 
@@ -392,5 +422,15 @@ public class GameScreen implements Screen {
         debugRenderer.setColor(0, 1, 1, 1);
         debugRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
         debugRenderer.end();
+    }
+
+    public void updateTime (){
+        // Create stage timer
+        currentTime = TimeUtils.timeSinceMillis(startTime);
+        timeOutputMins = 540 + (currentTime / 1000);
+        timeOutputHours = Math.floor((timeOutputMins / 60));
+        timeOutputMins %= 60;
+
+        timeLabel.setText( String.format("Time - %.0f:%02d", timeOutputHours, timeOutputMins));
     }
 }
