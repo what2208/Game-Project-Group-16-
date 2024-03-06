@@ -54,7 +54,7 @@ public class GameScreen implements Screen {
     private Viewport viewport;
     private Texture testBuilding;
     private Rectangle testBuildingHitBox;
-    private boolean showEscapeMenu;
+    private boolean showEscapeMenu = false;
     private boolean paused = false;
     public OrthogonalTiledMapRenderer renderer;
     private int[] backgroundLayers;
@@ -266,6 +266,8 @@ public class GameScreen implements Screen {
 
 
         renderer.render(foregroundLayers);
+
+        game.batch.end();
 
         // Draw popup screen
         if (showEscapeMenu) {
