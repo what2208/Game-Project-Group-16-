@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,6 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
@@ -45,6 +49,7 @@ public class GameScreen implements Screen {
     private int score = 0;
     public Player player;
     public Stage escapeMenuStage;
+    public Stage gameStage;
     private Window escapeMenu;
     private Viewport viewport;
     private Texture testBuilding;
@@ -62,8 +67,6 @@ public class GameScreen implements Screen {
     public Window dialogueMenu;
     private boolean showingQuery;
     private OptionDialogue optionDialogue;
-
-
 
 
     public GameScreen(final HustleGame game) {
@@ -110,6 +113,7 @@ public class GameScreen implements Screen {
         // Map
         float unitScale = 50 / 16f;
         renderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
+
 
         // Load some textures
 //        testBuilding = new Texture(Gdx.files.internal("Sprites/testbuilding.png"));
@@ -229,6 +233,14 @@ public class GameScreen implements Screen {
         // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
         delta = 0.0167f;
 
+        // Load timer bar - needs fixing and drawing
+        //TextureAtlas blueBar = new TextureAtlas(Gdx.files.internal("Interface/BlueTimeBar/BlueBar.atlas"));
+        //Skin blueSkin = new Skin(blueBar);
+        //ProgressBar timeBar = new ProgressBar(0, 200, 1, false, blueSkin);
+        //timeBar.act(delta);
+
+
+
         // Handles movement based on key presses
         // Also handles the player's collision
         if (!player.isFrozen()) {
@@ -252,7 +264,6 @@ public class GameScreen implements Screen {
         game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
         game.smallinfoFont.draw(game.batch, String.format("Score: %d", score), 0f, game.HEIGHT-80);
 
-        game.batch.end();
 
         renderer.render(foregroundLayers);
 
@@ -287,6 +298,7 @@ public class GameScreen implements Screen {
         camera.update();
 
     }
+
 
     public void setupEscapeMenu() {
         // Configures an escape menu to display when hitting 'esc'
