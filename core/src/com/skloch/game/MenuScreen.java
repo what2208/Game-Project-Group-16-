@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -49,7 +48,7 @@ public class MenuScreen implements Screen {
         // Creat the buttons and the title
         Label title = new Label("Heslington Hustle", game.skin, "title");
         TextButton startButton = new TextButton("New Game", game.skin);
-        TextButton optionsButton = new TextButton("Options", game.skin);
+        TextButton settingsButton = new TextButton("Settings", game.skin);
         TextButton creditsButton = new TextButton("Credits", game.skin);
         TextButton exitButton = new TextButton("Exit", game.skin);
 
@@ -60,7 +59,7 @@ public class MenuScreen implements Screen {
         table.row();
         table.add(startButton).uniformX().width(buttonWidth).padBottom(10);
         table.row();
-        table.add(optionsButton).uniformX().width(buttonWidth).padBottom(10);
+        table.add(settingsButton).uniformX().width(buttonWidth).padBottom(10);
         table.row();
         table.add(creditsButton).uniformX().width(buttonWidth).padBottom(30);
         table.row();
@@ -71,16 +70,18 @@ public class MenuScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                dispose();
                 game.setScreen(new GameScreen(game));
             }
         }
         );
 
-        // OPTION BUTTON
-        optionsButton.addListener(new ChangeListener() {
+        // SETTINGS BUTTON
+        Screen thisScreen = this;
+        settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new OptionsScreen(game));
+                game.setScreen(new SettingsScreen(game, thisScreen));
             }
         });
 
@@ -135,6 +136,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void resume() {
+        Gdx.input.setInputProcessor(menuStage);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,16 +13,24 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-public class OptionsScreen implements Screen {
+public class SettingsScreen implements Screen {
     private HustleGame game;
     private Stage optionStage;
     private OrthographicCamera camera;
     private Viewport viewport;
 
     private Window optionMenu;
+    public Slider musicSlider;
+    public Slider sfxSlider;
 
-    public OptionsScreen (final HustleGame game) {
+    // Use an object since we don't know what type of screen we will be passed
+    public Screen previousScreen;
+
+
+    public SettingsScreen(final HustleGame game, Screen previousScreen) {
+        // An option screen to let the player adjust the volume of music and sound effects
         this.game = game;
+        this.previousScreen = previousScreen;
         optionStage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(optionStage);
 
@@ -31,37 +38,39 @@ public class OptionsScreen implements Screen {
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
-        // Configures an escape menu to display when hitting 'esc'
-        // Escape menu
+        // Create the window
         optionMenu = new Window("", game.skin);
         optionStage.addActor(optionMenu);
         optionMenu.setModal(true);
 
+        // Table for UI elements
         Table optionTable = new Table();
-
         optionMenu.add(optionTable).prefHeight(600);
 
+        // Create all the UI elements
+        // musicSlider and sfxSlider need to be accessible in render so they are already declared
         TextButton exitButton = new TextButton("Exit", game.skin);
-        Label title = new Label("Options", game.skin, "button");
+        Label title = new Label("Settings", game.skin, "button");
         Label musicTitle = new Label("Music Volume", game.skin, "interaction");
-        Slider musicSlider = new Slider(0, 100, 1, false, game.skin, "default-horizontal");
+        musicSlider = new Slider(0, 100, 1, false, game.skin, "default-horizontal");
         Label sfxTitle = new Label("SFX Volume", game.skin, "interaction");
-        Slider sfxSlider = new Slider(0, 100, 1, false, game.skin, "default-horizontal");
+        sfxSlider = new Slider(0, 100, 1, false, game.skin, "default-horizontal");
         Table sliderTable = new Table();
         // optionTable.setDebug(true);
         // sliderTable.setDebug(true);
 
-        musicSlider.setValue(100);
-        sfxSlider.setValue(100);
-        musicSlider.setWidth(1000);
+        // Default values
+        musicSlider.setValue(80);
+        sfxSlider.setValue(80);
 
-
+        // Add to a smaller table to centre the labels and slider bars
         sliderTable.add(musicTitle).padRight(20);
         sliderTable.add(musicSlider).prefWidth(250);
         sliderTable.row().padTop(20);
         sliderTable.add(sfxTitle).padRight(20).right();
         sliderTable.add(sfxSlider).prefWidth(250);
 
+        // Window UI elements
         optionTable.add(title).top().padTop(40).padBottom(50);
         optionTable.row();
         optionTable.add(sliderTable).fillX();
@@ -72,16 +81,17 @@ public class OptionsScreen implements Screen {
 
         optionMenu.setSize(600, 600);
 
-        // Centre
+        // Centre the window
         optionMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (optionMenu.getWidth() / 2));
         optionMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (optionMenu.getHeight() / 2));
 
-        // Create button listeners
+        // Create exit button listener
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 dispose();
-                game.setScreen(new MenuScreen(game));
+                game.setScreen(previousScreen);
+                previousScreen.resume();
             }
         });
 
@@ -98,6 +108,11 @@ public class OptionsScreen implements Screen {
 
         optionStage.act(delta);
         optionStage.draw();
+
+        // Volumes should be between 0 and 1
+        game.musicVolume = musicSlider.getValue() / 100;
+        game.sfxVolume = sfxSlider.getValue() / 100;
+
     }
 
 
@@ -125,6 +140,6 @@ public class OptionsScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        optionStage.dispose();
     }
 }
