@@ -54,7 +54,6 @@ public class GameScreen implements Screen {
     private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
 
-
     public GameScreen(final HustleGame game) {
         this.game = game;
         this.game.gameScreen = this;
@@ -238,7 +237,13 @@ public class GameScreen implements Screen {
         game.batch.begin();
 
         // Player
-        game.batch.draw(player.getCurrentFrame(), player.sprite.x, player.sprite.y, 0, 0, player.sprite.width, player.sprite.height, 1f, 1f, 1);
+        game.batch.draw(
+                player.getCurrentFrame(),
+                player.sprite.x, player.sprite.y,
+                0, 0,
+                player.sprite.width, player.sprite.height,
+                1f, 1f, 1
+        );
 
         // Text
         game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
@@ -315,8 +320,10 @@ public class GameScreen implements Screen {
         resumeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showEscapeMenu = false;
-                player.setFrozen(false);
+                if (showEscapeMenu) {
+                    showEscapeMenu = false;
+                    player.setFrozen(false);
+                }
             }
         });
 
@@ -327,7 +334,9 @@ public class GameScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new SettingsScreen(game, thisScreen));
+                if (showEscapeMenu) {
+                    game.setScreen(new SettingsScreen(game, thisScreen));
+                }
             }
         });
 
@@ -350,22 +359,25 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-        System.out.println("Paused!");
     }
 
     @Override
     public void resume() {
-        System.out.println("Resumed!");
         // Set the input multiplexer back to this stage
         Gdx.input.setInputProcessor(inputMultiplexer);
-        
 
+        // I'm not sure why, but there's a small bug where exiting the settings menu doesn't make the previous
+        // button on the previous screen update, so it's stuck in the 'over' configuration until the
+        // user moves the mouse.
+        // Uncomment the below line to bring the bug back
+        // It's an issue with changing screens, and I can't figure out why it happens, but setting the mouse position
+        // to exactly where it is seems to force the stage to update itself.
+
+        Gdx.input.setCursorPosition( Gdx.input.getX(),  Gdx.input.getY());
     }
 
     @Override
     public void hide() {
-        System.out.println("Hidden!");
-
     }
 
     @Override
@@ -374,6 +386,8 @@ public class GameScreen implements Screen {
         if (debugRenderer != null) {
             debugRenderer.dispose();
         }
+        uiStage.dispose();
+        gameStage.dispose();
     }
 
     public void drawHitboxes () {

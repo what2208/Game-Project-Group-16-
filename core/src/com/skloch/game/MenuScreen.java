@@ -137,11 +137,14 @@ public class MenuScreen implements Screen {
     @Override
     public void resume() {
         Gdx.input.setInputProcessor(menuStage);
+
+        // See the comment in the resume() function in GameScreen to see why this pointless line exists
+        Gdx.input.setCursorPosition(Gdx.input.getX(), Gdx.input.getY());
     }
 
     @Override
     public void dispose() {
-
+        menuStage.dispose();
     }
 
 }
