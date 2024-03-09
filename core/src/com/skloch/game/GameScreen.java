@@ -2,17 +2,11 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,10 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -32,16 +22,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
-
-import javax.swing.text.html.Option;
-import java.awt.*;
-import java.util.Iterator;
 
 public class GameScreen implements Screen {
     final HustleGame game;
@@ -67,7 +52,7 @@ public class GameScreen implements Screen {
     public Window dialogueMenu;
     private boolean showingQuery;
     private OptionDialogue optionDialogue;
-
+    protected InputMultiplexer inputMultiplexer;
 
     public GameScreen(final HustleGame game) {
         this.game = game;
@@ -134,7 +119,7 @@ public class GameScreen implements Screen {
                     return true;
                 }
 
-                if (keycode == Input.Keys.E) {
+                if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
                     if (player.nearObject()) {
                             if (optionDialogue.isVisible()) {
                                 optionDialogue.setVisible(false);
@@ -167,10 +152,12 @@ public class GameScreen implements Screen {
 
         // Since we need to listen to inputs from the stage and from the keyboard
         // Use an input multiplexer to listen for one inputadapter and then the other
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(gameKeyBoardInput);
-        multiplexer.addProcessor(escapeMenuStage);
-        Gdx.input.setInputProcessor(multiplexer);
+        // inputMultiplexer needs to be established before hand since we reference it on resume() when going
+        // back to this screen from the settings menu
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(gameKeyBoardInput);
+        inputMultiplexer.addProcessor(escapeMenuStage);
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
         // Set the player to the middle of the map
         // Get the dimensions of the top layer
@@ -250,7 +237,13 @@ public class GameScreen implements Screen {
         game.batch.begin();
 
         // Player
-        game.batch.draw(player.getCurrentFrame(), player.sprite.x, player.sprite.y, 0, 0, player.sprite.width, player.sprite.height, 1f, 1f, 1);
+        game.batch.draw(
+                player.getCurrentFrame(),
+                player.sprite.x, player.sprite.y,
+                0, 0,
+                player.sprite.width, player.sprite.height,
+                1f, 1f, 1
+        );
 
         // Text
         game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
@@ -327,15 +320,23 @@ public class GameScreen implements Screen {
         resumeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showEscapeMenu = false;
-                player.setFrozen(false);
+                if (showEscapeMenu) {
+                    showEscapeMenu = false;
+                    player.setFrozen(false);
+                }
             }
         });
 
+        // SETTINGS BUTTON
+        // I assign this object to a new var 'thisScreen' since the changeListener overrides 'this'
+        // I wasn't sure of a better solution
+        Screen thisScreen = this;
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Show options screen
+                if (showEscapeMenu) {
+                    game.setScreen(new SettingsScreen(game, thisScreen));
+                }
             }
         });
 
@@ -358,17 +359,25 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
+        // Set the input multiplexer back to this stage
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
+        // I'm not sure why, but there's a small bug where exiting the settings menu doesn't make the previous
+        // button on the previous screen update, so it's stuck in the 'over' configuration until the
+        // user moves the mouse.
+        // Uncomment the below line to bring the bug back
+        // It's an issue with changing screens, and I can't figure out why it happens, but setting the mouse position
+        // to exactly where it is seems to force the stage to update itself.
+
+        Gdx.input.setCursorPosition( Gdx.input.getX(),  Gdx.input.getY());
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
@@ -377,6 +386,8 @@ public class GameScreen implements Screen {
         if (debugRenderer != null) {
             debugRenderer.dispose();
         }
+        uiStage.dispose();
+        gameStage.dispose();
     }
 
     public void drawHitboxes () {

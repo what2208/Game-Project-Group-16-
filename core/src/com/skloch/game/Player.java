@@ -55,8 +55,10 @@ public class Player {
 
         // Sprite is a rectangle covering the whole player
         sprite = new Rectangle(0, 0, 17*scale, 28*scale);
+
         // Feet is a rectangle just covering the player's feet, so is better for collision
         feet = new Rectangle(4*scale, 0, 9*scale, 7*scale);
+
         // Hitbox for triggering events with objects
         float hitboxScaleX = 2.2f;
         float hitboxScaley = 1.7f;
@@ -79,8 +81,7 @@ public class Player {
         float oldY = sprite.y;
         float oldFeetX = feet.x;
 
-        // Move the player and their feet
-
+        // Move the player and their 2 other hitboxes
 
         boolean moving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -104,7 +105,7 @@ public class Player {
             moving = true;
         }
 
-        // Check if the player's feet are inside an object
+        // Check if the player's feet are inside an object, if they are, move them back in that axis
         for (GameObject object : this.collidables) {
             if (feet.overlaps(object)) {
                 // Find the direction that the player needs to be moved back to
@@ -117,7 +118,7 @@ public class Player {
                     this.setY(oldY);
                 }
                 // The above two are essentially the same code as Rectangle.overlaps()
-                // Just separated into the two dimensions
+                // Just separated into the x and y dimensions
             }
         }
 
@@ -144,7 +145,7 @@ public class Player {
         }
 
         // Find the closest object to the player so they can interact with it
-        recalcCentre();
+        recalcCentre(); // Just recalculates the centre of the player now we have moved them
         float distance = -1;
         closestObject = null;
         for (GameObject object : this.collidables) {
@@ -157,8 +158,6 @@ public class Player {
             }
         }
 
-
-
         // Increment the animation
         stateTime += Gdx.graphics.getDeltaTime();
 
@@ -170,11 +169,7 @@ public class Player {
             currentFrame = idleAnimation.get(direction).getKeyFrame(stateTime);
         }
 
-        // Round
-//        sprite.x = Math.round(sprite.x);
-//        sprite.y = Math.round(sprite.y);
-//        feet.x = Math.round(feet.x);
-//        feet.y = Math.round(feet.y);
+        // Bosh!
 
     }
 

@@ -18,6 +18,8 @@ public class HustleGame extends Game {
 	public TiledMap map;
 	public GameScreen gameScreen;
 	public MenuScreen menuScreen;
+	public float musicVolume;
+	public float sfxVolume;
 
 
 	// Constructor to grab width and height of the game
