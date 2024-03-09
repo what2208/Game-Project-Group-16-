@@ -34,7 +34,6 @@ public class GameScreen implements Screen {
     private int score = 0;
     public Player player;
     public Stage escapeMenuStage;
-    public Stage gameStage;
     private Window escapeMenu;
     private Viewport viewport;
     private Texture testBuilding;
@@ -387,7 +386,7 @@ public class GameScreen implements Screen {
             debugRenderer.dispose();
         }
         uiStage.dispose();
-        gameStage.dispose();
+        escapeMenuStage.dispose();
     }
 
     public void drawHitboxes () {

@@ -60,8 +60,8 @@ public class SettingsScreen implements Screen {
         // sliderTable.setDebug(true);
 
         // Default values
-        musicSlider.setValue(80);
-        sfxSlider.setValue(80);
+        musicSlider.setValue(game.musicVolume*100);
+        sfxSlider.setValue(game.sfxVolume*100);
 
         // Add to a smaller table to centre the labels and slider bars
         sliderTable.add(musicTitle).padRight(20);
