@@ -3,7 +3,6 @@ package com.skloch.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -17,9 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
@@ -36,8 +33,6 @@ public class GameScreen implements Screen {
     public Stage escapeMenuStage;
     private Window escapeMenu;
     private Viewport viewport;
-    private Texture testBuilding;
-    private Rectangle testBuildingHitBox;
     private boolean showEscapeMenu = false;
     private boolean paused = false;
     public OrthogonalTiledMapRenderer renderer;
@@ -53,21 +48,28 @@ public class GameScreen implements Screen {
     private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
 
+    private Table uiTable;
+
     public GameScreen(final HustleGame game) {
         this.game = game;
         this.game.gameScreen = this;
         eventManager = new EventManager(this.game);
-
-        // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
-        escapeMenuStage = new Stage(new ScreenViewport());
-        uiStage = new Stage(new ScreenViewport());
 
         // Camera and viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
-        // Debug - Used to draw hitboxes
+        // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
+        uiStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
+        uiTable = new Table();
+        // uiTable.setDebug(true);
+        uiTable.setSize(game.WIDTH, game.HEIGHT);
+//        uiTable.setPosition(viewport.getLeftGutterWidth(), viewport.getBottomGutterHeight());
+        uiStage.addActor(uiTable);
+
+
+        // Debug - Used to draw player hitboxes
         // Uncomment drawHitboxes() from the bottom of render to enable
         debugRenderer = new ShapeRenderer();
         debugRenderer.setProjectionMatrix(camera.combined);
@@ -75,22 +77,22 @@ public class GameScreen implements Screen {
         player = new Player(game);
 
         // Escape menu
-        setupEscapeMenu();
+        setupEscapeMenu(uiTable);
 
         // Other UI bits
-        Table uiTable = new Table();
-        uiTable.setFillParent(true);
         interactionLabel = new Label("Press E to interact", game.skin, "default");
-        uiStage.addActor(interactionLabel);
+        uiTable.add(interactionLabel).padTop(300);
 
-        uiStage.addActor(uiTable);
-
-        uiTable.add(interactionLabel).padBottom(170);
-        uiTable.row().pad(0, 0, 0, 0);
-
-        uiTable.bottom();
-        optionDialogue = new OptionDialogue("", 400, this.game);
-        uiStage.addActor(optionDialogue.getWindow());
+        // Create and set the position of a yes/no option box that displays when the
+        // player interacts with an object
+        optionDialogue = new OptionDialogue("", 400, this.game.skin);
+        Window optWin = optionDialogue.getWindow();
+        optionDialogue.setPos(
+                (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
+                (viewport.getWorldHeight() / 2f) - (optWin.getHeight() / 2f) - 150
+        );
+        // Use addActor for menus that overlay other fixed text elements
+        uiTable.addActor(optionDialogue.getWindow());
         optionDialogue.setVisible(false);
 
 
@@ -108,11 +110,13 @@ public class GameScreen implements Screen {
                         player.setFrozen(false);
                         return true;
                     }
-                    showEscapeMenu = !showEscapeMenu;
-                    if (showEscapeMenu) {
-                        player.setFrozen(true);
-                    } else {
+
+                    if (escapeMenu.isVisible()) {
                         player.setFrozen(false);
+                        escapeMenu.setVisible(false);
+                    } else {
+                        player.setFrozen(true);
+                        escapeMenu.setVisible(true);
                     }
                     // Return true to indicate the keydown event was handled
                     return true;
@@ -155,7 +159,7 @@ public class GameScreen implements Screen {
         // back to this screen from the settings menu
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(gameKeyBoardInput);
-        inputMultiplexer.addProcessor(escapeMenuStage);
+        inputMultiplexer.addProcessor(uiStage);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         // Set the player to the middle of the map
@@ -194,6 +198,8 @@ public class GameScreen implements Screen {
                         layer0.getHeight()*50
                 )
         );
+
+        resize(game.WIDTH, game.HEIGHT);
     }
 
     @Override
@@ -204,12 +210,13 @@ public class GameScreen implements Screen {
     @Override
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        viewport.apply();
         // Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // Set batch to use the same coordinate system as the camera
 
         // Set delta to a constant value to minimise stuttering issues when moving the camera and player
         // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
-        delta = 0.0167f;
+        delta = 0.016667f;
 
         // Load timer bar - needs fixing and drawing
         //TextureAtlas blueBar = new TextureAtlas(Gdx.files.internal("Interface/BlueTimeBar/BlueBar.atlas"));
@@ -253,12 +260,6 @@ public class GameScreen implements Screen {
 
         game.batch.end();
 
-        // Draw popup screen
-        if (showEscapeMenu) {
-            escapeMenuStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-            escapeMenuStage.draw();
-        }
-
 
         // uiStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         interactionLabel.setVisible(false);
@@ -269,9 +270,11 @@ public class GameScreen implements Screen {
             }
         }
 
+        // Draw UI bits
+        // uiStage.setViewport(viewport);
+        uiStage.getViewport().apply();
         uiStage.act(delta);
         uiStage.draw();
-
 
         // Debug - Draw player hitboxes
         // drawHitboxes();
@@ -280,17 +283,19 @@ public class GameScreen implements Screen {
 //            System.out.println(player.getClosestObject().get("event"));
 //        }
 
-        camera.position.set(player.getX(), player.getY(), 0);
+
+        // Focus the camera on the center of the player
+        camera.position.set(player.getCentreX(), player.getCentreY(), 0);
         camera.update();
 
     }
 
 
-    public void setupEscapeMenu() {
+    public void setupEscapeMenu(Table interfaceTable) {
         // Configures an escape menu to display when hitting 'esc'
         // Escape menu
         escapeMenu = new Window("", game.skin);
-        escapeMenuStage.addActor(escapeMenu);
+        interfaceTable.addActor(escapeMenu);
         escapeMenu.setModal(true);
 
         Table escapeTable = new Table();
@@ -310,17 +315,20 @@ public class GameScreen implements Screen {
 
         escapeMenu.pack();
 
+        // escapeMenu.setDebug(true);
+
         // Centre
-        escapeMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (escapeMenu.getWidth() / 2));
-        escapeMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (escapeMenu.getHeight() / 2));
+        escapeMenu.setX((viewport.getWorldWidth() / 2) - (escapeMenu.getWidth() / 2));
+        escapeMenu.setY((viewport.getWorldHeight() / 2) - (escapeMenu.getHeight() / 2));
+
 
         // Create button listeners
 
         resumeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (showEscapeMenu) {
-                    showEscapeMenu = false;
+                if (escapeMenu.isVisible()) {
+                    escapeMenu.setVisible(false);
                     player.setFrozen(false);
                 }
             }
@@ -333,7 +341,7 @@ public class GameScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (showEscapeMenu) {
+                if (escapeMenu.isVisible()) {
                     game.setScreen(new SettingsScreen(game, thisScreen));
                 }
             }
@@ -342,17 +350,29 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (showEscapeMenu) {
+                if (escapeMenu.isVisible()) {
                     dispose();
                     game.setScreen(new MenuScreen(game));
                 }
             }
         });
+
+        escapeMenu.setVisible(false);
+
     }
+
 
     @Override
     public void resize(int width, int height) {
+        uiStage.getViewport().update(width, height);
         viewport.update(width, height);
+
+//        game.WIDTH = width - viewport.getRightGutterWidth() - viewport.getLeftGutterWidth();
+//        game.HEIGHT = height - viewport.getTopGutterHeight() - viewport.getBottomGutterHeight();
+
+//        escapeMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (escapeMenu.getWidth() / 2));
+//        escapeMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (escapeMenu.getHeight() / 2));
+
 
     }
 
@@ -386,7 +406,6 @@ public class GameScreen implements Screen {
             debugRenderer.dispose();
         }
         uiStage.dispose();
-        escapeMenuStage.dispose();
     }
 
     public void drawHitboxes () {

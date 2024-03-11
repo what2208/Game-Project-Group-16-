@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 // MENU SCREEN
@@ -28,7 +29,7 @@ public class MenuScreen implements Screen {
         this.game = game;
         this.game.menuScreen = this;
         // Create stage to draw UI on
-        menuStage =  new Stage(new ScreenViewport());
+        menuStage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(menuStage);
 
         camera = new OrthographicCamera();
@@ -89,7 +90,7 @@ public class MenuScreen implements Screen {
         creditsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                game.setScreen(new CreditScreen(game, thisScreen));
             }
         });
 
@@ -111,6 +112,7 @@ public class MenuScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         // Make the stage follow actions and draw itself
+        menuStage.setViewport(viewport);
         menuStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         menuStage.draw();
 

@@ -31,7 +31,7 @@ public class SettingsScreen implements Screen {
         // An option screen to let the player adjust the volume of music and sound effects
         this.game = game;
         this.previousScreen = previousScreen;
-        optionStage = new Stage(new ScreenViewport());
+        optionStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
         Gdx.input.setInputProcessor(optionStage);
 
         camera = new OrthographicCamera();
@@ -59,7 +59,7 @@ public class SettingsScreen implements Screen {
         // optionTable.setDebug(true);
         // sliderTable.setDebug(true);
 
-        // Default values
+        // Set to correct values
         musicSlider.setValue(game.musicVolume*100);
         sfxSlider.setValue(game.sfxVolume*100);
 
@@ -82,8 +82,8 @@ public class SettingsScreen implements Screen {
         optionMenu.setSize(600, 600);
 
         // Centre the window
-        optionMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (optionMenu.getWidth() / 2));
-        optionMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (optionMenu.getHeight() / 2));
+        optionMenu.setX((viewport.getWorldWidth() / 2f) - (optionMenu.getWidth() / 2f));
+        optionMenu.setY((viewport.getWorldHeight() / 2f) - (optionMenu.getHeight() / 2f));
 
         // Create exit button listener
         exitButton.addListener(new ChangeListener() {
@@ -118,7 +118,8 @@ public class SettingsScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        optionStage.getViewport().update(width, height);
+        viewport.update(width, height);
     }
 
     // Other required methods

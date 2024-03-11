@@ -2,6 +2,7 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
@@ -9,21 +10,21 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Align;
 
 public class OptionDialogue {
-    private HustleGame game;
+    private Skin skin;
     private Window window;
     public Label questionLabel;
     private Label leftArrow;
     private Label rightArrow;
     boolean visible = false;
     boolean choice = false;
-    public OptionDialogue (String question, int width, HustleGame game) {
+    public OptionDialogue (String question, int width, Skin skin) {
         // Create an option dialogue to prompt the player for an input
         // Attempted to make it as adaptable as possible
         // Width can be changed and text wraps
         // It will however go wrong up to a certain point
 
-        this.game = game;
-        window = new Window("", game.skin);
+        this.skin = skin;
+        window = new Window("", skin);
         window.setModal(true);
 
         Table dialogueTable = new Table();
@@ -31,12 +32,12 @@ public class OptionDialogue {
         // dialogueTable.setDebug(true);
         // window.setDebug(true);
 
-        questionLabel = new Label("Interact", game.skin, "interaction");
+        questionLabel = new Label("Interact", skin, "interaction");
         questionLabel.setWrap(true);
-        leftArrow = new Label(">", game.skin, "interaction");
-        rightArrow = new Label(">", game.skin, "interaction");
-        Label option1Label = new Label("Yes", game.skin, "interaction");
-        Label option2Label = new Label("No", game.skin, "interaction");
+        leftArrow = new Label(">", skin, "interaction");
+        rightArrow = new Label(">", skin, "interaction");
+        Label option1Label = new Label("Yes", skin, "interaction");
+        Label option2Label = new Label("No", skin, "interaction");
 
         questionLabel.setAlignment(Align.center);
 
@@ -51,8 +52,9 @@ public class OptionDialogue {
 
         window.pack();
 
-        window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
-        window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
+        // Use to set an initial position
+//        window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
+//        window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
 
         this.updateArrow();
         this.setVisible(false);
@@ -62,6 +64,11 @@ public class OptionDialogue {
 
     public Window getWindow () {
         return this.window;
+    }
+
+    public void setPos(float posX, float posY) {
+        window.setX(posX);
+        window.setY(posY);
     }
 
     public void setQuestionText (String text) {

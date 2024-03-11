@@ -204,6 +204,13 @@ public class Player {
         return sprite.getY();
     }
 
+    public float getCentreX () {
+        return centreX;
+    }
+    public float getCentreY () {
+        return centreY;
+    }
+
     public void setX (float x) {
         this.sprite.setX(x);
         this.feet.setX(x + 4*scale);
