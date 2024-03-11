@@ -2,6 +2,7 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -29,7 +30,7 @@ public class MenuScreen implements Screen {
         this.game = game;
         this.game.menuScreen = this;
         // Create stage to draw UI on
-        menuStage = new Stage(new ScreenViewport());
+        menuStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
         Gdx.input.setInputProcessor(menuStage);
 
         camera = new OrthographicCamera();
@@ -107,6 +108,7 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
@@ -121,6 +123,7 @@ public class MenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
+        menuStage.getViewport().update(width, height);
     }
 
     // Other required methods
