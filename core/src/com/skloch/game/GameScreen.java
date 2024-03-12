@@ -2,12 +2,14 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -40,7 +42,6 @@ public class GameScreen implements Screen {
     private int[] foregroundLayers ;
     private int[] objectLayers;
     public Stage uiStage;
-    public ShapeRenderer debugRenderer;
     private Label interactionLabel;
     private EventManager eventManager;
     public Window dialogueMenu;
@@ -49,7 +50,6 @@ public class GameScreen implements Screen {
     protected InputMultiplexer inputMultiplexer;
 
     private Table uiTable;
-
     public GameScreen(final HustleGame game) {
         this.game = game;
         this.game.gameScreen = this;
@@ -68,11 +68,7 @@ public class GameScreen implements Screen {
 //        uiTable.setPosition(viewport.getLeftGutterWidth(), viewport.getBottomGutterHeight());
         uiStage.addActor(uiTable);
 
-
-        // Debug - Used to draw player hitboxes
-        // Uncomment drawHitboxes() from the bottom of render to enable
-        debugRenderer = new ShapeRenderer();
-        debugRenderer.setProjectionMatrix(camera.combined);
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
 
         player = new Player(game);
 
@@ -167,6 +163,7 @@ public class GameScreen implements Screen {
         TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
 
         player.setPos((float) layer0.getWidth()*50 / 2, (float) layer0.getHeight()*50 / 2);
+        camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
         // Define background, foreground and object layers
         backgroundLayers = new int[] {0, 1};
@@ -200,6 +197,7 @@ public class GameScreen implements Screen {
         );
 
         resize(game.WIDTH, game.HEIGHT);
+
     }
 
     @Override
@@ -210,19 +208,22 @@ public class GameScreen implements Screen {
     @Override
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         viewport.apply();
-        // Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // Set batch to use the same coordinate system as the camera
 
         // Set delta to a constant value to minimise stuttering issues when moving the camera and player
         // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
         delta = 0.016667f;
 
+
         // Load timer bar - needs fixing and drawing
         //TextureAtlas blueBar = new TextureAtlas(Gdx.files.internal("Interface/BlueTimeBar/BlueBar.atlas"));
         //Skin blueSkin = new Skin(blueBar);
         //ProgressBar timeBar = new ProgressBar(0, 200, 1, false, blueSkin);
         //timeBar.act(delta);
+
+        camera.update();
 
 
 
@@ -261,9 +262,8 @@ public class GameScreen implements Screen {
         game.batch.end();
 
 
-        // uiStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         interactionLabel.setVisible(false);
-        if (!optionDialogue.isVisible()) {
+        if (!optionDialogue.isVisible() && !escapeMenu.isVisible()) {
             if (player.nearObject()) {
                 interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
                 interactionLabel.setVisible(true);
@@ -278,14 +278,29 @@ public class GameScreen implements Screen {
 
         // Debug - Draw player hitboxes
         // drawHitboxes();
-        // Debug, print the event value of the closest object to the player if there is one
+
+        // Debug - print the event value of the closest object to the player if there is one
 //        if (player.getClosestObject() != null) {
 //            System.out.println(player.getClosestObject().get("event"));
+
+
 //        }
 
 
         // Focus the camera on the center of the player
-        camera.position.set(player.getCentreX(), player.getCentreY(), 0);
+        // Make it slide into place too
+        // Change to camera.positon.set to remove cool sliding
+        camera.position.slerp(
+                new Vector3(
+                        player.getCentreX(),
+                        player.getCentreY(),
+                        0
+                ),
+                delta*9
+        );
+
+
+
         camera.update();
 
     }
@@ -401,25 +416,21 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose () {
-        // testBuilding.dispose();
-        if (debugRenderer != null) {
-            debugRenderer.dispose();
-        }
         uiStage.dispose();
     }
 
     public void drawHitboxes () {
-        debugRenderer.setProjectionMatrix(camera.combined);
-        debugRenderer.begin(ShapeType.Line);
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
+        game.shapeRenderer.begin(ShapeType.Line);
         // Sprite
-        debugRenderer.setColor(1, 0, 0, 1);
-        debugRenderer.rect(player.sprite.x, player.sprite.y, player.sprite.width, player.sprite.height);
+        game.shapeRenderer.setColor(1, 0, 0, 1);
+        game.shapeRenderer.rect(player.sprite.x, player.sprite.y, player.sprite.width, player.sprite.height);
         // Feet hitbox
-        debugRenderer.setColor(0, 0, 1, 1);
-        debugRenderer.rect(player.feet.x, player.feet.y, player.feet.width, player.feet.height);
+        game.shapeRenderer.setColor(0, 0, 1, 1);
+        game.shapeRenderer.rect(player.feet.x, player.feet.y, player.feet.width, player.feet.height);
         // Event hitbox
-        debugRenderer.setColor(0, 1, 1, 1);
-        debugRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
-        debugRenderer.end();
+        game.shapeRenderer.setColor(0, 1, 1, 1);
+        game.shapeRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
+        game.shapeRenderer.end();
     }
 }

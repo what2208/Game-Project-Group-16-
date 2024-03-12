@@ -2,6 +2,7 @@ package com.skloch.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -86,17 +87,27 @@ public class CreditScreen implements Screen{
                 previousScreen.resume();
             }
         });
+
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
     @Override
     public void render (float delta) {
-        ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
+        ScreenUtils.clear(0, 0, 0, 1);
+
+        // Draw blue background
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.shapeRenderer.setColor(0.53f, 0.81f, 0.92f, 1);
+        game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
+        game.shapeRenderer.end();
 
         camera.update();
         // game.batch.setProjectionMatrix(camera.combined);
 
         creditStage.act(delta);
         creditStage.draw();
+
+        camera.update();
     }
 
 

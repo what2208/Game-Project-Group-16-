@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -24,6 +25,7 @@ public class HustleGame extends Game {
 	public MenuScreen menuScreen;
 	public float musicVolume = 0.8f;
 	public float sfxVolume = 0.8f;
+	public ShapeRenderer shapeRenderer;
 
 
 	// Constructor to grab width and height of the game
@@ -37,6 +39,7 @@ public class HustleGame extends Game {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
 		map = new TmxMapLoader().load("Test Map/testmap.tmx");
+		shapeRenderer = new ShapeRenderer();
 
 		credits = readCreditsFile();
 
@@ -55,6 +58,7 @@ public class HustleGame extends Game {
 		smallinfoFont.dispose();
 		skin.dispose();
 		map.dispose();
+		shapeRenderer.dispose();
 	}
 
 	public String readCreditsFile() {

@@ -215,12 +215,14 @@ public class Player {
         this.sprite.setX(x);
         this.feet.setX(x + 4*scale);
         this.eventHitbox.setX(this.sprite.getX() - (this.eventHitbox.getWidth() - sprite.getWidth()) / 2);
+        this.recalcCentre();
     }
 
     public void setY (float y) {
         this.sprite.setY(y);
         this.feet.setY(y);
         this.eventHitbox.setY(this.sprite.getY() - (this.eventHitbox.getHeight() - sprite.getHeight()) / 2);
+        this.recalcCentre();
     }
 
     public void setPos (float x, float y) {

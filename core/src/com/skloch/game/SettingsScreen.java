@@ -3,6 +3,7 @@ package com.skloch.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -95,16 +96,21 @@ public class SettingsScreen implements Screen {
             }
         });
 
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
+
 
     }
 
 
     @Override
     public void render (float delta) {
-        ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
+        ScreenUtils.clear(0, 0, 0, 1);
 
-        camera.update();
-        // game.batch.setProjectionMatrix(camera.combined);
+        // Draw blue background
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.shapeRenderer.setColor(0.53f, 0.81f, 0.92f, 1);
+        game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
+        game.shapeRenderer.end();
 
         optionStage.act(delta);
         optionStage.draw();
@@ -112,6 +118,8 @@ public class SettingsScreen implements Screen {
         // Volumes should be between 0 and 1
         game.musicVolume = musicSlider.getValue() / 100;
         game.sfxVolume = sfxSlider.getValue() / 100;
+
+        camera.update();
 
     }
 
