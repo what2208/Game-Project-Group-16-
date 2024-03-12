@@ -17,3 +17,14 @@ Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
 Fonts:
 https://www.dafont.com/w95fa.font
 https://www.dafont.com/motorola-screentype.font?fpp=100&text=Heslington+Hustle
+
+Music:
+Main menu music - https://uppbeat.io/track/sulyya/mirthaflare
+Overworld music - https://pixabay.com/music/pulses-blippy-trance-127685/
+
+Sounds:
+Menu button select sound - https://www.free-stock-music.com/sound-effects-library-coin.html
+Walking sound - https://pixabay.com/sound-effects/stone-steps-6748/
+Pause menu open/close sound - https://pixabay.com/sound-effects/coin-collect-retro-8-bit-sound-effect-145251/
+Dialogue box open sound - https://pixabay.com/sound-effects/sfx-jump-07-80241/
+Dialogue box option sound - https://pixabay.com/sound-effects/select-sound-121244/
