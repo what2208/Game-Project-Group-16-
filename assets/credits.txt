@@ -1,0 +1,19 @@
+Made By:
+ENG1 Group 2-16
+
+Game Engine:
+LibGDX
+
+Tools:
+LibGDX Skin Composer
+LibGDX Texture Packer
+Tiled Map Editor
+
+Assets:
+Player sprite - https://cuddle-bug.itch.io/apocalypse
+Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download
+Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
+
+Fonts:
+https://www.dafont.com/w95fa.font
+https://www.dafont.com/motorola-screentype.font?fpp=100&text=Heslington+Hustle

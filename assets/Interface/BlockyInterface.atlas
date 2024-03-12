@@ -68,9 +68,16 @@ button_up
   orig: 84, 84
   offset: 0, 0
   index: -1
+slider_bar
+  rotate: false
+  xy: 509, 728
+  size: 290, 12
+  orig: 290, 12
+  offset: 0, 0
+  index: -1
 slider_button
   rotate: false
-  xy: 509, 600
+  xy: 1, 127
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
@@ -84,10 +91,21 @@ window
   orig: 144, 144
   offset: 0, 0
   index: -1
-slider_bar
+scroll_bar
   rotate: false
-  xy: 509, 728
-  size: 290, 12
-  orig: 290, 12
+  xy: 509, 616
+  size: 48, 24
+  split: 5, 4, 5, 9
+  pad: 0, 0, 0, 0
+  orig: 48, 24
+  offset: 0, 0
+  index: -1
+scroll_bar_v
+  rotate: false
+  xy: 87, 205
+  size: 24, 48
+  split: 5, 9, 4, 5
+  pad: 0, 0, 0, 0
+  orig: 24, 48
   offset: 0, 0
   index: -1

@@ -3,6 +3,7 @@ package com.skloch.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -31,7 +32,7 @@ public class SettingsScreen implements Screen {
         // An option screen to let the player adjust the volume of music and sound effects
         this.game = game;
         this.previousScreen = previousScreen;
-        optionStage = new Stage(new ScreenViewport());
+        optionStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
         Gdx.input.setInputProcessor(optionStage);
 
         camera = new OrthographicCamera();
@@ -59,7 +60,7 @@ public class SettingsScreen implements Screen {
         // optionTable.setDebug(true);
         // sliderTable.setDebug(true);
 
-        // Default values
+        // Set to correct values
         musicSlider.setValue(game.musicVolume*100);
         sfxSlider.setValue(game.sfxVolume*100);
 
@@ -82,8 +83,8 @@ public class SettingsScreen implements Screen {
         optionMenu.setSize(600, 600);
 
         // Centre the window
-        optionMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (optionMenu.getWidth() / 2));
-        optionMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (optionMenu.getHeight() / 2));
+        optionMenu.setX((viewport.getWorldWidth() / 2f) - (optionMenu.getWidth() / 2f));
+        optionMenu.setY((viewport.getWorldHeight() / 2f) - (optionMenu.getHeight() / 2f));
 
         // Create exit button listener
         exitButton.addListener(new ChangeListener() {
@@ -95,16 +96,21 @@ public class SettingsScreen implements Screen {
             }
         });
 
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
+
 
     }
 
 
     @Override
     public void render (float delta) {
-        ScreenUtils.clear(0.53f, 0.81f, 0.92f, 1);
+        ScreenUtils.clear(0, 0, 0, 1);
 
-        camera.update();
-        // game.batch.setProjectionMatrix(camera.combined);
+        // Draw blue background
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.shapeRenderer.setColor(0.53f, 0.81f, 0.92f, 1);
+        game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
+        game.shapeRenderer.end();
 
         optionStage.act(delta);
         optionStage.draw();
@@ -113,12 +119,15 @@ public class SettingsScreen implements Screen {
         game.musicVolume = musicSlider.getValue() / 100;
         game.sfxVolume = sfxSlider.getValue() / 100;
 
+        camera.update();
+
     }
 
 
     @Override
     public void resize(int width, int height) {
-
+        optionStage.getViewport().update(width, height);
+        viewport.update(width, height);
     }
 
     // Other required methods
