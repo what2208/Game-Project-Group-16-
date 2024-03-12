@@ -105,6 +105,9 @@ public class Player {
             moving = true;
         }
 
+        if (!moving) {
+            game.walkSound.stop();
+        }
         // Check if the player's feet are inside an object, if they are, move them back in that axis
         for (GameObject object : this.collidables) {
             if (feet.overlaps(object)) {

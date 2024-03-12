@@ -2,6 +2,7 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -23,6 +24,7 @@ public class SettingsScreen implements Screen {
     private Window optionMenu;
     public Slider musicSlider;
     public Slider sfxSlider;
+    private Sound menuButtonSound;
 
     // Use an object since we don't know what type of screen we will be passed
     public Screen previousScreen;
@@ -90,6 +92,7 @@ public class SettingsScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                game.menuButtonSound.play(game.sfxVolume);
                 dispose();
                 game.setScreen(previousScreen);
                 previousScreen.resume();
@@ -118,6 +121,7 @@ public class SettingsScreen implements Screen {
         // Volumes should be between 0 and 1
         game.musicVolume = musicSlider.getValue() / 100;
         game.sfxVolume = sfxSlider.getValue() / 100;
+        game.menuMusic.setVolume(game.musicVolume);
 
         camera.update();
 

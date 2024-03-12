@@ -1,6 +1,7 @@
 package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -17,7 +18,7 @@ public class OptionDialogue {
     private Label rightArrow;
     boolean visible = false;
     boolean choice = false;
-    public OptionDialogue (String question, int width, Skin skin) {
+    public OptionDialogue (String question, int width, Skin skin, final HustleGame game) {
         // Create an option dialogue to prompt the player for an input
         // Attempted to make it as adaptable as possible
         // Width can be changed and text wraps
@@ -56,10 +57,14 @@ public class OptionDialogue {
 //        window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
 //        window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
 
-        this.updateArrow();
+        this.updateArrow(game);
         this.setVisible(false);
 
         this.setWidth(width);
+
+
+        // Load option sounds
+
     }
 
     public Window getWindow () {
@@ -100,7 +105,7 @@ public class OptionDialogue {
     }
 
 
-    public void act(int keycode) {
+    public void act(int keycode, final HustleGame game) {
         // Reacts to keypress to change which option is selected
         if (choice == true && (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT)) {
             choice = false;
@@ -108,23 +113,25 @@ public class OptionDialogue {
             choice = true;
         }
 
-        this.updateArrow();
+        this.updateArrow(game);
     }
 
-    private void updateArrow () {
+    private void updateArrow (final HustleGame game) {
         // Updates which arrow is pointed at
         if (choice == true) {
+            game.dialogueOptionSound.play(game.sfxVolume);
             rightArrow.setVisible(false);
             leftArrow.setVisible(true);
         } else {
+            game.dialogueOptionSound.play(game.sfxVolume);
             rightArrow.setVisible(true);
             leftArrow.setVisible(false);
         }
     }
 
-    public void setChoice (Boolean choice) {
+    public void setChoice (Boolean choice, final HustleGame game) {
         this.choice = choice;
-        updateArrow();
+        updateArrow(game);
     }
 
 

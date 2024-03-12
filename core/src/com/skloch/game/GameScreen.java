@@ -79,9 +79,21 @@ public class GameScreen implements Screen {
         interactionLabel = new Label("Press E to interact", game.skin, "default");
         uiTable.add(interactionLabel).padTop(300);
 
+        // Load music
+        game.overworldMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/OverworldMusic.mp3"));
+        game.overworldMusic.setLooping(true);
+        game.overworldMusic.setVolume(game.musicVolume);
+        game.overworldMusic.play();
+
+        // Load required sounds
+        game.pauseSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Pause01.wav"));
+        game.dialogueOpenSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/DialogueOpen.wav"));
+        game.dialogueOptionSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/DialogueOption.wav"));
+        game.walkSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Walking.wav"));
+
         // Create and set the position of a yes/no option box that displays when the
         // player interacts with an object
-        optionDialogue = new OptionDialogue("", 400, this.game.skin);
+        optionDialogue = new OptionDialogue("", 400, this.game.skin, game);
         Window optWin = optionDialogue.getWindow();
         optionDialogue.setPos(
                 (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
@@ -108,9 +120,14 @@ public class GameScreen implements Screen {
                     }
 
                     if (escapeMenu.isVisible()) {
+                        game.pauseSound.play(game.sfxVolume);
+                        game.overworldMusic.play();
+                        game.overworldMusic.setVolume(game.musicVolume);
                         player.setFrozen(false);
                         escapeMenu.setVisible(false);
                     } else {
+                        game.pauseSound.play(game.sfxVolume);
+                        game.overworldMusic.pause();
                         player.setFrozen(true);
                         escapeMenu.setVisible(true);
                     }
@@ -123,23 +140,34 @@ public class GameScreen implements Screen {
                             if (optionDialogue.isVisible()) {
                                 optionDialogue.setVisible(false);
                                 player.setFrozen(false);
+                                game.dialogueOpenSound.play(game.sfxVolume);
 
                                 if (optionDialogue.getChoice()) {
                                     eventManager.event((String) player.getClosestObject().get("event"));
                                 }
                             } else {
-                                optionDialogue.setChoice(false);
+                                optionDialogue.setChoice(false, game);
                                 optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
                                 player.setFrozen(true);
                                 optionDialogue.setVisible(true);
+                                game.dialogueOpenSound.play(game.sfxVolume);
                             }
                         }
                         return true;
                     }
 
+                if (keycode == Input.Keys.UP || keycode == Input.Keys.W || keycode == Input.Keys.RIGHT || keycode == Input.Keys.D || keycode == Input.Keys.DOWN || keycode == Input.Keys.S || keycode == Input.Keys.LEFT || keycode == Input.Keys.A){
+                    game.walkSound.stop();
+                    game.walkSound.loop(game.sfxVolume);
+                }
+
+                if (player.isFrozen()) {
+                    game.walkSound.stop();
+                }
+
                 // If an option dialogue is open it should soak up all keypresses
                 if (optionDialogue.isVisible()) {
-                    optionDialogue.act(keycode);
+                    optionDialogue.act(keycode, game);
                     return true;
                 }
 
@@ -197,6 +225,7 @@ public class GameScreen implements Screen {
         );
 
         resize(game.WIDTH, game.HEIGHT);
+
 
     }
 
@@ -343,6 +372,9 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
+                    game.pauseSound.play(game.sfxVolume);
+                    game.overworldMusic.play();
+                    game.overworldMusic.setVolume(game.musicVolume);
                     escapeMenu.setVisible(false);
                     player.setFrozen(false);
                 }
@@ -357,6 +389,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
+                    game.menuButtonSound.play(game.sfxVolume);
                     game.setScreen(new SettingsScreen(game, thisScreen));
                 }
             }
@@ -366,6 +399,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
+                    game.menuButtonSound.play(game.sfxVolume);
                     dispose();
                     game.setScreen(new MenuScreen(game));
                 }

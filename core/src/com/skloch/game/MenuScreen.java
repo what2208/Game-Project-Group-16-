@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 
 // MENU SCREEN
 // First thing the player sees, launches them into the actual game
@@ -41,6 +43,16 @@ public class MenuScreen implements Screen {
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
         titleTexture = new Texture(Gdx.files.internal("title.png"));
+
+        // Load and start main menu music
+        game.menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/MainMenu.mp3"));
+        game.menuMusic.setLooping(true);
+        game.menuMusic.setVolume(game.musicVolume);
+        game.menuMusic.play();
+
+        // Load button sound
+        game.menuButtonSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Button.wav"));
+
 
         // Make table to draw buttons and title
         Table table = new Table();
@@ -75,6 +87,8 @@ public class MenuScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                game.menuButtonSound.play(game.sfxVolume);
+                game.menuMusic.stop();
                 dispose();
                 game.setScreen(new GameScreen(game));
             }
@@ -86,6 +100,7 @@ public class MenuScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                game.menuButtonSound.play(game.sfxVolume);
                 game.setScreen(new SettingsScreen(game, thisScreen));
             }
         });
@@ -94,6 +109,7 @@ public class MenuScreen implements Screen {
         creditsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                game.menuButtonSound.play(game.sfxVolume);
                 game.setScreen(new CreditScreen(game, thisScreen));
             }
         });
@@ -164,6 +180,7 @@ public class MenuScreen implements Screen {
         // See the comment in the resume() function in GameScreen to see why this pointless line exists
         Gdx.input.setCursorPosition(Gdx.input.getX(), Gdx.input.getY());
     }
+
 
     @Override
     public void dispose() {
