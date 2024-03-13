@@ -87,7 +87,7 @@ public class CreditScreen implements Screen{
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.menuButtonSound.play(game.sfxVolume);
+                game.soundManager.playButton();
                 dispose();
                 game.setScreen(previousScreen);
                 previousScreen.resume();

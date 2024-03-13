@@ -25,16 +25,8 @@ public class HustleGame extends Game {
 	public String credits;
 	public GameScreen gameScreen;
 	public MenuScreen menuScreen;
-	public float musicVolume = 0.8f;
-	public float sfxVolume = 0.8f;
 	public ShapeRenderer shapeRenderer;
-	public Music menuMusic;
-	public Music overworldMusic;
-	public Sound menuButtonSound;
-	public Sound pauseSound;
-	public Sound dialogueOptionSound;
-	public Sound dialogueOpenSound;
-	public Sound walkSound;
+	public SoundManager soundManager;
 
 
 	// Constructor to grab width and height of the game
@@ -49,6 +41,7 @@ public class HustleGame extends Game {
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
 		map = new TmxMapLoader().load("Test Map/testmap.tmx");
 		shapeRenderer = new ShapeRenderer();
+		soundManager = new SoundManager();
 
 		credits = readCreditsFile();
 
@@ -68,6 +61,7 @@ public class HustleGame extends Game {
 		skin.dispose();
 		map.dispose();
 		shapeRenderer.dispose();
+		soundManager.dispose();
 	}
 
 	public String readCreditsFile() {

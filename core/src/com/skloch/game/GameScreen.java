@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
@@ -48,6 +47,7 @@ public class GameScreen implements Screen {
     private boolean showingQuery;
     private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
+    private float footstepTimer = 0f;
 
     private Table uiTable;
     public GameScreen(final HustleGame game) {
@@ -70,7 +70,7 @@ public class GameScreen implements Screen {
 
         game.shapeRenderer.setProjectionMatrix(camera.combined);
 
-        player = new Player(game);
+        player = new Player();
 
         // Escape menu
         setupEscapeMenu(uiTable);
@@ -80,20 +80,11 @@ public class GameScreen implements Screen {
         uiTable.add(interactionLabel).padTop(300);
 
         // Load music
-        game.overworldMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/OverworldMusic.mp3"));
-        game.overworldMusic.setLooping(true);
-        game.overworldMusic.setVolume(game.musicVolume);
-        game.overworldMusic.play();
-
-        // Load required sounds
-        game.pauseSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Pause01.wav"));
-        game.dialogueOpenSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/DialogueOpen.wav"));
-        game.dialogueOptionSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/DialogueOption.wav"));
-        game.walkSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Walking.wav"));
+        game.soundManager.playOverworldMusic();
 
         // Create and set the position of a yes/no option box that displays when the
         // player interacts with an object
-        optionDialogue = new OptionDialogue("", 400, this.game.skin, game);
+        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
         Window optWin = optionDialogue.getWindow();
         optionDialogue.setPos(
                 (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
@@ -112,6 +103,7 @@ public class GameScreen implements Screen {
         InputAdapter gameKeyBoardInput = new InputAdapter() {
             @Override
             public boolean keyDown (int keycode) {
+                // SHOW ESCAPE MENU CODE
                 if (keycode == Input.Keys.ESCAPE) {
                     if (optionDialogue.isVisible()) {
                         optionDialogue.setVisible(false);
@@ -120,14 +112,13 @@ public class GameScreen implements Screen {
                     }
 
                     if (escapeMenu.isVisible()) {
-                        game.pauseSound.play(game.sfxVolume);
-                        game.overworldMusic.play();
-                        game.overworldMusic.setVolume(game.musicVolume);
+                        game.soundManager.playButton();
+                        game.soundManager.playOverworldMusic();
                         player.setFrozen(false);
                         escapeMenu.setVisible(false);
                     } else {
-                        game.pauseSound.play(game.sfxVolume);
-                        game.overworldMusic.pause();
+                        // game.soundManager.pauseOverworldMusic();
+                        game.soundManager.playButton();
                         player.setFrozen(true);
                         escapeMenu.setVisible(true);
                     }
@@ -135,12 +126,13 @@ public class GameScreen implements Screen {
                     return true;
                 }
 
+                // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
                     if (player.nearObject()) {
                             if (optionDialogue.isVisible()) {
                                 optionDialogue.setVisible(false);
                                 player.setFrozen(false);
-                                game.dialogueOpenSound.play(game.sfxVolume);
+                                game.soundManager.playButton();
 
                                 if (optionDialogue.getChoice()) {
                                     eventManager.event((String) player.getClosestObject().get("event"));
@@ -150,20 +142,11 @@ public class GameScreen implements Screen {
                                 optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
                                 player.setFrozen(true);
                                 optionDialogue.setVisible(true);
-                                game.dialogueOpenSound.play(game.sfxVolume);
+                                game.soundManager.playDialogueOpen();
                             }
                         }
                         return true;
                     }
-
-                if (keycode == Input.Keys.UP || keycode == Input.Keys.W || keycode == Input.Keys.RIGHT || keycode == Input.Keys.D || keycode == Input.Keys.DOWN || keycode == Input.Keys.S || keycode == Input.Keys.LEFT || keycode == Input.Keys.A){
-                    game.walkSound.stop();
-                    game.walkSound.loop(game.sfxVolume);
-                }
-
-                if (player.isFrozen()) {
-                    game.walkSound.stop();
-                }
 
                 // If an option dialogue is open it should soak up all keypresses
                 if (optionDialogue.isVisible()) {
@@ -244,6 +227,7 @@ public class GameScreen implements Screen {
         // Set delta to a constant value to minimise stuttering issues when moving the camera and player
         // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
         delta = 0.016667f;
+        game.soundManager.processTimers(delta);
 
 
         // Load timer bar - needs fixing and drawing
@@ -260,6 +244,11 @@ public class GameScreen implements Screen {
         // Also handles the player's collision
         if (!player.isFrozen()) {
             player.move(delta);
+            if (player.isMoving()) {
+                game.soundManager.playFootstep();
+            } else {
+                game.soundManager.footstepBool = false;
+            }
         }
 
         renderer.setView(camera);
@@ -372,9 +361,8 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
-                    game.pauseSound.play(game.sfxVolume);
-                    game.overworldMusic.play();
-                    game.overworldMusic.setVolume(game.musicVolume);
+                    game.soundManager.playButton();
+                    game.soundManager.playOverworldMusic();
                     escapeMenu.setVisible(false);
                     player.setFrozen(false);
                 }
@@ -389,7 +377,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
-                    game.menuButtonSound.play(game.sfxVolume);
+                    game.soundManager.playButton();
                     game.setScreen(new SettingsScreen(game, thisScreen));
                 }
             }
@@ -399,7 +387,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
-                    game.menuButtonSound.play(game.sfxVolume);
+                    game.soundManager.playButton();
                     dispose();
                     game.setScreen(new MenuScreen(game));
                 }
@@ -415,14 +403,6 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         uiStage.getViewport().update(width, height);
         viewport.update(width, height);
-
-//        game.WIDTH = width - viewport.getRightGutterWidth() - viewport.getLeftGutterWidth();
-//        game.HEIGHT = height - viewport.getTopGutterHeight() - viewport.getBottomGutterHeight();
-
-//        escapeMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (escapeMenu.getWidth() / 2));
-//        escapeMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (escapeMenu.getHeight() / 2));
-
-
     }
 
     @Override
@@ -439,7 +419,7 @@ public class GameScreen implements Screen {
         // user moves the mouse.
         // Uncomment the below line to bring the bug back
         // It's an issue with changing screens, and I can't figure out why it happens, but setting the mouse position
-        // to exactly where it is seems to force the stage to update itself.
+        // to exactly where it is seems to force the stage to update itself and fixes the visual issue.
 
         Gdx.input.setCursorPosition( Gdx.input.getX(),  Gdx.input.getY());
     }

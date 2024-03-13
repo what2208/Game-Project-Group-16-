@@ -63,8 +63,8 @@ public class SettingsScreen implements Screen {
         // sliderTable.setDebug(true);
 
         // Set to correct values
-        musicSlider.setValue(game.musicVolume*100);
-        sfxSlider.setValue(game.sfxVolume*100);
+        musicSlider.setValue(game.soundManager.getMusicVolume()*100);
+        sfxSlider.setValue(game.soundManager.getSfxVolume()*100);
 
         // Add to a smaller table to centre the labels and slider bars
         sliderTable.add(musicTitle).padRight(20);
@@ -92,7 +92,7 @@ public class SettingsScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.menuButtonSound.play(game.sfxVolume);
+                game.soundManager.playButton();
                 dispose();
                 game.setScreen(previousScreen);
                 previousScreen.resume();
@@ -119,9 +119,8 @@ public class SettingsScreen implements Screen {
         optionStage.draw();
 
         // Volumes should be between 0 and 1
-        game.musicVolume = musicSlider.getValue() / 100;
-        game.sfxVolume = sfxSlider.getValue() / 100;
-        game.menuMusic.setVolume(game.musicVolume);
+        game.soundManager.setMusicVolume(musicSlider.getValue() / 100);
+        game.soundManager.setSfxVolume(sfxSlider.getValue() / 100);
 
         camera.update();
 
