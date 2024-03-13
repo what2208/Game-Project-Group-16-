@@ -19,18 +19,11 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-
-import java.sql.Time;
-// import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-
 
 public class GameScreen implements Screen {
     final HustleGame game;
@@ -38,68 +31,72 @@ public class GameScreen implements Screen {
     private int score = 0;
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
-    private Label timeLabel;
-    private Label dayLabel;
+    private Label timeLabel, dayLabel;
     public Player player;
     private Window escapeMenu;
     private Viewport viewport;
-    private boolean showEscapeMenu = false;
-    private boolean paused = false;
-    public OrthogonalTiledMapRenderer renderer;
+    public OrthogonalTiledMapRenderer mapRenderer;
     private int[] backgroundLayers, foregroundLayers, objectLayers;;
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
-    public Window dialogueMenu;
-    private boolean showingQuery;
     private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
-    private float footstepTimer = 0f;
-
     private Table uiTable;
+
     public GameScreen(final HustleGame game) {
+        // Important game variables
         this.game = game;
         this.game.gameScreen = this;
         eventManager = new EventManager(this.game);
 
-        // Camera and viewport
+
+
+        // Camera and viewport settings
         camera = new OrthographicCamera();
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
-
-        // Set the stage specifically to a new gameStage so buttons from menu aren't interactable
-        uiStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
-        uiTable = new Table();
-        // uiTable.setDebug(true);
-        uiTable.setSize(game.WIDTH, game.HEIGHT);
-//        uiTable.setPosition(viewport.getLeftGutterWidth(), viewport.getBottomGutterHeight());
-        uiStage.addActor(uiTable);
-
         game.shapeRenderer.setProjectionMatrix(camera.combined);
 
+
+
+        // Create a stage for the user interface to be on
+        uiStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
+        uiTable = new Table();
+        uiTable.setSize(game.WIDTH, game.HEIGHT);
+        uiStage.addActor(uiTable);
+
+
+
+        // Create a player class
         player = new Player();
 
+
+
+        // User interface elements
         // Escape menu
         setupEscapeMenu(uiTable);
 
-        // Other UI bits
-        interactionLabel = new Label("Press E to interact", game.skin, "default");
-        uiTable.add(interactionLabel).padTop(300);
-
-        // Load music
-        game.soundManager.playOverworldMusic();
-
-        // Create and set the position of a yes/no option box that displays when the
-        // player interacts with an object
+        // Create and center the yes/no box that appears when interacting with objects
         optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
         Window optWin = optionDialogue.getWindow();
         optionDialogue.setPos(
                 (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
                 (viewport.getWorldHeight() / 2f) - (optWin.getHeight() / 2f) - 150
         );
-        // Use addActor for menus that overlay other fixed text elements
+        // Use addActor to add windows to the scene
         uiTable.addActor(optionDialogue.getWindow());
         optionDialogue.setVisible(false);
+
+        // Interaction label to prompt player
+        interactionLabel = new Label("Press E to interact", game.skin, "default");
+        uiTable.add(interactionLabel).padTop(300);
+
+
+
+        // Start music
+        game.soundManager.playOverworldMusic();
+
 
 
         // Set initial time
@@ -114,75 +111,13 @@ public class GameScreen implements Screen {
         timeTable.row();
         timeTable.add(dayLabel).uniformX().left().padTop(2);
         timeTable.top().left().padLeft(10).padTop(10);
-
         uiStage.addActor(timeTable);
 
 
 
-        // Map
-        float unitScale = 50 / 16f;
-        renderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
-
-        // Button presses
-        InputAdapter gameKeyBoardInput = new InputAdapter() {
-            @Override
-            public boolean keyDown (int keycode) {
-                // SHOW ESCAPE MENU CODE
-                if (keycode == Input.Keys.ESCAPE) {
-                    if (optionDialogue.isVisible()) {
-                        optionDialogue.setVisible(false);
-                        player.setFrozen(false);
-                        return true;
-                    }
-
-                    if (escapeMenu.isVisible()) {
-                        game.soundManager.playButton();
-                        game.soundManager.playOverworldMusic();
-                        player.setFrozen(false);
-                        escapeMenu.setVisible(false);
-                    } else {
-                        // game.soundManager.pauseOverworldMusic();
-                        game.soundManager.playButton();
-                        player.setFrozen(true);
-                        escapeMenu.setVisible(true);
-                    }
-                    // Return true to indicate the keydown event was handled
-                    return true;
-                }
-
-                // SHOW OPTION MENU / ACT ON OPTION MENU CODE
-                if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
-                    if (player.nearObject()) {
-                            if (optionDialogue.isVisible()) {
-                                optionDialogue.setVisible(false);
-                                player.setFrozen(false);
-                                game.soundManager.playButton();
-
-                                if (optionDialogue.getChoice()) {
-                                    eventManager.event((String) player.getClosestObject().get("event"));
-                                }
-                            } else {
-                                optionDialogue.setChoice(false, game);
-                                optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
-                                player.setFrozen(true);
-                                optionDialogue.setVisible(true);
-                                game.soundManager.playDialogueOpen();
-                            }
-                        }
-                        return true;
-                    }
-
-                // If an option dialogue is open it should soak up all keypresses
-                if (optionDialogue.isVisible()) {
-                    optionDialogue.act(keycode, game);
-                    return true;
-                }
-
-
-
-                return false;
-            }
-        };
+        // Create the keyboard input adapter that defines events to be called based on
+        // specific button presses
+        InputAdapter gameKeyBoardInput = makeInputAdapter();
 
         // Since we need to listen to inputs from the stage and from the keyboard
         // Use an input multiplexer to listen for one inputadapter and then the other
@@ -193,20 +128,27 @@ public class GameScreen implements Screen {
         inputMultiplexer.addProcessor(uiStage);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
+
+
+        // Setup map
+        float unitScale = 50 / 16f;
+        mapRenderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
+
         // Set the player to the middle of the map
         // Get the dimensions of the top layer
         TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
-
         player.setPos((float) layer0.getWidth()*50 / 2, (float) layer0.getHeight()*50 / 2);
+        // Put camera on player
         camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
         // Define background, foreground and object layers
-        backgroundLayers = new int[] {0, 1};
-        foregroundLayers = new int[] {3};
-        objectLayers = new int[] {2};
+        // IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
+        // Bottom most layer on 'layers' tab is 0
+        backgroundLayers = new int[] {0, 1}; // Rendered behind player
+        foregroundLayers = new int[] {3}; // Rendered in front of player
+        objectLayers = new int[] {2}; // Rectangles for the player to collide with
 
         // Give objects to player
-        // Loop through all objects layers
         for (int layer : objectLayers) {
             // Get all objects on the layer
             MapObjects objects = game.map.getLayers().get(layer).getObjects();
@@ -215,7 +157,8 @@ public class GameScreen implements Screen {
             for (int i = 0; i < objects.getCount(); i++) {
                 // Get the properties of each object
                 MapProperties properties = objects.get(i).getProperties();
-                // Make a new gameObject with these properties, passing along the scale the map is rendered at for accurate coordinates
+                // Make a new gameObject with these properties, passing along the scale the map is rendered
+                // at for accurate coordinates
                 player.addCollidable(new GameObject(properties, unitScale));
             }
         }
@@ -231,9 +174,6 @@ public class GameScreen implements Screen {
                 )
         );
 
-        resize(game.WIDTH, game.HEIGHT);
-
-
     }
 
     @Override
@@ -243,14 +183,16 @@ public class GameScreen implements Screen {
 
     @Override
     public void render (float delta) {
+        // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        viewport.apply();
-        // Set batch to use the same coordinate system as the camera
+        viewport.apply(); // Update the viewport
+
 
         // Set delta to a constant value to minimise stuttering issues when moving the camera and player
         // Solution found here: https://www.reddit.com/r/libgdx/comments/5z6qaf/can_someone_help_me_understand_timestepsstuttering/
         delta = 0.016667f;
+        // Update sound timers
         game.soundManager.processTimers(delta);
 
 
@@ -260,16 +202,15 @@ public class GameScreen implements Screen {
         //ProgressBar timeBar = new ProgressBar(0, 200, 1, false, blueSkin);
         //timeBar.act(delta);
 
-        camera.update();
 
+        // Increment the time and possibly day
         updateTime(Gdx.graphics.getDeltaTime()*1.5f);
         timeLabel.setText(formatTime((int) daySeconds));
-        dayLabel.setText(String.format("Day %s", day));
 
 
-
-        // Handles movement based on key presses
-        // Also handles the player's collision
+        // Let the player move to keyboard presses if not frozen
+        // Player.move() handles player collision
+        // Also play a footstep sound if they are moving
         if (!player.isFrozen()) {
             player.move(delta);
             if (player.isMoving()) {
@@ -279,17 +220,17 @@ public class GameScreen implements Screen {
             }
         }
 
-        renderer.setView(camera);
-        renderer.render(backgroundLayers);
-        renderer.render(objectLayers);
 
-        // LibGDX is based on openGL, which likes to draw everything at once
-        // So game.batch stores everything renderable and the renders it all at once
-        // This is where we put anything we want to display to the screen
+        // Update the map's render position
+        mapRenderer.setView(camera);
+        // Draw the background layer
+        mapRenderer.render(backgroundLayers);
+
+        // Begin the spritebatch to draw the player on the screen
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        // Player
+        // Player, draw and scale
         game.batch.draw(
                 player.getCurrentFrame(),
                 player.sprite.x, player.sprite.y,
@@ -298,16 +239,13 @@ public class GameScreen implements Screen {
                 1f, 1f, 1
         );
 
-        // Text
-        game.infoFont.draw(game.batch, "Take a shower!", 0f, game.HEIGHT-40);
-        game.smallinfoFont.draw(game.batch, String.format("Score: %d", score), 0f, game.HEIGHT-80);
-
-
-        renderer.render(foregroundLayers);
-
         game.batch.end();
 
+        // Render map foreground layers
+        mapRenderer.render(foregroundLayers);
 
+
+        // Check if the interaction (press e to use) label needs to be drawn
         interactionLabel.setVisible(false);
         if (!optionDialogue.isVisible() && !escapeMenu.isVisible()) {
             if (player.nearObject()) {
@@ -317,29 +255,15 @@ public class GameScreen implements Screen {
         }
 
 
-
-
-        // Draw UI bits
-        // uiStage.setViewport(viewport);
+        // Update UI elements
         uiStage.getViewport().apply();
-
         uiStage.act(delta);
         uiStage.draw();
-
-        // Debug - Draw player hitboxes
-        // drawHitboxes();
-
-        // Debug - print the event value of the closest object to the player if there is one
-//        if (player.getClosestObject() != null) {
-//            System.out.println(player.getClosestObject().get("event"));
-
-
-//        }
 
 
         // Focus the camera on the center of the player
         // Make it slide into place too
-        // Change to camera.positon.set to remove cool sliding
+        // Change to camera.positon.set() to remove cool sliding
         camera.position.slerp(
                 new Vector3(
                         player.getCentreX(),
@@ -348,6 +272,15 @@ public class GameScreen implements Screen {
                 ),
                 delta*9
         );
+
+
+        // Debug - Draw player hitboxes
+        // drawHitboxes();
+
+        // Debug - print the event value of the closest object to the player if there is one
+//        if (player.getClosestObject() != null) {
+//            System.out.println(player.getClosestObject().get("event"));
+//        }
 
 
         camera.update();
@@ -484,6 +417,7 @@ public class GameScreen implements Screen {
         if (daySeconds >= 1440) {
             daySeconds -= 1440;
             day += 1;
+            dayLabel.setText(String.format("Day %s", day));
         }
     }
 
@@ -502,5 +436,72 @@ public class GameScreen implements Screen {
         } else {
             return String.format("%d:%sam", hour, minutes);
         }
+    }
+
+
+    /**
+     *  Generates an InputAdapter to handle game specific keyboard inputs
+     *
+     * @return An InputAdapter for keyboard inputs
+     */
+    public InputAdapter makeInputAdapter () {
+        return new InputAdapter() {
+            @Override
+            public boolean keyDown (int keycode) {
+                // SHOW ESCAPE MENU CODE
+                if (keycode == Input.Keys.ESCAPE) {
+                    if (optionDialogue.isVisible()) {
+                        optionDialogue.setVisible(false);
+                        player.setFrozen(false);
+                        return true;
+                    }
+
+                    if (escapeMenu.isVisible()) {
+                        game.soundManager.playButton();
+                        game.soundManager.playOverworldMusic();
+                        player.setFrozen(false);
+                        escapeMenu.setVisible(false);
+                    } else {
+                        // game.soundManager.pauseOverworldMusic();
+                        game.soundManager.playButton();
+                        player.setFrozen(true);
+                        escapeMenu.setVisible(true);
+                    }
+                    // Return true to indicate the keydown event was handled
+                    return true;
+                }
+
+                // SHOW OPTION MENU / ACT ON OPTION MENU CODE
+                if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
+                    if (player.nearObject()) {
+                        if (optionDialogue.isVisible()) {
+                            optionDialogue.setVisible(false);
+                            player.setFrozen(false);
+                            game.soundManager.playButton();
+
+                            if (optionDialogue.getChoice()) {
+                                eventManager.event((String) player.getClosestObject().get("event"));
+                            }
+                        } else {
+                            optionDialogue.setChoice(false, game);
+                            optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
+                            player.setFrozen(true);
+                            optionDialogue.setVisible(true);
+                            game.soundManager.playDialogueOpen();
+                        }
+                    }
+                    return true;
+                }
+
+                // If an option dialogue is open it should soak up all keypresses
+                if (optionDialogue.isVisible()) {
+                    optionDialogue.act(keycode, game);
+                    return true;
+                }
+
+
+                return false;
+            }
+        };
     }
 }

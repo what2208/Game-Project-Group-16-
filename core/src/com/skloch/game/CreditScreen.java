@@ -22,7 +22,6 @@ import java.awt.*;
 public class CreditScreen implements Screen{
 
     private HustleGame game;
-    private Screen previousScreen;
     private Stage creditStage;
     private Window creditMenu;
     private OrthographicCamera camera;
@@ -32,7 +31,6 @@ public class CreditScreen implements Screen{
 
         // Basically all the same code as the settings menu
         this.game = game;
-        this.previousScreen = previousScreen;
         creditStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
         Gdx.input.setInputProcessor(creditStage);
 

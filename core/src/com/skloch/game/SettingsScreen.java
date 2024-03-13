@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
@@ -20,13 +19,9 @@ public class SettingsScreen implements Screen {
     private Stage optionStage;
     private OrthographicCamera camera;
     private Viewport viewport;
-
     private Window optionMenu;
     public Slider musicSlider;
     public Slider sfxSlider;
-    private Sound menuButtonSound;
-
-    // Use an object since we don't know what type of screen we will be passed
     public Screen previousScreen;
 
 

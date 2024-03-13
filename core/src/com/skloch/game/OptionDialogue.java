@@ -1,17 +1,14 @@
 package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.Align;
 
 public class OptionDialogue {
-    private Skin skin;
     private Window window;
     public Label questionLabel;
     private Label leftArrow;
@@ -25,7 +22,6 @@ public class OptionDialogue {
         // Width can be changed and text wraps
         // It will however go wrong up to a certain point
 
-        this.skin = skin;
         this.soundManager = soundManager;
         window = new Window("", skin);
         window.setModal(true);
@@ -55,17 +51,10 @@ public class OptionDialogue {
 
         window.pack();
 
-        // Use to set an initial position
-//        window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
-//        window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
-
         this.updateArrow();
         this.setVisible(false);
 
         this.setWidth(width);
-
-
-        // Load option sounds
 
     }
 
