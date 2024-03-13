@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
@@ -81,7 +80,7 @@ public class GameScreen implements Screen {
         uiTable.add(interactionLabel).padTop(300);
 
         // Load music
-        // game.soundManager.playOverworld();
+        game.soundManager.playOverworldMusic();
 
         // Create and set the position of a yes/no option box that displays when the
         // player interacts with an object
@@ -104,6 +103,7 @@ public class GameScreen implements Screen {
         InputAdapter gameKeyBoardInput = new InputAdapter() {
             @Override
             public boolean keyDown (int keycode) {
+                // SHOW ESCAPE MENU CODE
                 if (keycode == Input.Keys.ESCAPE) {
                     if (optionDialogue.isVisible()) {
                         optionDialogue.setVisible(false);
@@ -113,11 +113,11 @@ public class GameScreen implements Screen {
 
                     if (escapeMenu.isVisible()) {
                         game.soundManager.playButton();
-                        game.soundManager.playOverworld();
+                        game.soundManager.playOverworldMusic();
                         player.setFrozen(false);
                         escapeMenu.setVisible(false);
                     } else {
-                        game.soundManager.stopOverworld();
+                        // game.soundManager.pauseOverworldMusic();
                         game.soundManager.playButton();
                         player.setFrozen(true);
                         escapeMenu.setVisible(true);
@@ -126,6 +126,7 @@ public class GameScreen implements Screen {
                     return true;
                 }
 
+                // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
                     if (player.nearObject()) {
                             if (optionDialogue.isVisible()) {
@@ -361,7 +362,7 @@ public class GameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
                     game.soundManager.playButton();
-                    game.soundManager.playOverworld();
+                    game.soundManager.playOverworldMusic();
                     escapeMenu.setVisible(false);
                     player.setFrozen(false);
                 }
@@ -402,14 +403,6 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         uiStage.getViewport().update(width, height);
         viewport.update(width, height);
-
-//        game.WIDTH = width - viewport.getRightGutterWidth() - viewport.getLeftGutterWidth();
-//        game.HEIGHT = height - viewport.getTopGutterHeight() - viewport.getBottomGutterHeight();
-
-//        escapeMenu.setX(((float) Gdx.graphics.getWidth() / 2) - (escapeMenu.getWidth() / 2));
-//        escapeMenu.setY(((float) Gdx.graphics.getHeight() / 2) - (escapeMenu.getHeight() / 2));
-
-
     }
 
     @Override
@@ -426,7 +419,7 @@ public class GameScreen implements Screen {
         // user moves the mouse.
         // Uncomment the below line to bring the bug back
         // It's an issue with changing screens, and I can't figure out why it happens, but setting the mouse position
-        // to exactly where it is seems to force the stage to update itself.
+        // to exactly where it is seems to force the stage to update itself and fixes the visual issue.
 
         Gdx.input.setCursorPosition( Gdx.input.getX(),  Gdx.input.getY());
     }

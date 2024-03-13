@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Disposable;
 
 public class SoundManager implements Disposable {
-    private Music overworldMusic, menuMusic;
+    public Music overworldMusic, menuMusic;
     private Sound footstep1, footstep2;
     public boolean footstepBool;
     private float footstepTimer;
@@ -20,8 +20,8 @@ public class SoundManager implements Disposable {
         menuMusic.setLooping(true);
 
         // Load SFX
-        footstep1 = Gdx.audio.newSound(Gdx.files.internal("Sounds/footstep1.ogg"));
-        footstep2 = Gdx.audio.newSound(Gdx.files.internal("Sounds/footstep2.ogg"));
+        footstep1 = Gdx.audio.newSound(Gdx.files.internal("Sounds/footstep1 grass.ogg"));
+        footstep2 = Gdx.audio.newSound(Gdx.files.internal("Sounds/footstep2 grass.ogg"));
 
         pauseSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Pause01.wav"));
         dialogueOpenSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/DialogueOpen.wav"));
@@ -40,15 +40,16 @@ public class SoundManager implements Disposable {
     }
 
     public void playPause() {pauseSound.play(sfxVolume);}
-
     public void playDialogueOpen() {dialogueOpenSound.play(sfxVolume);}
     public void playDialogueOption() {dialogueOptionSound.play(sfxVolume);}
-    public void playOverworld() {overworldMusic.play();}
-    public void playMenu() {menuMusic.play();}
     public void playButton() {buttonSound.play(sfxVolume);}
 
-    public void stopMenu() {menuMusic.stop();}
-    public void stopOverworld() {overworldMusic.stop();}
+    public void playOverworldMusic() {overworldMusic.play();}
+    public void playMenuMusic() {menuMusic.play();}
+    public void stopMenuMusic() {menuMusic.stop();}
+    public void stopOverworldMusic() {overworldMusic.stop();}
+
+    public void pauseOverworldMusic() {overworldMusic.pause();}
 
     public float getMusicVolume() {return musicVolume;}
     public float getSfxVolume() {return sfxVolume;}
@@ -65,7 +66,7 @@ public class SoundManager implements Disposable {
     public void playFootstep() {
         // If it is time to play a footstep, play one
         if (footstepTimer <= 0) {
-            footstepTimer = 0.46f; // Delay plus avg length of footstep
+            footstepTimer = 0.5f; // Delay plus avg length of footstep
             if (footstepBool == false) {
                 footstep1.play(sfxVolume);
                 footstepBool = true;

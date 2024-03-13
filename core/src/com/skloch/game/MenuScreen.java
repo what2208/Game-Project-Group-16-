@@ -10,15 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 
 // MENU SCREEN
 // First thing the player sees, launches them into the actual game
@@ -45,7 +40,7 @@ public class MenuScreen implements Screen {
         titleTexture = new Texture(Gdx.files.internal("title.png"));
 
         // Play menu music
-        game.soundManager.playMenu();
+        game.soundManager.playMenuMusic();
 
 
         // Make table to draw buttons and title
@@ -78,10 +73,13 @@ public class MenuScreen implements Screen {
         table.top();
 
         // Add listeners to the buttons so they do things when pressed
+
+        // START GAME BUTTON
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.soundManager.stopMenu();
+                game.soundManager.playButton();
+                game.soundManager.stopMenuMusic();
                 dispose();
                 game.setScreen(new GameScreen(game));
             }
@@ -107,6 +105,7 @@ public class MenuScreen implements Screen {
             }
         });
 
+        // EXIT BUTTON
         exitButton.addListener(new ChangeListener() {
                @Override
                public void changed(ChangeEvent event, Actor actor) {
