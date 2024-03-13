@@ -1,6 +1,8 @@
 package com.skloch.game;
 
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.HashMap;
 
 // Used to call certain events when an object is interacted with/ events in general

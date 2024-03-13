@@ -6,28 +6,35 @@ filter: Linear, Linear
 repeat: none
 MotorolaScreentype
   rotate: false
-  xy: 1, 734
+  xy: 1, 591
   size: 506, 279
   orig: 506, 279
   offset: 0, 0
   index: -1
 W95FA(1)
   rotate: false
-  xy: 1, 271
+  xy: 1, 401
   size: 505, 188
   orig: 505, 188
   offset: 0, 0
   index: -1
+W95FA(2)
+  rotate: false
+  xy: 1, 872
+  size: 506, 141
+  orig: 506, 141
+  offset: 0, 0
+  index: -1
 W95FA(3)
   rotate: false
-  xy: 1, 461
+  xy: 509, 742
   size: 506, 271
   orig: 506, 271
   offset: 0, 0
   index: -1
 button_disabled
   rotate: false
-  xy: 1, 185
+  xy: 509, 642
   size: 84, 84
   split: 13, 13, 13, 25
   pad: 0, 0, 0, 0
@@ -36,7 +43,7 @@ button_disabled
   index: -1
 button_over
   rotate: false
-  xy: 509, 640
+  xy: 1, 169
   size: 84, 84
   split: 13, 13, 13, 25
   pad: 0, 0, 0, 0
@@ -45,7 +52,7 @@ button_over
   index: -1
 button_pressed
   rotate: false
-  xy: 655, 786
+  xy: 147, 315
   size: 84, 84
   split: 13, 13, 19, 18
   pad: 0, 0, 0, 0
@@ -54,26 +61,51 @@ button_pressed
   index: -1
 button_up
   rotate: false
-  xy: 1, 99
+  xy: 595, 642
   size: 84, 84
   split: 13, 13, 12, 25
   pad: 0, 0, 0, 0
   orig: 84, 84
   offset: 0, 0
   index: -1
+slider_bar
+  rotate: false
+  xy: 509, 728
+  size: 290, 12
+  orig: 290, 12
+  offset: 0, 0
+  index: -1
+slider_button
+  rotate: false
+  xy: 1, 127
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
 window
   rotate: false
-  xy: 509, 726
+  xy: 1, 255
   size: 144, 144
   split: 33, 33, 33, 34
   pad: 0, 0, 0, 0
   orig: 144, 144
   offset: 0, 0
   index: -1
-W95FA(2)
+scroll_bar
   rotate: false
-  xy: 509, 872
-  size: 506, 141
-  orig: 506, 141
+  xy: 509, 616
+  size: 48, 24
+  split: 5, 4, 5, 9
+  pad: 0, 0, 0, 0
+  orig: 48, 24
+  offset: 0, 0
+  index: -1
+scroll_bar_v
+  rotate: false
+  xy: 87, 205
+  size: 24, 48
+  split: 5, 9, 4, 5
+  pad: 0, 0, 0, 0
+  orig: 24, 48
   offset: 0, 0
   index: -1

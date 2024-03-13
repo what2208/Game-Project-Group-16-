@@ -83,6 +83,26 @@ atlasData: {
 			hidden: false
 		}
 		{
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/slider_button.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: slider_button
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: TEXTURE
+			hidden: false
+		}
+		{
 			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/window.9.png
 			bgColor: {
 				r: 1
@@ -93,6 +113,66 @@ atlasData: {
 			tint: null
 			tintName: null
 			name: window
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/slider_bar.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: slider_bar
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: TEXTURE
+			hidden: false
+		}
+		{
+			file: C:/Users/Sam/Downloads/Cryo's Mini GUI/Buttons/Components/9 patches/scroll_bar.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: scroll_bar
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: C:/Users/Sam/Downloads/Cryo's Mini GUI/Buttons/Components/9 patches/scroll_bar_v.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: scroll_bar_v
 			tiled: false
 			minWidth: -1
 			minHeight: -1
@@ -115,6 +195,26 @@ atlasData: {
 			tint: null
 			tintName: null
 			name: W95FA(1)
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: FONT
+			hidden: false
+		}
+		{
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(2).png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: W95FA(2)
 			tiled: false
 			minWidth: -1
 			minHeight: -1
@@ -155,26 +255,6 @@ atlasData: {
 			tint: null
 			tintName: null
 			name: W95FA(3)
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: FONT
-			hidden: false
-		}
-		{
-			file: C:/Users/Sam/Downloads/w95fa/W95FA(2).png
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: W95FA(2)
 			tiled: false
 			minWidth: -1
 			minHeight: -1
@@ -274,7 +354,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Downloads/w95fa/W95FA(2).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(2).fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -1246,7 +1326,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: hScrollKnob
 						optional: true
-						value: null
+						value: scroll_bar
 					}
 					vScroll: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1258,7 +1338,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: vScrollKnob
 						optional: true
-						value: null
+						value: scroll_bar_v
 					}
 				}
 				deletable: false
@@ -1394,7 +1474,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: null
+						value: slider_bar
 					}
 					disabledBackground: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1406,7 +1486,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knob
 						optional: true
-						value: null
+						value: slider_button
 					}
 					disabledKnob: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1964,7 +2044,11 @@ jsonData: {
 preferences: {
 	id: {
 		class: java.lang.Integer
-		value: 543940393
+		value: 653816627
+	}
+	last-import-export-path: {
+		class: java.lang.String
+		value: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface.json
 	}
 	resources-relative: {
 		class: java.lang.Boolean
