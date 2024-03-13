@@ -18,11 +18,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+
+import java.sql.Time;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 
@@ -30,16 +36,17 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int score = 0;
+    private float daySeconds = 0; // Current seconds elapsed in day
+    private int day = 1; // What day the game is on
+    private Label timeLabel;
+    private Label dayLabel;
     public Player player;
-    public Stage escapeMenuStage;
     private Window escapeMenu;
     private Viewport viewport;
     private boolean showEscapeMenu = false;
     private boolean paused = false;
     public OrthogonalTiledMapRenderer renderer;
-    private int[] backgroundLayers;
-    private int[] foregroundLayers ;
-    private int[] objectLayers;
+    private int[] backgroundLayers, foregroundLayers, objectLayers;;
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
@@ -93,6 +100,23 @@ public class GameScreen implements Screen {
         // Use addActor for menus that overlay other fixed text elements
         uiTable.addActor(optionDialogue.getWindow());
         optionDialogue.setVisible(false);
+
+
+        // Set initial time
+        daySeconds = (8*60); // 8:00 am
+
+        // Table to display date and time
+        Table timeTable = new Table();
+        timeTable.setFillParent(true);
+        timeLabel = new Label(formatTime((int) daySeconds), game.skin, "time");
+        dayLabel = new Label(String.format("Day %d", day), game.skin, "day");
+        timeTable.add(timeLabel).uniformX();
+        timeTable.row();
+        timeTable.add(dayLabel).uniformX().left().padTop(2);
+        timeTable.top().left().padLeft(10).padTop(10);
+
+        uiStage.addActor(timeTable);
+
 
 
         // Map
@@ -238,6 +262,10 @@ public class GameScreen implements Screen {
 
         camera.update();
 
+        updateTime(Gdx.graphics.getDeltaTime()*1.5f);
+        timeLabel.setText(formatTime((int) daySeconds));
+        dayLabel.setText(String.format("Day %s", day));
+
 
 
         // Handles movement based on key presses
@@ -288,9 +316,13 @@ public class GameScreen implements Screen {
             }
         }
 
+
+
+
         // Draw UI bits
         // uiStage.setViewport(viewport);
         uiStage.getViewport().apply();
+
         uiStage.act(delta);
         uiStage.draw();
 
@@ -318,9 +350,7 @@ public class GameScreen implements Screen {
         );
 
 
-
         camera.update();
-
     }
 
 
@@ -446,5 +476,31 @@ public class GameScreen implements Screen {
         game.shapeRenderer.setColor(0, 1, 1, 1);
         game.shapeRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
         game.shapeRenderer.end();
+    }
+    
+
+    public void updateTime(float delta) {
+        daySeconds += delta;
+        if (daySeconds >= 1440) {
+            daySeconds -= 1440;
+            day += 1;
+        }
+    }
+
+    public String formatTime(int seconds) {
+        // Takes a number of seconds and converts it into a 12 hour clock time
+        int hour = Math.floorDiv(seconds, 60);
+        String minutes = String.format("%02d", (seconds - hour * 60));
+
+        // Make 12 hour
+        if (hour == 24 || hour == 0) {
+            return String.format("12:%sam", minutes);
+        } else if (hour == 12) {
+            return String.format("12:%spm", minutes);
+        } else if (hour > 12) {
+            return String.format("%d:%spm", hour-12, minutes);
+        } else {
+            return String.format("%d:%sam", hour, minutes);
+        }
     }
 }
