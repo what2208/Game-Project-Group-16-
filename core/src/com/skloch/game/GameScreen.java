@@ -245,6 +245,8 @@ public class GameScreen implements Screen {
             player.move(delta);
             if (player.isMoving()) {
                 game.soundManager.playFootstep();
+            } else {
+                game.soundManager.footstepBool = false;
             }
         }
 

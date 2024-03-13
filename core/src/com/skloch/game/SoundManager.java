@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Disposable;
 public class SoundManager implements Disposable {
     private Music overworldMusic, menuMusic;
     private Sound footstep1, footstep2;
-    private boolean footstepBool;
+    public boolean footstepBool;
     private float footstepTimer;
     private float sfxVolume = 0.8f, musicVolume = 0.8f;
     private Sound pauseSound, dialogueOpenSound, dialogueOptionSound, buttonSound;
@@ -65,7 +65,7 @@ public class SoundManager implements Disposable {
     public void playFootstep() {
         // If it is time to play a footstep, play one
         if (footstepTimer <= 0) {
-            footstepTimer = 0.35f; // Delay plus avg length of footstep
+            footstepTimer = 0.46f; // Delay plus avg length of footstep
             if (footstepBool == false) {
                 footstep1.play(sfxVolume);
                 footstepBool = true;
