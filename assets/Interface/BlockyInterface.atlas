@@ -6,35 +6,35 @@ filter: Linear, Linear
 repeat: none
 MotorolaScreentype
   rotate: false
-  xy: 1, 601
+  xy: 509, 734
   size: 506, 279
   orig: 506, 279
   offset: 0, 0
   index: -1
 W95FA(1)
   rotate: false
-  xy: 1, 69
+  xy: 509, 544
   size: 505, 188
   orig: 505, 188
   offset: 0, 0
   index: -1
 W95FA(2)
   rotate: false
-  xy: 1, 882
+  xy: 1, 872
   size: 506, 141
   orig: 506, 141
   offset: 0, 0
   index: -1
 W95FA(3)
   rotate: false
-  xy: 509, 752
+  xy: 1, 107
   size: 506, 271
   orig: 506, 271
   offset: 0, 0
   index: -1
 button_disabled
   rotate: false
-  xy: 509, 356
+  xy: 1, 7
   size: 84, 84
   split: 13, 13, 13, 25
   pad: 0, 0, 0, 0
@@ -43,7 +43,7 @@ button_disabled
   index: -1
 button_over
   rotate: false
-  xy: 655, 502
+  xy: 813, 458
   size: 84, 84
   split: 13, 13, 13, 25
   pad: 0, 0, 0, 0
@@ -52,7 +52,7 @@ button_over
   index: -1
 button_pressed
   rotate: false
-  xy: 509, 270
+  xy: 87, 7
   size: 84, 84
   split: 13, 13, 19, 18
   pad: 0, 0, 0, 0
@@ -61,16 +61,30 @@ button_pressed
   index: -1
 button_up
   rotate: false
-  xy: 595, 356
+  xy: 813, 372
   size: 84, 84
   split: 13, 13, 12, 25
   pad: 0, 0, 0, 0
   orig: 84, 84
   offset: 0, 0
   index: -1
+nk57-monospace.rg-bold
+  rotate: false
+  xy: 1, 380
+  size: 506, 340
+  orig: 506, 340
+  offset: 0, 0
+  index: -1
+nk57-monospace.rg-bold(1)
+  rotate: false
+  xy: 1, 722
+  size: 506, 148
+  orig: 506, 148
+  offset: 0, 0
+  index: -1
 scroll_bar
   rotate: false
-  xy: 1, 43
+  xy: 509, 110
   size: 48, 24
   split: 5, 4, 5, 9
   pad: 0, 0, 0, 0
@@ -79,7 +93,7 @@ scroll_bar
   index: -1
 scroll_bar_v
   rotate: false
-  xy: 741, 538
+  xy: 173, 43
   size: 24, 48
   split: 5, 9, 4, 5
   pad: 0, 0, 0, 0
@@ -88,38 +102,38 @@ scroll_bar_v
   index: -1
 slider_bar
   rotate: false
-  xy: 509, 588
+  xy: 1, 93
   size: 290, 12
   orig: 290, 12
   offset: 0, 0
   index: -1
 slider_button
   rotate: false
-  xy: 1, 1
+  xy: 899, 502
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 window
   rotate: false
-  xy: 509, 442
+  xy: 509, 136
   size: 144, 144
   split: 33, 33, 33, 34
   pad: 0, 0, 0, 0
   orig: 144, 144
   offset: 0, 0
   index: -1
-nk57-monospace.rg-bold
+avatar1
   rotate: false
-  xy: 1, 259
-  size: 506, 340
-  orig: 506, 340
+  xy: 667, 302
+  size: 144, 240
+  orig: 144, 240
   offset: 0, 0
   index: -1
-nk57-monospace.rg-bold(1)
+avatar2
   rotate: false
-  xy: 509, 602
-  size: 506, 148
-  orig: 506, 148
+  xy: 509, 282
+  size: 156, 260
+  orig: 156, 260
   offset: 0, 0
   index: -1

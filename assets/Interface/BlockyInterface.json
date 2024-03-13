@@ -89,6 +89,31 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		disabled: button_disabled
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		up: button_up
+		down: button_pressed
+		over: button_over
+		disabled: button_disabled
+		pressedOffsetY: -5
+	}
+	avatar1: {
+		imageUp: avatar1
+		up: button_up
+		down: button_pressed
+		over: button_over
+		disabled: button_disabled
+		pressedOffsetY: -5
+	}
+	avatar2: {
+		imageUp: avatar2
+		up: button_up
+		down: button_pressed
+		over: button_over
+		disabled: button_disabled
+		pressedOffsetY: -5
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
 		font: Button_white
@@ -133,7 +158,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
 	default: {
-		label: default
+		label: interaction
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {

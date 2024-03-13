@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
     protected InputMultiplexer inputMultiplexer;
     private Table uiTable;
 
-    public GameScreen(final HustleGame game) {
+    public GameScreen(final HustleGame game, int avatarChoice) {
         // Important game variables
         this.game = game;
         this.game.gameScreen = this;

@@ -80,7 +80,7 @@ public class CreditScreen implements Screen{
 
         // Centre the window
         creditMenu.setX((viewport.getWorldWidth() / 2) - (creditMenu.getWidth() / 2));
-        creditMenu.setY((viewport.getWorldWidth() / 2) - (creditMenu.getHeight() / 2));
+        creditMenu.setY((viewport.getWorldHeight() / 2) - (creditMenu.getHeight() / 2));
 
         exitButton.addListener(new ChangeListener() {
             @Override
