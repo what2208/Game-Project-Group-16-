@@ -28,6 +28,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+
+import java.sql.Time;
 // import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 
@@ -36,9 +38,14 @@ public class GameScreen implements Screen {
     private OrthographicCamera camera;
     private int score = 0;
     private long startTime = TimeUtils.millis();
+    private long initialTime = TimeUtils.millis();
     private long currentTime;
     private double timeOutputHours;
     private long timeOutputMins;
+    private long totalSeconds;
+    private boolean isMorning = true;
+    private boolean firstDay = true;
+    private boolean timeSwitched = false;
     private Label timeLabel;
     private int day = 1;
     private Label dayLabel;
@@ -133,6 +140,7 @@ public class GameScreen implements Screen {
         dayTable.add(dayLabel).padLeft(5);
         dayTable.left().top();
         uiStage.addActor(dayTable);
+
 
         // Map
         float unitScale = 50 / 16f;
@@ -504,13 +512,43 @@ public class GameScreen implements Screen {
         game.shapeRenderer.end();
     }
 
-    public void updateTime (){
+    public void updateTime () {
         // Create stage timer
         currentTime = TimeUtils.timeSinceMillis(startTime);
-        timeOutputMins = 540 + (currentTime / 1000);
-        timeOutputHours = Math.floor((timeOutputMins / 60));
+        totalSeconds = TimeUtils.timeSinceMillis(initialTime) / 1000;
+        if (firstDay) {
+            timeOutputMins = 719 + (currentTime / 1000);
+        }
+        else {
+            timeOutputMins = 60 + (currentTime / 1000);
+        }
+        timeOutputHours = Math.floor((timeOutputMins / 60.0));
         timeOutputMins %= 60;
+        if (timeOutputHours == 12 && timeOutputMins == 0 && isMorning && !timeSwitched) {
+            isMorning = false;
+            timeSwitched = true;
+        } else if (timeOutputHours == 12 && timeOutputMins == 0 && !isMorning && !timeSwitched) {
+            isMorning = true;
+            timeSwitched = true;
+            day += 1;
+            dayLabel.setText(String.format("Day %d", day));
+        }
 
-        timeLabel.setText( String.format("Time - %.0f:%02d", timeOutputHours, timeOutputMins));
+        if (timeOutputHours == 13 && timeOutputMins == 0) {
+            startTime = TimeUtils.millis();
+            firstDay = false;
+            timeSwitched = false;
+        }
+
+        if (isMorning) {
+            timeLabel.setText(String.format("%.0f:%02dAM", timeOutputHours, timeOutputMins));
+        } else {
+            timeLabel.setText(String.format("%.0f:%02dPM", timeOutputHours, timeOutputMins));
+        }
+
+        //startTime = 0;
+        //currentTime = 0;
+        //timeOutputHours = Math.floor(currentTime / 3600);
+        //timeOutputMins = currentTime % 3600;
     }
 }
