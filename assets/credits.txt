@@ -17,6 +17,7 @@ Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
 Fonts:
 https://www.dafont.com/w95fa.font
 https://www.dafont.com/motorola-screentype.font?fpp=100&text=Heslington+Hustle
+https://www.1001fonts.com/nk57-monospace-font.html
 
 Music:
 Main menu music - https://uppbeat.io/track/sulyya/mirthaflare

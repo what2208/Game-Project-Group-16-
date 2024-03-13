@@ -37,28 +37,17 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int score = 0;
-    private long startTime = TimeUtils.millis();
-    private long initialTime = TimeUtils.millis();
-    private long currentTime;
-    private double timeOutputHours;
-    private long timeOutputMins;
-    private long totalSeconds;
-    private boolean isMorning = true;
-    private boolean firstDay = true;
-    private boolean timeSwitched = false;
+    private float daySeconds = 0; // Current seconds elapsed in day
+    private int day = 1; // What day the game is on
     private Label timeLabel;
-    private int day = 1;
     private Label dayLabel;
     public Player player;
-    public Stage escapeMenuStage;
     private Window escapeMenu;
     private Viewport viewport;
     private boolean showEscapeMenu = false;
     private boolean paused = false;
     public OrthogonalTiledMapRenderer renderer;
-    private int[] backgroundLayers;
-    private int[] foregroundLayers ;
-    private int[] objectLayers;
+    private int[] backgroundLayers, foregroundLayers, objectLayers;;
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
@@ -122,24 +111,21 @@ public class GameScreen implements Screen {
         optionDialogue.setVisible(false);
 
 
+        // Set initial time
+        daySeconds = (8*60); // 8:00 am
 
-        // Time table
-        Table timerTable = new Table();
-        timerTable.setFillParent(true);
-        timeLabel = new Label(String.format("Time - %.0f:%02d", timeOutputHours, timeOutputMins), game.skin);
-        timeLabel.setFontScale((float)1.3);
-        timerTable.add(timeLabel).padRight(5);
-        timerTable.right().top();
-        uiStage.addActor(timerTable);
+        // Table to display date and time
+        Table timeTable = new Table();
+        timeTable.setFillParent(true);
+        timeLabel = new Label(formatTime((int) daySeconds), game.skin, "time");
+        dayLabel = new Label(String.format("Day %d", day), game.skin, "day");
+        timeTable.add(timeLabel).uniformX();
+        timeTable.row();
+        timeTable.add(dayLabel).uniformX().left().padTop(2);
+        timeTable.top().left().padLeft(10).padTop(10);
 
-        // Day Table
-        Table dayTable = new Table();
-        dayTable.setFillParent(true);
-        dayLabel = new Label(String.format("Day %d", day), game.skin);
-        dayLabel.setFontScale((float)1.3);
-        dayTable.add(dayLabel).padLeft(5);
-        dayTable.left().top();
-        uiStage.addActor(dayTable);
+        uiStage.addActor(timeTable);
+
 
 
         // Map
@@ -292,6 +278,9 @@ public class GameScreen implements Screen {
 
         camera.update();
 
+        updateTime(Gdx.graphics.getDeltaTime()*1.5f);
+        timeLabel.setText(formatTime((int) daySeconds));
+        dayLabel.setText(String.format("Day %s", day));
 
 
 
@@ -372,10 +361,7 @@ public class GameScreen implements Screen {
         );
 
 
-
         camera.update();
-
-        updateTime();
     }
 
 
@@ -511,44 +497,30 @@ public class GameScreen implements Screen {
         game.shapeRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
         game.shapeRenderer.end();
     }
+    
 
-    public void updateTime () {
-        // Create stage timer
-        currentTime = TimeUtils.timeSinceMillis(startTime);
-        totalSeconds = TimeUtils.timeSinceMillis(initialTime) / 1000;
-        if (firstDay) {
-            timeOutputMins = 719 + (currentTime / 1000);
-        }
-        else {
-            timeOutputMins = 60 + (currentTime / 1000);
-        }
-        timeOutputHours = Math.floor((timeOutputMins / 60.0));
-        timeOutputMins %= 60;
-        if (timeOutputHours == 12 && timeOutputMins == 0 && isMorning && !timeSwitched) {
-            isMorning = false;
-            timeSwitched = true;
-        } else if (timeOutputHours == 12 && timeOutputMins == 0 && !isMorning && !timeSwitched) {
-            isMorning = true;
-            timeSwitched = true;
+    public void updateTime(float delta) {
+        daySeconds += delta;
+        if (daySeconds >= 1440) {
+            daySeconds -= 1440;
             day += 1;
-            dayLabel.setText(String.format("Day %d", day));
         }
+    }
 
-        if (timeOutputHours == 13 && timeOutputMins == 0) {
-            startTime = TimeUtils.millis();
-            firstDay = false;
-            timeSwitched = false;
-        }
+    public String formatTime(int seconds) {
+        // Takes a number of seconds and converts it into a 12 hour clock time
+        int hour = Math.floorDiv(seconds, 60);
+        String minutes = String.format("%02d", (seconds - hour * 60));
 
-        if (isMorning) {
-            timeLabel.setText(String.format("%.0f:%02dAM", timeOutputHours, timeOutputMins));
+        // Make 12 hour
+        if (hour == 24 || hour == 0) {
+            return String.format("12:%sam", minutes);
+        } else if (hour == 12) {
+            return String.format("12:%spm", minutes);
+        } else if (hour > 12) {
+            return String.format("%d:%spm", hour-12, minutes);
         } else {
-            timeLabel.setText(String.format("%.0f:%02dPM", timeOutputHours, timeOutputMins));
+            return String.format("%d:%sam", hour, minutes);
         }
-
-        //startTime = 0;
-        //currentTime = 0;
-        //timeOutputHours = Math.floor(currentTime / 3600);
-        //timeOutputMins = currentTime % 3600;
     }
 }
