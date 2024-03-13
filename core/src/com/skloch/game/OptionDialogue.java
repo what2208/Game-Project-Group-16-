@@ -18,13 +18,15 @@ public class OptionDialogue {
     private Label rightArrow;
     boolean visible = false;
     boolean choice = false;
-    public OptionDialogue (String question, int width, Skin skin, final HustleGame game) {
+    private SoundManager soundManager;
+    public OptionDialogue (String question, int width, Skin skin, SoundManager soundManager) {
         // Create an option dialogue to prompt the player for an input
         // Attempted to make it as adaptable as possible
         // Width can be changed and text wraps
         // It will however go wrong up to a certain point
 
         this.skin = skin;
+        this.soundManager = soundManager;
         window = new Window("", skin);
         window.setModal(true);
 
@@ -57,7 +59,7 @@ public class OptionDialogue {
 //        window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
 //        window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
 
-        this.updateArrow(game);
+        this.updateArrow();
         this.setVisible(false);
 
         this.setWidth(width);
@@ -113,17 +115,16 @@ public class OptionDialogue {
             choice = true;
         }
 
-        this.updateArrow(game);
+        this.updateArrow();
+        soundManager.playDialogueOption();
     }
 
-    private void updateArrow (final HustleGame game) {
+    private void updateArrow () {
         // Updates which arrow is pointed at
         if (choice == true) {
-            game.dialogueOptionSound.play(game.sfxVolume);
             rightArrow.setVisible(false);
             leftArrow.setVisible(true);
         } else {
-            game.dialogueOptionSound.play(game.sfxVolume);
             rightArrow.setVisible(true);
             leftArrow.setVisible(false);
         }
@@ -131,7 +132,7 @@ public class OptionDialogue {
 
     public void setChoice (Boolean choice, final HustleGame game) {
         this.choice = choice;
-        updateArrow(game);
+        updateArrow();
     }
 
 

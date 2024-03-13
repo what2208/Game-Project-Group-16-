@@ -10,27 +10,22 @@ import com.badlogic.gdx.utils.Array;
 import org.w3c.dom.css.Rect;
 
 public class Player {
-    public Rectangle sprite;
-    public Rectangle feet;
-    public Rectangle eventHitbox;
-    public float centreX;
-    public float centreY;
-    final HustleGame game;
+    // Hitboxes
+    public Rectangle sprite, feet, eventHitbox;
+    public float centreX, centreY;
     public int direction = 2; // 0 = up, 1 = right, 2 = down, 3 = left (like a clock)
     private TextureRegion currentFrame;
     private float stateTime = 0;
-    private Array<Animation<TextureRegion>> walkingAnimation;
-    private Array<Animation<TextureRegion>> idleAnimation;
+    private final Array<Animation<TextureRegion>> walkingAnimation, idleAnimation;
     // Stats
     public float speed = 300f;
     public Array<GameObject> collidables;
     public int scale = 4;
     private Rectangle bounds;
     private GameObject closestObject;
-    public boolean frozen;
+    public boolean frozen, moving;
 
-    public Player (final HustleGame game) {
-        this.game = game;
+    public Player () {
         // Load the player's textures from the atlas
         TextureAtlas playerAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Player/Player.atlas"));
 
@@ -83,7 +78,7 @@ public class Player {
 
         // Move the player and their 2 other hitboxes
 
-        boolean moving = false;
+        moving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
             direction = 3;
@@ -103,10 +98,6 @@ public class Player {
             this.setY(sprite.getY() - speed * delta);
             direction = 2;
             moving = true;
-        }
-
-        if (!moving) {
-            game.walkSound.stop();
         }
         // Check if the player's feet are inside an object, if they are, move them back in that axis
         for (GameObject object : this.collidables) {
@@ -178,6 +169,10 @@ public class Player {
 
     public GameObject getClosestObject () {
         return closestObject;
+    }
+
+    public boolean isMoving() {
+        return moving;
     }
 
     public boolean nearObject() {

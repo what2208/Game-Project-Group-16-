@@ -44,14 +44,8 @@ public class MenuScreen implements Screen {
 
         titleTexture = new Texture(Gdx.files.internal("title.png"));
 
-        // Load and start main menu music
-        game.menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/MainMenu.mp3"));
-        game.menuMusic.setLooping(true);
-        game.menuMusic.setVolume(game.musicVolume);
-        game.menuMusic.play();
-
-        // Load button sound
-        game.menuButtonSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Button.wav"));
+        // Play menu music
+        game.soundManager.playMenu();
 
 
         // Make table to draw buttons and title
@@ -87,8 +81,7 @@ public class MenuScreen implements Screen {
         startButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.menuButtonSound.play(game.sfxVolume);
-                game.menuMusic.stop();
+                game.soundManager.stopMenu();
                 dispose();
                 game.setScreen(new GameScreen(game));
             }
@@ -100,7 +93,7 @@ public class MenuScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.menuButtonSound.play(game.sfxVolume);
+                game.soundManager.playButton();
                 game.setScreen(new SettingsScreen(game, thisScreen));
             }
         });
@@ -109,7 +102,7 @@ public class MenuScreen implements Screen {
         creditsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.menuButtonSound.play(game.sfxVolume);
+                game.soundManager.playButton();
                 game.setScreen(new CreditScreen(game, thisScreen));
             }
         });
@@ -117,6 +110,7 @@ public class MenuScreen implements Screen {
         exitButton.addListener(new ChangeListener() {
                @Override
                public void changed(ChangeEvent event, Actor actor) {
+                   game.soundManager.playButton();
                    Gdx.app.exit();
                }
            }
