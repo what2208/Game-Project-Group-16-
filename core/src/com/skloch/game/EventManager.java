@@ -16,9 +16,13 @@ public class EventManager {
             case "chest":
                 chestEvent();
                 break;
+            case "piazza":
+                piazzaEvent();
+                break;
             default:
                 objectEvent(eventKey);
                 break;
+
         }
 
     }
@@ -32,6 +36,11 @@ public class EventManager {
     }
 
     public void objectEvent(String object) {
-        System.out.println(String.format("This is a %s!", object));
+        System.out.println("This is a " +  object + "!");
+    }
+
+    public void piazzaEvent() {
+        System.out.println("You ate at the Piazza!\n You lost 10 energy!");
+        game.decreaseEnergy(100);
     }
 }

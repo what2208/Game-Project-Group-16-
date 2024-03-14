@@ -68,5 +68,4 @@ public class HustleGame extends Game {
 		}
 
 	}
-
 }

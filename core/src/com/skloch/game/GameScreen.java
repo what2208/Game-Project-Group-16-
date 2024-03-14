@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -11,10 +13,12 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,7 +32,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
-    private int score = 0;
+    private int energy = 100;
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
     private Label timeLabel, dayLabel;
@@ -43,6 +47,8 @@ public class GameScreen implements Screen {
     private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
     private Table uiTable;
+    private Image energyBar;
+
 
     public GameScreen(final HustleGame game, int avatarChoice) {
         // Important game variables
@@ -92,12 +98,17 @@ public class GameScreen implements Screen {
         interactionLabel = new Label("Press E to interact", game.skin, "default");
         uiTable.add(interactionLabel).padTop(300);
 
+        // Load energy bar elements
+        Group energyGroup = new Group();
+        energyGroup.setDebug(true);
+        energyBar = new Image(new Texture(Gdx.files.internal("Interface/Energy Bar/green_bar.png")));
+        Image energyBarOutline = new Image(new Texture(Gdx.files.internal("Interface/Energy Bar/bar_outline.png")));
+        energyBarOutline.setPosition(viewport.getWorldWidth()-energyBarOutline.getWidth() - 15, 15);
+        energyBar.setPosition(energyBarOutline.getX()+16, energyBarOutline.getY()+16);
+        energyGroup.addActor(energyBar);
+        energyGroup.addActor(energyBarOutline);
 
-
-        // Start music
-        game.soundManager.playOverworldMusic();
-
-
+        uiTable.addActor(energyGroup);
 
         // Set initial time
         daySeconds = (8*60); // 8:00 am
@@ -113,6 +124,9 @@ public class GameScreen implements Screen {
         timeTable.top().left().padLeft(10).padTop(10);
         uiStage.addActor(timeTable);
 
+
+        // Start music
+        game.soundManager.playOverworldMusic();
 
 
         // Create the keyboard input adapter that defines events to be called based on
@@ -503,5 +517,24 @@ public class GameScreen implements Screen {
                 return false;
             }
         };
+    }
+
+
+    /**
+     * Sets the player's energy level and updates the onscreen bar
+     *
+     * @param energy An int between 0 and 100
+     */
+    public void setEnergy(int energy) {
+        this.energy = energy;
+        energyBar.setScaleY(100f / energy);
+    }
+
+    public void decreaseEnergy(int energy) {
+        this.energy = this.energy - energy;
+        if (this.energy < 0) {
+            this.energy = 0;
+        }
+        energyBar.setScaleY(100f / energy);
     }
 }
