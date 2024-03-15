@@ -230,7 +230,7 @@ public class GameScreen implements Screen {
 
 
         // Increment the time and possibly day
-        updateTime(Gdx.graphics.getDeltaTime()*1.5f);
+        updateTime(Gdx.graphics.getDeltaTime());
         timeLabel.setText(formatTime((int) daySeconds));
 
 
@@ -244,6 +244,9 @@ public class GameScreen implements Screen {
             } else {
                 game.soundManager.footstepBool = false;
             }
+        } else {
+            player.updateAnimation();
+            player.setMoving(false);
         }
 
 
@@ -507,7 +510,11 @@ public class GameScreen implements Screen {
                     } else if(player.nearObject()) {
                         // Show a dialogue menu asking if they want to do an interaction with the object
                         dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                        dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                        if (eventManager.objectInteractions.containsKey((String) player.getClosestObject().get("event"))) {
+                            dialogueBox.setText(eventManager.objectInteractions.get((String) player.getClosestObject().get("event")));
+                        } else {
+                            dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                        }
                         dialogueBox.show();
                         dialogueBox.getSelectBox().show();
                         game.soundManager.playDialogueOpen();
@@ -551,6 +558,5 @@ public class GameScreen implements Screen {
             this.energy = 0;
         }
         energyBar.setScaleY(this.energy / 100f);
-        System.out.println(this.energy);
     }
 }

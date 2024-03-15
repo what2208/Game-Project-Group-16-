@@ -18,13 +18,15 @@ public class DialogueBox {
     private Skin skin;
     private final int MAXCHARS;
     private SelectBox selectBox;
+    private Array<String> textLines;
+    private int linePointer = 0;
 
 
 
     public DialogueBox (Skin skin) {
         int WIDTH = 800;
         int HEIGHT = 200;
-        MAXCHARS = 36;
+        MAXCHARS = 35;
         this.skin = skin;
 
         dialogueWindow = new Window("", skin);
@@ -32,7 +34,6 @@ public class DialogueBox {
         dialogueTable = new Table();
         dialogueWindow.addActor(dialogueTable);
         dialogueTable.setFillParent(true);
-//        dialogueTable.setDebug(true);
 
         textLabel = new Label("Are you sure you want to sleep at the Piazza? This will cost you 10 energy", skin, "dialogue");
         dialogueTable.add(textLabel).expand().width(WIDTH - 80).top().padTop(40);
@@ -59,7 +60,6 @@ public class DialogueBox {
         private String[] options;
         private String[] events;
         private Array<Label> optionPointers = new Array<Label>();
-        private Array<String> splitText = new Array<String>();
         public SelectBox () {
             selectWindow = new Window("", skin);
             selectTable = new Table();
@@ -230,30 +230,66 @@ public class DialogueBox {
         // Add a newline every 36 chars
         String newString = "";
         int lastSpace = 0;
-        int line = 0;
         int index = 0;
-        for (char c : text.toCharArray()) {
-            if (c == ' ') {
-                lastSpace = index + line*MAXCHARS;
-            }
+        int totalIndex = 0;
 
+        // Add newline characters where the length of a section between two linebreaks is greater than MAXCHARS
+        for (char c : text.toCharArray()) {
             // Account for any occuring linebreaks
             if (c == '\n') {
-                lastSpace = index + line*MAXCHARS;
                 index = 0;
-                line += 1;
             }
 
-            if (index >= MAXCHARS-1) {
-                // Replace the last space with a linebreak
-                newString = newString.substring(0, lastSpace) + "\n" + newString.substring(lastSpace+1);
-                line += 1;
-                index = 0;
+            if (index >= MAXCHARS) {
+                // If the current line is a space, just add a newline instead of a space
+                if (c == ' ') {
+                    newString = newString + "\n";
+                    totalIndex += 1;
+                    index = 0;
+                } else {
+                    // If not, Replace the last space with a linebreak and add the char
+                    // If the last linebreak is 0 or greater than MAXCHARS away, just add a break now
+                    if (lastSpace == 0 || (totalIndex - lastSpace) >= MAXCHARS) {
+                        newString = newString + "\n";
+                        index = 0;
+                    } else {
+                        newString = newString.substring(0, lastSpace) + "\n" + newString.substring(lastSpace+1);
+                        newString = newString + c;
+                        index = totalIndex - lastSpace;
+                        totalIndex += 1;
+                    }
+                }
+            } else {
+                newString = newString + c;
+                if (c == ' ') {
+                    lastSpace = totalIndex;
+                }
+
+                index += 1;
+                totalIndex += 1;
             }
-            newString = newString + c;
-            index += 1;
         }
-        textLabel.setText(newString);
+
+        // Split the newString into chunks with 3 linebreaks
+        textLines = new Array<String>();
+        int numBreaks = 0;
+        String subString = "";
+
+        for (String s: newString.split("\n")) {
+            if (numBreaks == 2) {
+                subString += s;
+                textLines.add(subString);
+                subString = "";
+                numBreaks = 0;
+            } else {
+                subString += s + "\n";
+                numBreaks += 1;
+            }
+        }
+        textLines.add(subString);
+
+        textLabel.setText(textLines.get(0));
+        linePointer = 0;
     }
 
     /**
@@ -287,7 +323,13 @@ public class DialogueBox {
      * Continues on to the next bit of text, or closes the window if the end is reached
      */
     public void advanceText() {
-        hide();
+        linePointer += 1;
+        if (linePointer >= textLines.size) {
+            hide();
+        } else {
+            textLabel.setText(textLines.get(linePointer));
+        }
+
     }
 
     /**
