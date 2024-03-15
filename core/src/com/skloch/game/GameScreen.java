@@ -108,7 +108,6 @@ public class GameScreen implements Screen {
         // Add the dialogue box and its elements to the stage
         uiTable.addActor(dialogueBox.getWindow());
         uiTable.addActor(dialogueBox.getSelectBox().getWindow());
-        dialogueBox.show();
 
 
         // Load energy bar elements
@@ -505,9 +504,6 @@ public class GameScreen implements Screen {
                             game.soundManager.playButton();
                             // Call the event relating to the player's choice
                             eventManager.event(dialogueBox.getSelectBox().getChoice());
-                            // Hide the menu and unfreeze the player
-                            dialogueBox.hide();
-                            player.setFrozen(false);
 
 
                         } else {
