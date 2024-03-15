@@ -46,7 +46,6 @@ public class DialogueBox {
         selectBox.setOptions(new String[]{"Yes", "No"}, new String[]{"piazza", "close"});
 
         setText("Are you sure you want to sleep at the Piazza? This will cost you 10 energy");
-        System.out.println();
 
     }
 
@@ -64,14 +63,13 @@ public class DialogueBox {
         public SelectBox () {
             selectWindow = new Window("", skin);
             selectTable = new Table();
-            selectWindow.addActor(selectTable);
-            selectTable.setFillParent(true);
+            selectWindow.add(selectTable);
 
 
 
             selectWindow.setPosition(
                     dialogueWindow.getX() + dialogueWindow.getWidth() - selectWindow.getWidth(),
-                    dialogueWindow.getY() + dialogueWindow.getHeight()
+                    dialogueWindow.getY() + dialogueWindow.getHeight()-24
             );
 
 
@@ -105,10 +103,16 @@ public class DialogueBox {
                 selectTable.row();
             }
 
+            selectTable.pack();
+            selectWindow.setWidth(selectTable.getWidth()+70);
+            selectWindow.setHeight(selectTable.getHeight()+70);
+
+            // selectWindow.add(selectTable);
+
             // Recenter
             selectWindow.setPosition(
                     dialogueWindow.getX() + dialogueWindow.getWidth() - selectWindow.getWidth(),
-                    dialogueWindow.getY() + dialogueWindow.getHeight()
+                    dialogueWindow.getY() + dialogueWindow.getHeight()-24
             );
 
             // Show first pointer
@@ -192,7 +196,10 @@ public class DialogueBox {
          * @param index The new choice index
          */
         public void setChoice(int index) {
-            optionPointers.get(choiceIndex).setVisible(false);
+            if (choiceIndex < options.length) {
+                // Don't try and set option 4 to invisible if we only have 2 options
+                optionPointers.get(choiceIndex).setVisible(false);
+            }
             choiceIndex = index;
             optionPointers.get(choiceIndex).setVisible(true);
         }
@@ -225,21 +232,19 @@ public class DialogueBox {
         int lastSpace = 0;
         int line = 0;
         int index = 0;
-        boolean prevSlash = false;
         for (char c : text.toCharArray()) {
             if (c == ' ') {
                 lastSpace = index + line*MAXCHARS;
-            } else if (c == '\\') {
-                prevSlash = true;
             }
 
             // Account for any occuring linebreaks
-            if (prevSlash == true && c == 'n') {
+            if (c == '\n') {
+                lastSpace = index + line*MAXCHARS;
                 index = 0;
                 line += 1;
             }
 
-            if (index >= MAXCHARS) {
+            if (index >= MAXCHARS-1) {
                 // Replace the last space with a linebreak
                 newString = newString.substring(0, lastSpace) + "\n" + newString.substring(lastSpace+1);
                 line += 1;
@@ -263,6 +268,32 @@ public class DialogueBox {
      */
     public void hide() {
         dialogueWindow.setVisible(false);
+        selectBox.hide();
+    }
+
+    /**
+     * Pressing 'confirm' on the dialogue box
+     * Either selects the choice if the selectbox is open, or advances text if not
+     */
+    public void enter(EventManager eventManager) {
+        if (selectBox.isVisible()) {
+            eventManager.event(selectBox.getChoice());
+        } else {
+            advanceText();
+        }
+    }
+
+    /**
+     * Continues on to the next bit of text, or closes the window if the end is reached
+     */
+    public void advanceText() {
+        hide();
+    }
+
+    /**
+     * Hides just the selectbox window
+     */
+    public void hideSelectBox() {
         selectBox.hide();
     }
 

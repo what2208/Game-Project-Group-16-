@@ -35,6 +35,7 @@ public class EventManager {
                 break;
             case "exit":
                 // Should do nothing and just close the dialogue menu
+                game.dialogueBox.hide();
                 break;
             default:
                 objectEvent(eventKey);
@@ -45,29 +46,33 @@ public class EventManager {
     }
 
     public void treeEvent() {
-        game.dialogueBox.setText("The chest is empty...");
+        game.dialogueBox.hideSelectBox();
+        game.dialogueBox.setText("This is a tree!");
         game.dialogueBox.hide();
     }
 
     public void chestEvent() {
+        game.dialogueBox.hideSelectBox();
         game.dialogueBox.setText("The chest is empty...");
         game.dialogueBox.hide();
     }
 
     public void objectEvent(String object) {
+        game.dialogueBox.hideSelectBox();
         game.dialogueBox.setText("This is a " +  object + "!");
         game.dialogueBox.hide();
     }
 
     public void piazzaEvent(String[] args) {
         int energyCost = buildingEnergies.get("piazza");
+        System.out.println(args.length);
         if (args.length == 1) {
             game.dialogueBox.setText("Study for how long?");
             game.dialogueBox.getSelectBox().setOptions(new String[]{"2 Hours (20)", "3 Hours (30)", "4 Hours (40)"}, new String[]{"piazza-2", "piazza-3", "piazza-4"});
         } else {
+            game.dialogueBox.hideSelectBox();
             game.dialogueBox.setText(String.format("You studied for %s hours!\nYou lost %d energy", args[1], Integer.parseInt(args[1])*energyCost));
             game.decreaseEnergy(energyCost * Integer.parseInt(args[1]));
-            game.dialogueBox.hide();
         }
     }
 }

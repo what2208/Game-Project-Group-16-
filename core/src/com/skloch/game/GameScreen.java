@@ -237,7 +237,7 @@ public class GameScreen implements Screen {
         // Let the player move to keyboard presses if not frozen
         // Player.move() handles player collision
         // Also play a footstep sound if they are moving
-        if (!player.isFrozen()) {
+        if (!player.isFrozen() && !dialogueBox.isVisible()) {
             player.move(delta);
             if (player.isMoving()) {
                 game.soundManager.playFootstep();
@@ -499,22 +499,18 @@ public class GameScreen implements Screen {
 
                 // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
-                    if (player.nearObject()) {
-                        if (dialogueBox.isVisible()) {
-                            game.soundManager.playButton();
-                            // Call the event relating to the player's choice
-                            eventManager.event(dialogueBox.getSelectBox().getChoice());
+                    // If a dialogue box is visible, choose an option or advance text
+                    if (dialogueBox.isVisible()) {
+                        dialogueBox.enter(eventManager);
+                        game.soundManager.playButton();
 
-
-                        } else {
-                            // Show a dialogue menu with a prompt and a selection box, defaulting to no
-                            dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                            dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
-                            player.setFrozen(true);
-                            dialogueBox.show();
-                            dialogueBox.getSelectBox().show();
-                            game.soundManager.playDialogueOpen();
-                        }
+                    } else if(player.nearObject()) {
+                        // Show a dialogue menu asking if they want to do an interaction with the object
+                        dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
+                        dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                        dialogueBox.show();
+                        dialogueBox.getSelectBox().show();
+                        game.soundManager.playDialogueOpen();
                     }
                     return true;
                 }
