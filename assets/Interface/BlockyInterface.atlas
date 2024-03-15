@@ -1,40 +1,40 @@
 
 BlockyInterface.png
-size: 1024, 1024
+size: 2048, 2048
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
 MotorolaScreentype
   rotate: false
-  xy: 509, 734
+  xy: 509, 1473
   size: 506, 279
   orig: 506, 279
   offset: 0, 0
   index: -1
 W95FA(1)
   rotate: false
-  xy: 509, 544
+  xy: 1017, 1564
   size: 505, 188
   orig: 505, 188
   offset: 0, 0
   index: -1
 W95FA(2)
   rotate: false
-  xy: 1, 872
+  xy: 1, 1611
   size: 506, 141
   orig: 506, 141
   offset: 0, 0
   index: -1
 W95FA(3)
   rotate: false
-  xy: 1, 107
+  xy: 1, 846
   size: 506, 271
   orig: 506, 271
   offset: 0, 0
   index: -1
 button_disabled
   rotate: false
-  xy: 1, 7
+  xy: 509, 1176
   size: 84, 84
   split: 13, 13, 13, 25
   pad: 0, 0, 0, 0
@@ -43,7 +43,7 @@ button_disabled
   index: -1
 button_over
   rotate: false
-  xy: 813, 458
+  xy: 1175, 1478
   size: 84, 84
   split: 13, 13, 13, 25
   pad: 0, 0, 0, 0
@@ -52,7 +52,7 @@ button_over
   index: -1
 button_pressed
   rotate: false
-  xy: 87, 7
+  xy: 1670, 1668
   size: 84, 84
   split: 13, 13, 19, 18
   pad: 0, 0, 0, 0
@@ -61,7 +61,7 @@ button_pressed
   index: -1
 button_up
   rotate: false
-  xy: 813, 372
+  xy: 1, 320
   size: 84, 84
   split: 13, 13, 12, 25
   pad: 0, 0, 0, 0
@@ -70,21 +70,21 @@ button_up
   index: -1
 nk57-monospace.rg-bold
   rotate: false
-  xy: 1, 380
+  xy: 1, 1119
   size: 506, 340
   orig: 506, 340
   offset: 0, 0
   index: -1
 nk57-monospace.rg-bold(1)
   rotate: false
-  xy: 1, 722
+  xy: 1, 1461
   size: 506, 148
   orig: 506, 148
   offset: 0, 0
   index: -1
 scroll_bar
   rotate: false
-  xy: 509, 110
+  xy: 1017, 1276
   size: 48, 24
   split: 5, 4, 5, 9
   pad: 0, 0, 0, 0
@@ -93,7 +93,7 @@ scroll_bar
   index: -1
 scroll_bar_v
   rotate: false
-  xy: 173, 43
+  xy: 147, 598
   size: 24, 48
   split: 5, 9, 4, 5
   pad: 0, 0, 0, 0
@@ -102,21 +102,21 @@ scroll_bar_v
   index: -1
 slider_bar
   rotate: false
-  xy: 1, 93
+  xy: 509, 1262
   size: 290, 12
   orig: 290, 12
   offset: 0, 0
   index: -1
 slider_button
   rotate: false
-  xy: 899, 502
+  xy: 1524, 1566
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 window
   rotate: false
-  xy: 509, 136
+  xy: 1524, 1608
   size: 144, 144
   split: 33, 33, 33, 34
   pad: 0, 0, 0, 0
@@ -125,15 +125,29 @@ window
   index: -1
 avatar1
   rotate: false
-  xy: 667, 302
+  xy: 1, 406
   size: 144, 240
   orig: 144, 240
   offset: 0, 0
   index: -1
 avatar2
   rotate: false
-  xy: 509, 282
+  xy: 1017, 1302
   size: 156, 260
   orig: 156, 260
+  offset: 0, 0
+  index: -1
+PixeloidMono edited(1)
+  rotate: false
+  xy: 509, 1276
+  size: 506, 195
+  orig: 506, 195
+  offset: 0, 0
+  index: -1
+PixeloidMono edited(2)
+  rotate: false
+  xy: 1, 648
+  size: 505, 196
+  orig: 505, 196
   offset: 0, 0
   index: -1

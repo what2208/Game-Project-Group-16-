@@ -44,17 +44,18 @@ public class GameScreen implements Screen {
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
-    private OptionDialogue optionDialogue;
+//    private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
     private Table uiTable;
     private Image energyBar;
+    public DialogueBox dialogueBox;
 
 
     public GameScreen(final HustleGame game, int avatarChoice) {
         // Important game variables
         this.game = game;
         this.game.gameScreen = this;
-        eventManager = new EventManager(this.game);
+        eventManager = new EventManager(this);
 
 
 
@@ -84,19 +85,31 @@ public class GameScreen implements Screen {
         setupEscapeMenu(uiTable);
 
         // Create and center the yes/no box that appears when interacting with objects
-        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
-        Window optWin = optionDialogue.getWindow();
-        optionDialogue.setPos(
-                (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
-                (viewport.getWorldHeight() / 2f) - (optWin.getHeight() / 2f) - 150
-        );
-        // Use addActor to add windows to the scene
-        uiTable.addActor(optionDialogue.getWindow());
-        optionDialogue.setVisible(false);
+//        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
+//        Window optWin = optionDialogue.getWindow();
+//        optionDialogue.setPos(
+//                (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
+//                (viewport.getWorldHeight() / 2f) - (optWin.getHeight() / 2f) - 150
+//        );
+//        // Use addActor to add windows to the scene
+//        uiTable.addActor(optionDialogue.getWindow());
+//        optionDialogue.setVisible(false);
 
         // Interaction label to prompt player
         interactionLabel = new Label("Press E to interact", game.skin, "default");
         uiTable.add(interactionLabel).padTop(300);
+
+        // Dialogue box
+        dialogueBox = new DialogueBox(game.skin);
+        dialogueBox.setPos(
+                (viewport.getWorldWidth() - dialogueBox.getWidth()) / 2f,
+                15f);
+        dialogueBox.hide();
+        // Add the dialogue box and its elements to the stage
+        uiTable.addActor(dialogueBox.getWindow());
+        uiTable.addActor(dialogueBox.getSelectBox().getWindow());
+        dialogueBox.show();
+
 
         // Load energy bar elements
         Group energyGroup = new Group();
@@ -261,7 +274,7 @@ public class GameScreen implements Screen {
 
         // Check if the interaction (press e to use) label needs to be drawn
         interactionLabel.setVisible(false);
-        if (!optionDialogue.isVisible() && !escapeMenu.isVisible()) {
+        if (!dialogueBox.isVisible() && !escapeMenu.isVisible()) {
             if (player.nearObject()) {
                 interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
                 interactionLabel.setVisible(true);
@@ -464,8 +477,8 @@ public class GameScreen implements Screen {
             public boolean keyDown (int keycode) {
                 // SHOW ESCAPE MENU CODE
                 if (keycode == Input.Keys.ESCAPE) {
-                    if (optionDialogue.isVisible()) {
-                        optionDialogue.setVisible(false);
+                    if (dialogueBox.isVisible()) {
+                        dialogueBox.hide();
                         player.setFrozen(false);
                         return true;
                     }
@@ -488,19 +501,22 @@ public class GameScreen implements Screen {
                 // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
                     if (player.nearObject()) {
-                        if (optionDialogue.isVisible()) {
-                            optionDialogue.setVisible(false);
-                            player.setFrozen(false);
+                        if (dialogueBox.isVisible()) {
                             game.soundManager.playButton();
+                            // Call the event relating to the player's choice
+                            eventManager.event(dialogueBox.getSelectBox().getChoice());
+                            // Hide the menu and unfreeze the player
+                            dialogueBox.hide();
+                            player.setFrozen(false);
 
-                            if (optionDialogue.getChoice()) {
-                                eventManager.event((String) player.getClosestObject().get("event"));
-                            }
+
                         } else {
-                            optionDialogue.setChoice(false, game);
-                            optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
+                            // Show a dialogue menu with a prompt and a selection box, defaulting to no
+                            dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
+                            dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
                             player.setFrozen(true);
-                            optionDialogue.setVisible(true);
+                            dialogueBox.show();
+                            dialogueBox.getSelectBox().show();
                             game.soundManager.playDialogueOpen();
                         }
                     }
@@ -508,9 +524,16 @@ public class GameScreen implements Screen {
                 }
 
                 // If an option dialogue is open it should soak up all keypresses
-                if (optionDialogue.isVisible()) {
-                    optionDialogue.act(keycode, game);
+                if (dialogueBox.isVisible() && dialogueBox.getSelectBox().isVisible()) {
+                    // Up or down
+                    if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
+                        dialogueBox.getSelectBox().choiceUp();
+                    } else if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
+                        dialogueBox.getSelectBox().choiceDown();
+                    }
+
                     return true;
+
                 }
 
 
@@ -535,6 +558,7 @@ public class GameScreen implements Screen {
         if (this.energy < 0) {
             this.energy = 0;
         }
-        energyBar.setScaleY(100f / energy);
+        energyBar.setScaleY(this.energy / 100f);
+        System.out.println(this.energy);
     }
 }
