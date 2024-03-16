@@ -152,8 +152,12 @@ public class Player {
         }
 
         // Increment the animation
-        stateTime += Gdx.graphics.getDeltaTime();
+        updateAnimation();
 
+    }
+
+    public void updateAnimation() {
+        stateTime += Gdx.graphics.getDeltaTime();
         // Set the current frame of the animation
         // Show a different animation if the player is moving vs idling
         if (moving) {
@@ -161,9 +165,10 @@ public class Player {
         } else {
             currentFrame = idleAnimation.get(direction).getKeyFrame(stateTime);
         }
+    }
 
-        // Bosh!
-
+    public void setMoving(boolean moving) {
+        this.moving = moving;
     }
 
     public GameObject getClosestObject () {

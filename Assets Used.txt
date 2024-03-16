@@ -21,6 +21,7 @@ Fonts:
 Font on the buttons - https://www.dafont.com/w95fa.font
 Title font - https://www.dafont.com/motorola-screentype.font?fpp=100&text=Heslington+Hustle
 Time and day font - https://www.1001fonts.com/nk57-monospace-font.html
+Dialogue font - https://ggbot.itch.io/pixeloid-font?download
 
 Music:
 Main menu music - https://uppbeat.io/track/sulyya/mirthaflare

@@ -12,13 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class HustleGame extends Game {
 	public SpriteBatch batch;
-	public BitmapFont infoFont;
-	public BitmapFont smallinfoFont;
 	public int WIDTH;
 	public int HEIGHT;
 	public Skin skin;
 	public TiledMap map;
-	public String credits;
+	public String credits, tutorialText;
 	public GameScreen gameScreen;
 	public MenuScreen menuScreen;
 	public ShapeRenderer shapeRenderer;
@@ -39,7 +37,8 @@ public class HustleGame extends Game {
 		shapeRenderer = new ShapeRenderer();
 		soundManager = new SoundManager();
 
-		credits = readCreditsFile();
+		credits = readTextFile("Text/credits.txt");
+		tutorialText = readTextFile("Text/tutorial_text.txt");
 
 		this.setScreen(new MenuScreen(this));
 	}
@@ -52,24 +51,21 @@ public class HustleGame extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		infoFont.dispose();
-		smallinfoFont.dispose();
 		skin.dispose();
 		map.dispose();
 		shapeRenderer.dispose();
 		soundManager.dispose();
 	}
 
-	public String readCreditsFile() {
-		FileHandle file = Gdx.files.internal("credits.txt");
+	public String readTextFile(String filepath) {
+		FileHandle file = Gdx.files.internal(filepath);
 
 		if (!file.exists()) {
-			System.out.println("WARNING: Couldn't load credits file");
-			return "Error: Couldn't load assets/credits.txt";
+			System.out.println("WARNING: Couldn't load file " + filepath);
+			return "Couldn't load " + filepath;
 		} else {
 			return file.readString();
 		}
 
 	}
-
 }

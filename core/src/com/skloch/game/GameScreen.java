@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -11,10 +13,12 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,7 +32,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
-    private int score = 0;
+    private int energy = 100;
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
     private Label timeLabel, dayLabel;
@@ -40,15 +44,18 @@ public class GameScreen implements Screen {
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
-    private OptionDialogue optionDialogue;
+//    private OptionDialogue optionDialogue;
     protected InputMultiplexer inputMultiplexer;
     private Table uiTable;
+    private Image energyBar;
+    public DialogueBox dialogueBox;
 
-    public GameScreen(final HustleGame game) {
+
+    public GameScreen(final HustleGame game, int avatarChoice) {
         // Important game variables
         this.game = game;
         this.game.gameScreen = this;
-        eventManager = new EventManager(this.game);
+        eventManager = new EventManager(this);
 
 
 
@@ -78,26 +85,42 @@ public class GameScreen implements Screen {
         setupEscapeMenu(uiTable);
 
         // Create and center the yes/no box that appears when interacting with objects
-        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
-        Window optWin = optionDialogue.getWindow();
-        optionDialogue.setPos(
-                (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
-                (viewport.getWorldHeight() / 2f) - (optWin.getHeight() / 2f) - 150
-        );
-        // Use addActor to add windows to the scene
-        uiTable.addActor(optionDialogue.getWindow());
-        optionDialogue.setVisible(false);
+//        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
+//        Window optWin = optionDialogue.getWindow();
+//        optionDialogue.setPos(
+//                (viewport.getWorldWidth() / 2f) - (optWin.getWidth() / 2f),
+//                (viewport.getWorldHeight() / 2f) - (optWin.getHeight() / 2f) - 150
+//        );
+//        // Use addActor to add windows to the scene
+//        uiTable.addActor(optionDialogue.getWindow());
+//        optionDialogue.setVisible(false);
 
         // Interaction label to prompt player
         interactionLabel = new Label("Press E to interact", game.skin, "default");
         uiTable.add(interactionLabel).padTop(300);
 
+        // Dialogue box
+        dialogueBox = new DialogueBox(game.skin);
+        dialogueBox.setPos(
+                (viewport.getWorldWidth() - dialogueBox.getWidth()) / 2f,
+                15f);
+        dialogueBox.hide();
+        // Add the dialogue box and its elements to the stage
+        uiTable.addActor(dialogueBox.getWindow());
+        uiTable.addActor(dialogueBox.getSelectBox().getWindow());
 
 
-        // Start music
-        game.soundManager.playOverworldMusic();
+        // Load energy bar elements
+        Group energyGroup = new Group();
+        energyGroup.setDebug(true);
+        energyBar = new Image(new Texture(Gdx.files.internal("Interface/Energy Bar/green_bar.png")));
+        Image energyBarOutline = new Image(new Texture(Gdx.files.internal("Interface/Energy Bar/bar_outline.png")));
+        energyBarOutline.setPosition(viewport.getWorldWidth()-energyBarOutline.getWidth() - 15, 15);
+        energyBar.setPosition(energyBarOutline.getX()+16, energyBarOutline.getY()+16);
+        energyGroup.addActor(energyBar);
+        energyGroup.addActor(energyBarOutline);
 
-
+        uiTable.addActor(energyGroup);
 
         // Set initial time
         daySeconds = (8*60); // 8:00 am
@@ -113,6 +136,9 @@ public class GameScreen implements Screen {
         timeTable.top().left().padLeft(10).padTop(10);
         uiStage.addActor(timeTable);
 
+
+        // Start music
+        game.soundManager.playOverworldMusic();
 
 
         // Create the keyboard input adapter that defines events to be called based on
@@ -204,20 +230,23 @@ public class GameScreen implements Screen {
 
 
         // Increment the time and possibly day
-        updateTime(Gdx.graphics.getDeltaTime()*1.5f);
+        updateTime(Gdx.graphics.getDeltaTime());
         timeLabel.setText(formatTime((int) daySeconds));
 
 
         // Let the player move to keyboard presses if not frozen
         // Player.move() handles player collision
         // Also play a footstep sound if they are moving
-        if (!player.isFrozen()) {
+        if (!player.isFrozen() && !dialogueBox.isVisible()) {
             player.move(delta);
             if (player.isMoving()) {
                 game.soundManager.playFootstep();
             } else {
                 game.soundManager.footstepBool = false;
             }
+        } else {
+            player.updateAnimation();
+            player.setMoving(false);
         }
 
 
@@ -247,7 +276,7 @@ public class GameScreen implements Screen {
 
         // Check if the interaction (press e to use) label needs to be drawn
         interactionLabel.setVisible(false);
-        if (!optionDialogue.isVisible() && !escapeMenu.isVisible()) {
+        if (!dialogueBox.isVisible() && !escapeMenu.isVisible()) {
             if (player.nearObject()) {
                 interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
                 interactionLabel.setVisible(true);
@@ -450,8 +479,8 @@ public class GameScreen implements Screen {
             public boolean keyDown (int keycode) {
                 // SHOW ESCAPE MENU CODE
                 if (keycode == Input.Keys.ESCAPE) {
-                    if (optionDialogue.isVisible()) {
-                        optionDialogue.setVisible(false);
+                    if (dialogueBox.isVisible()) {
+                        dialogueBox.hide();
                         player.setFrozen(false);
                         return true;
                     }
@@ -473,35 +502,61 @@ public class GameScreen implements Screen {
 
                 // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
-                    if (player.nearObject()) {
-                        if (optionDialogue.isVisible()) {
-                            optionDialogue.setVisible(false);
-                            player.setFrozen(false);
-                            game.soundManager.playButton();
+                    // If a dialogue box is visible, choose an option or advance text
+                    if (dialogueBox.isVisible()) {
+                        dialogueBox.enter(eventManager);
+                        game.soundManager.playButton();
 
-                            if (optionDialogue.getChoice()) {
-                                eventManager.event((String) player.getClosestObject().get("event"));
-                            }
+                    } else if(player.nearObject()) {
+                        // Show a dialogue menu asking if they want to do an interaction with the object
+                        dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
+                        if (eventManager.objectInteractions.containsKey((String) player.getClosestObject().get("event"))) {
+                            dialogueBox.setText(eventManager.objectInteractions.get((String) player.getClosestObject().get("event")));
                         } else {
-                            optionDialogue.setChoice(false, game);
-                            optionDialogue.setQuestionText("Interact with " + player.getClosestObject().get("event") + "?");
-                            player.setFrozen(true);
-                            optionDialogue.setVisible(true);
-                            game.soundManager.playDialogueOpen();
+                            dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
                         }
+                        dialogueBox.show();
+                        dialogueBox.getSelectBox().show();
+                        game.soundManager.playDialogueOpen();
                     }
                     return true;
                 }
 
                 // If an option dialogue is open it should soak up all keypresses
-                if (optionDialogue.isVisible()) {
-                    optionDialogue.act(keycode, game);
+                if (dialogueBox.isVisible() && dialogueBox.getSelectBox().isVisible()) {
+                    // Up or down
+                    if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
+                        dialogueBox.getSelectBox().choiceUp();
+                    } else if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
+                        dialogueBox.getSelectBox().choiceDown();
+                    }
+
                     return true;
+
                 }
 
 
                 return false;
             }
         };
+    }
+
+
+    /**
+     * Sets the player's energy level and updates the onscreen bar
+     *
+     * @param energy An int between 0 and 100
+     */
+    public void setEnergy(int energy) {
+        this.energy = energy;
+        energyBar.setScaleY(100f / energy);
+    }
+
+    public void decreaseEnergy(int energy) {
+        this.energy = this.energy - energy;
+        if (this.energy < 0) {
+            this.energy = 0;
+        }
+        energyBar.setScaleY(this.energy / 100f);
     }
 }

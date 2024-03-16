@@ -1,18 +1,18 @@
 package com.skloch.game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 // MENU SCREEN
@@ -20,11 +20,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class MenuScreen implements Screen {
     final HustleGame game;
     private Stage menuStage;
-
     OrthographicCamera camera;
-
     private Viewport viewport;
     private Texture titleTexture;
+    private boolean drawTitleTexture = true;
 
     public MenuScreen(final HustleGame game) {
         this.game = game;
@@ -42,19 +41,27 @@ public class MenuScreen implements Screen {
         // Play menu music
         game.soundManager.playMenuMusic();
 
+        // Make avatar select table
+        Table avatarSelectTable = makeAvatarSelectTable();
+        menuStage.addActor(avatarSelectTable);
+        avatarSelectTable.setVisible(false);
+
+
+        // Make tutorial window
+        Window tutorialWindow = makeTutorialWindow(avatarSelectTable);
+        menuStage.addActor(tutorialWindow);
+        tutorialWindow.setVisible(false);
+
+
 
         // Make table to draw buttons and title
-        Table table = new Table();
+        Table buttonTable = new Table();
 //        table.setDebug(true);
-        table.setFillParent(true);
-        menuStage.addActor(table);
+        buttonTable.setFillParent(true);
+        menuStage.addActor(buttonTable);
 
-        // Get fonts
-        game.infoFont = game.skin.getFont("Button_white");
-        game.smallinfoFont = game.skin.getFont("Button_white");
-        game.smallinfoFont.getData().setScale(0.8f);
 
-        // Create the buttons and the title
+        // Create the buttons
 //        Label title = new Label("Heslington Hustle", game.skin, "title"); // Old title, new uses a texture
         TextButton startButton = new TextButton("New Game", game.skin);
         TextButton settingsButton = new TextButton("Settings", game.skin);
@@ -63,14 +70,14 @@ public class MenuScreen implements Screen {
 
         // Add everything to the table using row() to go to a new line
         int buttonWidth = 340;
-        table.add(startButton).uniformX().width(buttonWidth).padBottom(10).padTop(280);
-        table.row();
-        table.add(settingsButton).uniformX().width(buttonWidth).padBottom(10);
-        table.row();
-        table.add(creditsButton).uniformX().width(buttonWidth).padBottom(30);
-        table.row();
-        table.add(exitButton).uniformX().width(buttonWidth);
-        table.top();
+        buttonTable.add(startButton).uniformX().width(buttonWidth).padBottom(10).padTop(280);
+        buttonTable.row();
+        buttonTable.add(settingsButton).uniformX().width(buttonWidth).padBottom(10);
+        buttonTable.row();
+        buttonTable.add(creditsButton).uniformX().width(buttonWidth).padBottom(30);
+        buttonTable.row();
+        buttonTable.add(exitButton).uniformX().width(buttonWidth);
+        buttonTable.top();
 
         // Add listeners to the buttons so they do things when pressed
 
@@ -79,9 +86,12 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.soundManager.playButton();
-                game.soundManager.stopMenuMusic();
-                dispose();
-                game.setScreen(new GameScreen(game));
+                buttonTable.setVisible(false);
+                drawTitleTexture = false;
+                tutorialWindow.setVisible(true);
+
+//                dispose();
+//                game.setScreen(new GameScreen(game));
             }
         }
         );
@@ -134,10 +144,12 @@ public class MenuScreen implements Screen {
         game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
         game.shapeRenderer.end();
 
-        game.batch.begin();
-        game.batch.draw(titleTexture, (viewport.getWorldWidth() / 2f) - (titleTexture.getWidth() / 2f), 500);
-        game.batch.end();
 
+        if (drawTitleTexture) {
+            game.batch.begin();
+            game.batch.draw(titleTexture, (viewport.getWorldWidth() / 2f) - (titleTexture.getWidth() / 2f), 500);
+            game.batch.end();
+        }
 
 
         // Make the stage follow actions and draw itself
@@ -174,10 +186,118 @@ public class MenuScreen implements Screen {
         Gdx.input.setCursorPosition(Gdx.input.getX(), Gdx.input.getY());
     }
 
-
     @Override
     public void dispose() {
         menuStage.dispose();
+    }
+
+    /**
+     * Generates a window to teach the player how to play the game
+     *
+     * @return A small window to explain the game
+     */
+    public Window makeTutorialWindow(Table nextTable) {
+        Window tutWindow = new Window("", game.skin);
+        Table tutTable = new Table();
+        tutWindow.add(tutTable).prefHeight(600).prefWidth(800-20);
+
+        // Title
+        Label title = new Label("How to play", game.skin, "button");
+        tutTable.add(title).padTop(10);
+        tutTable.row();
+
+        // Table for things inside the scrollable widget
+        Table scrollTable = new Table();
+
+        // Scrollable widget
+        ScrollPane scrollWindow = new ScrollPane(scrollTable, game.skin);
+        scrollWindow.setFadeScrollBars(false);
+
+        tutTable.add(scrollWindow).padTop(20).height(350).width(870);
+        tutTable.row();
+
+        Label text = new Label(game.tutorialText, game.skin, "interaction");
+        text.setWrap(true);
+        scrollTable.add(text).width(820f).padLeft(20);
+
+        // Exit button
+        TextButton continueButton = new TextButton("Continue", game.skin);
+        tutTable.add(continueButton).bottom().width(300).padTop(10);
+
+        tutWindow.pack();
+
+        tutWindow.setSize(900, 600);
+
+        // Centre the window
+        tutWindow.setX((viewport.getWorldWidth() / 2) - (tutWindow.getWidth() / 2));
+        tutWindow.setY((viewport.getWorldHeight() / 2) - (tutWindow.getHeight() / 2));
+
+
+
+        continueButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.soundManager.playButton();
+                tutWindow.setVisible(false);
+                nextTable.setVisible(true);
+            }
+        });
+
+
+
+        return tutWindow;
+    }
+
+
+    /**
+     * Creates an avatar selection screen, consisting of a label and two buttons
+     *
+     * @return A table containing UI elements
+     */
+    public Table makeAvatarSelectTable () {
+        Table table = new Table();
+        table.setFillParent(true);
+        table.top();
+
+        // Prompt
+        Label title = new Label("Select your avatar", game.skin, "button");
+        table.add(title).padBottom(120).padTop(80);
+        table.row();
+
+        // Image buttons
+        Table buttonTable = new Table();
+        table.add(buttonTable).width(600);
+
+        ImageButton choice1 = new ImageButton(game.skin, "avatar1");
+        buttonTable.add(choice1).left().expandX();
+        ImageButton choice2 = new ImageButton(game.skin, "avatar2");
+        buttonTable.add(choice2).right().expandX();
+
+        choice1.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.soundManager.playButton();
+                game.setScreen(new GameScreen(game, 1));
+                game.soundManager.stopMenuMusic();
+                dispose();
+            }
+        });
+
+        choice2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.soundManager.playButton();
+                game.setScreen(new GameScreen(game, 2));
+                game.soundManager.stopMenuMusic();
+                dispose();
+            }
+        });
+
+
+
+
+
+        return table;
     }
 
 }

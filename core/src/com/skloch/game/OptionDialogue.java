@@ -25,6 +25,7 @@ public class OptionDialogue {
         this.soundManager = soundManager;
         window = new Window("", skin);
         window.setModal(true);
+        window.setModal(true);
 
         Table dialogueTable = new Table();
 
