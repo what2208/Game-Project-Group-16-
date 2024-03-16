@@ -67,9 +67,12 @@ public class EventManager {
             game.dialogueBox.setText("Study for how long?");
             game.dialogueBox.getSelectBox().setOptions(new String[]{"2 Hours (20)", "3 Hours (30)", "4 Hours (40)"}, new String[]{"piazza-2", "piazza-3", "piazza-4"});
         } else {
+            int hours = Integer.parseInt(args[1]);
             game.dialogueBox.hideSelectBox();
-            game.dialogueBox.setText(String.format("You studied for %s hours!\nYou lost %d energy", args[1], Integer.parseInt(args[1])*energyCost));
-            game.decreaseEnergy(energyCost * Integer.parseInt(args[1]));
+            game.dialogueBox.setText(String.format("You studied for %s hours!\nYou lost %d energy", args[1], hours*energyCost));
+            game.decreaseEnergy(energyCost * hours);
+            game.addStudyHours(hours);
+            game.passTime(hours * 60);
         }
     }
 }

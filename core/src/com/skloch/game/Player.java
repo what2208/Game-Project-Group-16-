@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
+/**
+ * A class handling everything needed to control and draw a player, including animation, movement and collision
+ */
 public class Player {
     // Hitboxes
     public Rectangle sprite, feet, eventHitbox;
@@ -24,6 +27,12 @@ public class Player {
     private GameObject closestObject;
     public boolean frozen, moving;
 
+    /**
+     * A player character, contains methods to move the player and update animations, also includes collision handling
+     * and can be used to trigger events of objects near the player.
+     * Includes a feet hitbox for collision and an event hitbox for triggering objects.
+     * Call move() then draw the result of getCurrentAnimation() to use
+     */
     public Player () {
         // Load the player's textures from the atlas
         TextureAtlas playerAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Player/Player.atlas"));
@@ -65,6 +74,18 @@ public class Player {
 
     }
 
+    /**
+     * Handles all the logic involved in moving the player given keyboard inputs
+     * If the player encounters an object, they will not be alowed to move into the space, but will attempt to
+     * 'slide' off of it.
+     * Also updates the player's animation
+     *
+     * <p></p>
+     *
+     * Also locates the nearest object after moving, which can be used to trigger events
+     *
+     * @param delta The time passed since the previous render
+     */
     public void move (float delta) {
         // Updates the player's position based on keys being pressed
         // Also updates the direction they are facing, and whether they are currently moving
@@ -156,6 +177,10 @@ public class Player {
 
     }
 
+    /**
+     * Advances the current animation based on the time since the last render
+     * The animation frame of the player can be grabbed with getCurrentFrame
+     */
     public void updateAnimation() {
         stateTime += Gdx.graphics.getDeltaTime();
         // Set the current frame of the animation
@@ -167,59 +192,113 @@ public class Player {
         }
     }
 
+    /**
+     * Sets the player's state to moving or not moving, a not moving character will just display an idle animation
+     *
+     * @param moving The boolean to set moving to
+     */
     public void setMoving(boolean moving) {
         this.moving = moving;
     }
 
+    /**
+     * Returns the object that is closest to the player, calculated during move()
+     *
+     * @return A GameObject that is closest
+     */
     public GameObject getClosestObject () {
         return closestObject;
     }
 
+    /**
+     * Returns if the player is moving or not
+     *
+     * @return true if the player is moving
+     */
     public boolean isMoving() {
         return moving;
     }
 
+    /**
+     * Returns whether the player's eventHitbox overlaps an object
+     * Call getClosestObject to get the nearest
+     *
+     * @return true if a player is near enough an object to interact with it
+     */
     public boolean nearObject() {
         return closestObject != null;
     }
 
+    /**
+     * Returns the current frame the player's animation is on
+     *
+     * @return TextureRegion the frame of the player's animation
+     */
     public TextureRegion getCurrentFrame () {
         // Returns the current frame the player animation is on
         return currentFrame;
     }
 
-    // Sets the player's collidable objects as an array of rectangles
+    /**
+     * Sets the objects the player cannot move into as an Array of GameObjects
+     *
+     * @param collidables An array of GameObjects that the player should collide with
+     */
     public void setCollidables (Array<GameObject> collidables) {
         this.collidables = collidables;
     }
 
-    // Adds a rectangle for the player to collide with
+    /**
+     * Adds a GameObeject to the player's list of collidable objects
+     *
+     * @param object a GameObject for the player to collide with
+     */
     public void addCollidable (GameObject object) {
         this.collidables.add(object);
     }
 
+    /**
+     * @return The X coordinate of the player
+     */
     public float getX () {
         return sprite.getX();
     }
-
+    /**
+     * @return The Y coordinate of the player
+     */
     public float getY () {
         return sprite.getY();
     }
 
+    /**
+     * @return The X coordinate of the centre point of the player's sprite rectangle
+     */
     public float getCentreX () {
         return centreX;
     }
+    /**
+     * @return The Y coordinate of the centre point of the player's sprite rectangle
+     */
     public float getCentreY () {
         return centreY;
     }
 
+    /**
+     * Sets the x coordinate of the player, updating all 3 hitboxes at once as opposed to just the sprite rectangle
+     *
+     * @return The X coordinate to set the player to
+     */
     public void setX (float x) {
         this.sprite.setX(x);
         this.feet.setX(x + 4*scale);
         this.eventHitbox.setX(this.sprite.getX() - (this.eventHitbox.getWidth() - sprite.getWidth()) / 2);
         this.recalcCentre();
     }
-
+    /**
+     * Sets the Y coordinate of the player, updating all 3 hitboxes at once as opposed to just the sprite rectangle
+     *
+     * @return The Y coordinate to set the player to
+     */
     public void setY (float y) {
         this.sprite.setY(y);
         this.feet.setY(y);
@@ -227,26 +306,49 @@ public class Player {
         this.recalcCentre();
     }
 
+    /**
+     *
+     * @param x The X coordinate to set the player to
+     * @param y The Y coordinate to set the player to
+     */
     public void setPos (float x, float y) {
         this.setX(x);
         this.setY(y);
     }
 
+    /**
+     * Set a large rectangle that the player should be kept inside, set to null to set no bounds
+     *
+     * @param bounds The bounds of the playable map
+     */
     public void setBounds (Rectangle bounds) {
         // Set a rectangle that the player should not leave
         this.bounds = bounds;
     }
 
+    /**
+     * Returns the euclidian distance from a GameObject to the centre of the player
+     *
+     * @param object The object to get the distance from
+     * @return The distance from the object
+     */
     private float distanceFrom (GameObject object) {
-        // Returns the distance from an object
         return (float) Math.sqrt((Math.pow((centreX - object.centreX), 2) + Math.pow((centreY - object.centreY), 2)));
     }
 
+    /**
+     * Recalculates the centre of the player, useful after moving the player
+     */
     private void recalcCentre() {
         centreX = sprite.getX() + sprite.getWidth() / 2;
         centreY = sprite.getY() + sprite.getHeight() / 2;
     }
 
+    /**
+     * Sets the player to frozen, a frozen player can be set to ignore keyboard inputs in render
+     *
+     * @param freeze The value to set frozen to
+     */
     public void setFrozen (boolean freeze) {
         this.frozen = freeze;
         if (freeze) {
@@ -254,6 +356,10 @@ public class Player {
             currentFrame = idleAnimation.get(direction).getKeyFrame(stateTime);
         }
     }
+
+    /**
+     * @return true if the player is frozen
+     */
     public boolean isFrozen () {
         return this.frozen;
     }

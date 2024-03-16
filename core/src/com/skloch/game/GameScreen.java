@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -33,6 +32,8 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int energy = 100;
+    private int[] hoursStudiedPerDay = new int[7];
+    private int[] hoursRecreationalPerDay = new int[7];
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
     private Label timeLabel, dayLabel;
@@ -51,6 +52,12 @@ public class GameScreen implements Screen {
     public DialogueBox dialogueBox;
 
 
+    /**
+     *
+     * @param game An instance of the class HustleGame containing variables that only need to be loaded or
+     *             initialised once.
+     * @param avatarChoice Which avatar the player has picked, 0 for the more masculine avatar, 1 for the more feminine
+     */
     public GameScreen(final HustleGame game, int avatarChoice) {
         // Important game variables
         this.game = game;
@@ -207,6 +214,12 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     * Renders the player, updates sound, renders the map and updates any UI elements
+     * Called every frame
+     *
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render (float delta) {
         // Clear screen
@@ -230,7 +243,7 @@ public class GameScreen implements Screen {
 
 
         // Increment the time and possibly day
-        updateTime(Gdx.graphics.getDeltaTime());
+        passTime(Gdx.graphics.getDeltaTime());
         timeLabel.setText(formatTime((int) daySeconds));
 
 
@@ -316,6 +329,13 @@ public class GameScreen implements Screen {
     }
 
 
+    /**
+     * Configures everything needed to display the escape menu window when the player presses 'escape'
+     * Doesn't return anything as the variable escapeMenu is used to store the window
+     * Takes a table already added to the uiStage
+     *
+     * @param interfaceTable The table that the escapeMenu should be added to
+     */
     public void setupEscapeMenu(Table interfaceTable) {
         // Configures an escape menu to display when hitting 'esc'
         // Escape menu
@@ -401,6 +421,9 @@ public class GameScreen implements Screen {
     public void pause() {
     }
 
+    /**
+     * Called when switching back to this gameScreen
+     */
     @Override
     public void resume() {
         // Set the input multiplexer back to this stage
@@ -420,11 +443,19 @@ public class GameScreen implements Screen {
     public void hide() {
     }
 
+    /**
+     * Disposes of certain elements, called when the game is closed
+     */
     @Override
     public void dispose () {
         uiStage.dispose();
+        mapRenderer.dispose();
     }
 
+    /**
+     * DEBUG - Draws the player's 3 hitboxes
+     * Uncomment use at the bottom of render to use
+     */
     public void drawHitboxes () {
         game.shapeRenderer.setProjectionMatrix(camera.combined);
         game.shapeRenderer.begin(ShapeType.Line);
@@ -439,17 +470,28 @@ public class GameScreen implements Screen {
         game.shapeRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
         game.shapeRenderer.end();
     }
-    
 
-    public void updateTime(float delta) {
+
+    /**
+     * Add a number of seconds to the time elapsed in the day
+     *
+     * @param delta The time in seconds to add
+     */
+    public void passTime(float delta) {
         daySeconds += delta;
-        if (daySeconds >= 1440) {
+        while (daySeconds >= 1440) {
             daySeconds -= 1440;
             day += 1;
             dayLabel.setText(String.format("Day %s", day));
         }
     }
 
+    /**
+     * Takes a time in seconds and formats it a time in the format HH:MMam/pm
+     *
+     * @param seconds The seconds elapsed in a day
+     * @return A formatted time on a 12 hour clock
+     */
     public String formatTime(int seconds) {
         // Takes a number of seconds and converts it into a 12 hour clock time
         int hour = Math.floorDiv(seconds, 60);
@@ -552,11 +594,34 @@ public class GameScreen implements Screen {
         energyBar.setScaleY(100f / energy);
     }
 
+    /**
+     * Decreases the player's energy by a certain amount
+     *
+     * @param energy The energy to decrement
+     */
     public void decreaseEnergy(int energy) {
         this.energy = this.energy - energy;
         if (this.energy < 0) {
             this.energy = 0;
         }
         energyBar.setScaleY(this.energy / 100f);
+    }
+
+    // Functions related to game score and requirements
+
+    /**
+     * Adds an amount of hours studied to the total studied for the current day
+     * @param hours The amount of hours to add
+     */
+    public void addStudyHours(int hours) {
+        hoursStudiedPerDay[day] = hoursStudiedPerDay[day] + hours;
+    }
+
+    /**
+     * Adds an amount of recretional hours to the total amount for the current day
+     * @param hours The amount of hours to add
+     */
+    public void addRecreationalHours(int hours) {
+        hoursRecreationalPerDay[day] = hoursRecreationalPerDay[day] + hours;
     }
 }
