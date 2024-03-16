@@ -33,7 +33,7 @@ public class HustleGame extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
-		map = new TmxMapLoader().load("Test Map/testmap.tmx");
+		map = new TmxMapLoader().load("Heslington Map/heslington map.tmx");
 		shapeRenderer = new ShapeRenderer();
 		soundManager = new SoundManager();
 

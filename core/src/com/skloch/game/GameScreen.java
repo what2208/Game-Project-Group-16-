@@ -170,9 +170,9 @@ public class GameScreen implements Screen {
         // Define background, foreground and object layers
         // IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
         // Bottom most layer on 'layers' tab is 0
-        backgroundLayers = new int[] {0, 1}; // Rendered behind player
-        foregroundLayers = new int[] {3}; // Rendered in front of player
-        objectLayers = new int[] {2}; // Rectangles for the player to collide with
+        backgroundLayers = new int[] {0, 1, 2, 3, 4}; // Rendered behind player
+        foregroundLayers = new int[] {6}; // Rendered in front of player
+        objectLayers = new int[] {5}; // Rectangles for the player to collide with
 
         // Give objects to player
         for (int layer : objectLayers) {
