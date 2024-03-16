@@ -27,6 +27,13 @@ public class CreditScreen implements Screen{
     private OrthographicCamera camera;
     private Viewport viewport;
 
+    /**
+     * A scene2d window consisting of a title, a scrollable widget and an exit button.
+     * Credits are loaded from assets/Text/credits.txt and displayed in the scrollable widget
+     *
+     * @param game An instance of the HustleGame class
+     * @param previousScreen The screen to return to when the exit button is pressed
+     */
     public CreditScreen (final HustleGame game, Screen previousScreen) {
 
         // Basically all the same code as the settings menu
@@ -95,6 +102,10 @@ public class CreditScreen implements Screen{
         game.shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
+    /**
+     * Renders the credits window
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
@@ -115,13 +126,18 @@ public class CreditScreen implements Screen{
     }
 
 
+    /**
+     * Correctly resizes the onscreen elements when the window is resized
+     * @param width
+     * @param height
+     */
     @Override
     public void resize(int width, int height) {
         creditStage.getViewport().update(width, height);
         viewport.update(width, height);
     }
 
-    // Other required methods
+    // Other required methods from Screen
     @Override
     public void show() {
     }

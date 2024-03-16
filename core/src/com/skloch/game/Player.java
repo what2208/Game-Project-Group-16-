@@ -91,34 +91,38 @@ public class Player {
         // Also updates the direction they are facing, and whether they are currently moving
         // And also does collision
 
+        moving = false;
         // To check collision, store the player's current position
         float oldX = sprite.x;
         float oldY = sprite.y;
         float oldFeetX = feet.x;
 
-        // Move the player and their 2 other hitboxes
+        // If not frozen, react to keyboard input presses
+        if (!frozen) {
+            // Move the player and their 2 other hitboxes
+            moving = false;
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
+                this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
+                direction = 3;
+                moving = true;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
+                this.setX(sprite.getX() + speed * delta);
+                direction = 1;
+                moving = true;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
+                this.setY(sprite.getY() + speed * delta);
+                direction = 0;
+                moving = true;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
+                this.setY(sprite.getY() - speed * delta);
+                direction = 2;
+                moving = true;
+            }
+        }
 
-        moving = false;
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-            this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
-            direction = 3;
-            moving = true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-            this.setX(sprite.getX() + speed * delta);
-            direction = 1;
-            moving = true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            this.setY(sprite.getY() + speed * delta);
-            direction = 0;
-            moving = true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            this.setY(sprite.getY() - speed * delta);
-            direction = 2;
-            moving = true;
-        }
         // Check if the player's feet are inside an object, if they are, move them back in that axis
         for (GameObject object : this.collidables) {
             if (feet.overlaps(object)) {

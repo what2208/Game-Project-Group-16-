@@ -117,6 +117,7 @@ public class DialogueBox {
 
             // Show first pointer
             setChoice(0);
+            show();
 
 
         }
@@ -313,6 +314,7 @@ public class DialogueBox {
      */
     public void enter(EventManager eventManager) {
         if (selectBox.isVisible()) {
+            selectBox.hide();
             eventManager.event(selectBox.getChoice());
         } else {
             advanceText();

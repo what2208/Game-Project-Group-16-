@@ -25,6 +25,7 @@ Dialogue font - https://ggbot.itch.io/pixeloid-font?download
 
 Music:
 Main menu music - https://uppbeat.io/track/sulyya/mirthaflare
+                  [Streetlights] https://jdsherbert.itch.io/minigame-music-pack
 Overworld music - https://pixabay.com/music/pulses-blippy-trance-127685/
 
 Sounds:

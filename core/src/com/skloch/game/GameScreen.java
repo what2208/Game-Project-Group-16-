@@ -103,7 +103,7 @@ public class GameScreen implements Screen {
 //        optionDialogue.setVisible(false);
 
         // Interaction label to prompt player
-        interactionLabel = new Label("Press E to interact", game.skin, "default");
+        interactionLabel = new Label("E - Interact", game.skin, "default");
         uiTable.add(interactionLabel).padTop(300);
 
         // Dialogue box
@@ -246,20 +246,22 @@ public class GameScreen implements Screen {
         passTime(Gdx.graphics.getDeltaTime());
         timeLabel.setText(formatTime((int) daySeconds));
 
+        // Freeze the player's movement for this frame if any menus are visible
+        if (escapeMenu.isVisible() || dialogueBox.isVisible()) {
+            player.setFrozen(true);
+        } else {
+            player.setFrozen(false);
+        }
+
 
         // Let the player move to keyboard presses if not frozen
         // Player.move() handles player collision
         // Also play a footstep sound if they are moving
-        if (!player.isFrozen() && !dialogueBox.isVisible()) {
-            player.move(delta);
-            if (player.isMoving()) {
-                game.soundManager.playFootstep();
-            } else {
-                game.soundManager.footstepBool = false;
-            }
+        player.move(delta);
+        if (player.isMoving()) {
+            game.soundManager.playFootstep();
         } else {
-            player.updateAnimation();
-            player.setMoving(false);
+            game.soundManager.footstepBool = false;
         }
 
 
@@ -291,7 +293,6 @@ public class GameScreen implements Screen {
         interactionLabel.setVisible(false);
         if (!dialogueBox.isVisible() && !escapeMenu.isVisible()) {
             if (player.nearObject()) {
-                interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
                 interactionLabel.setVisible(true);
             }
         }
@@ -376,7 +377,6 @@ public class GameScreen implements Screen {
                     game.soundManager.playButton();
                     game.soundManager.playOverworldMusic();
                     escapeMenu.setVisible(false);
-                    player.setFrozen(false);
                 }
             }
         });
@@ -400,6 +400,7 @@ public class GameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
                     game.soundManager.playButton();
+                    game.soundManager.stopOverworldMusic();
                     dispose();
                     game.setScreen(new MenuScreen(game));
                 }
@@ -523,19 +524,16 @@ public class GameScreen implements Screen {
                 if (keycode == Input.Keys.ESCAPE) {
                     if (dialogueBox.isVisible()) {
                         dialogueBox.hide();
-                        player.setFrozen(false);
                         return true;
                     }
 
                     if (escapeMenu.isVisible()) {
                         game.soundManager.playButton();
                         game.soundManager.playOverworldMusic();
-                        player.setFrozen(false);
                         escapeMenu.setVisible(false);
                     } else {
                         // game.soundManager.pauseOverworldMusic();
                         game.soundManager.playButton();
-                        player.setFrozen(true);
                         escapeMenu.setVisible(true);
                     }
                     // Return true to indicate the keydown event was handled
@@ -552,8 +550,8 @@ public class GameScreen implements Screen {
                     } else if(player.nearObject()) {
                         // Show a dialogue menu asking if they want to do an interaction with the object
                         dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                        if (eventManager.objectInteractions.containsKey((String) player.getClosestObject().get("event"))) {
-                            dialogueBox.setText(eventManager.objectInteractions.get((String) player.getClosestObject().get("event")));
+                        if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
+                            dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
                         } else {
                             dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
                         }
@@ -595,6 +593,13 @@ public class GameScreen implements Screen {
     }
 
     /**
+     * @return The player's energy out of 100
+     */
+    public int getEnergy() {
+        return this.energy;
+    }
+
+    /**
      * Decreases the player's energy by a certain amount
      *
      * @param energy The energy to decrement
@@ -623,5 +628,25 @@ public class GameScreen implements Screen {
      */
     public void addRecreationalHours(int hours) {
         hoursRecreationalPerDay[day] = hoursRecreationalPerDay[day] + hours;
+    }
+
+    /**
+     * @return Returns 'breakfast', 'lunch' or 'dinner' depending on the time of day
+     */
+    public String getMeal() {
+        int hours = Math.floorDiv((int) daySeconds, 60);
+        if (hours >= 7 && hours <= 10) {
+            //Breakfast between 7:00-10:59am
+            return "breakfast";
+        } else if (hours > 10 && hours <= 16) {
+            // Lunch between 10:00am and 4:59pm
+            return "lunch";
+        } else if (hours > 16 && hours <= 21) {
+            // Dinner served between 4:00pm and 9:59pm
+            return "dinner";
+        } else {
+            // Nothing is served between 10:00pm and 6:59am
+            return null;
+        }
     }
 }

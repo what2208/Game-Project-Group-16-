@@ -16,7 +16,7 @@ public class SoundManager implements Disposable {
         // Load music
         overworldMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/OverworldMusic.mp3"));
         overworldMusic.setLooping(true);
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/MainMenu.mp3"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Music/Streetlights.ogg"));
         menuMusic.setLooping(true);
 
         // Load SFX
