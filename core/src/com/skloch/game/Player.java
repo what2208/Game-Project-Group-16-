@@ -121,46 +121,48 @@ public class Player {
                 direction = 2;
                 moving = true;
             }
-        }
 
-        // Check if the player's feet are inside an object, if they are, move them back in that axis
-        for (GameObject object : this.collidables) {
-            if (feet.overlaps(object)) {
-                // Find the direction that the player needs to be moved back to
-                // Reset x
-                if (!(oldFeetX < object.x + object.width && oldFeetX + feet.width > object.x)) {
-                    this.setX(oldX);
+            // Check if the player's feet are inside an object, if they are, move them back in that axis
+            for (GameObject object : this.collidables) {
+                if (feet.overlaps(object)) {
+                    // Find the direction that the player needs to be moved back to
+                    // Reset x
+                    if (!(oldFeetX < object.x + object.width && oldFeetX + feet.width > object.x)) {
+                        this.setX(oldX);
+                    }
+                    // If overlapping in y direction
+                    if (!(oldY < object.y + object.height && oldY + feet.height > object.y)) {
+                        this.setY(oldY);
+                    }
+                    // The above two are essentially the same code as Rectangle.overlaps()
+                    // Just separated into the x and y dimensions
                 }
-                // If overlapping in y direction
-                if (!(oldY < object.y + object.height && oldY + feet.height > object.y)) {
-                    this.setY(oldY);
-                }
-                // The above two are essentially the same code as Rectangle.overlaps()
-                // Just separated into the x and y dimensions
             }
-        }
 
 
-        // Check the player is in bounds
-        if (bounds != null) {
-            // If player is out of bounds, move them back
+            // Check the player is in bounds
+            if (bounds != null) {
+                // If player is out of bounds, move them back
                 if (feet.getX() < bounds.getX()) {
-                sprite.x = bounds.getX()-4*scale;
-                feet.x = sprite.x + 4*scale;
-            }
-            if (feet.getX()+feet.getWidth() > bounds.getWidth()) {
-                sprite.x = (bounds.getWidth() - feet.getWidth()) - (4*scale);
-                feet.x = sprite.x + 4*scale;
-            }
-            if (feet.getY() < bounds.getY()) {
-                sprite.y = bounds.getY();
-                feet.y = bounds.getY();
-            }
-            if (feet.getY()+feet.getHeight() > bounds.getHeight()) {
-                sprite.y = bounds.getHeight()-feet.getHeight();
-                feet.y = sprite.y;
+                    sprite.x = bounds.getX()-4*scale;
+                    feet.x = sprite.x + 4*scale;
+                }
+                if (feet.getX()+feet.getWidth() > bounds.getWidth()) {
+                    sprite.x = (bounds.getWidth() - feet.getWidth()) - (4*scale);
+                    feet.x = sprite.x + 4*scale;
+                }
+                if (feet.getY() < bounds.getY()) {
+                    sprite.y = bounds.getY();
+                    feet.y = bounds.getY();
+                }
+                if (feet.getY()+feet.getHeight() > bounds.getHeight()) {
+                    sprite.y = bounds.getHeight()-feet.getHeight();
+                    feet.y = sprite.y;
+                }
             }
         }
+
+
 
         // Find the closest object to the player so they can interact with it
         recalcCentre(); // Just recalculates the centre of the player now we have moved them
