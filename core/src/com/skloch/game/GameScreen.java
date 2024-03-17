@@ -94,15 +94,16 @@ public class GameScreen implements Screen {
 
 
 
-
         // Create a player class
-        player = new Player();
+        if (avatarChoice == 1) {
+            player = new Player("avatar1");
+        } else {
+            player = new Player("avatar2");
+        }
 
 
 
-        // User interface elements
-        // Escape menu
-        setupEscapeMenu(uiTable);
+        // USER INTERFACE
 
         // Create and center the yes/no box that appears when interacting with objects
 //        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
@@ -159,6 +160,7 @@ public class GameScreen implements Screen {
         uiStage.addActor(blackScreen);
         uiStage.addActor(dialogueBox.getWindow());
         uiStage.addActor(dialogueBox.getSelectBox().getWindow());
+        setupEscapeMenu(uiStage);
 
 
 
@@ -353,13 +355,13 @@ public class GameScreen implements Screen {
      * Doesn't return anything as the variable escapeMenu is used to store the window
      * Takes a table already added to the uiStage
      *
-     * @param interfaceTable The table that the escapeMenu should be added to
+     * @param interfaceStage The stage that the escapeMenu should be added to
      */
-    public void setupEscapeMenu(Table interfaceTable) {
+    public void setupEscapeMenu(Stage interfaceStage) {
         // Configures an escape menu to display when hitting 'esc'
         // Escape menu
         escapeMenu = new Window("", game.skin);
-        interfaceTable.addActor(escapeMenu);
+        interfaceStage.addActor(escapeMenu);
         escapeMenu.setModal(true);
 
         Table escapeTable = new Table();

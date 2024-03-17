@@ -32,26 +32,29 @@ public class Player {
      * and can be used to trigger events of objects near the player.
      * Includes a feet hitbox for collision and an event hitbox for triggering objects.
      * Call move() then draw the result of getCurrentAnimation() to use
+     *
+     * @param avatar "avatar1" for the more masculine character, "avatar2" for the more feminine character,
+     *               player animations are packed in the player_sprites atlas
      */
-    public Player () {
+    public Player (String avatar) {
         // Load the player's textures from the atlas
-        TextureAtlas playerAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Player/Player.atlas"));
+        TextureAtlas playerAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Player/player_sprites.atlas"));
 
         walkingAnimation = new Array<Animation<TextureRegion>>();
         idleAnimation = new Array<Animation<TextureRegion>>();
 
         // Load walking animation from Sprite atlas
         walkingAnimation.add(
-                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions("walk_back"), Animation.PlayMode.LOOP),
-                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions("walk_right"), Animation.PlayMode.LOOP),
-                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions("walk_front"), Animation.PlayMode.LOOP),
-                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions("walk_left"), Animation.PlayMode.LOOP));
+                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions(avatar + "_walk_back"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions(avatar + "_walk_right"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions(avatar + "_walk_front"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(0.25f, playerAtlas.findRegions(avatar + "_walk_left"), Animation.PlayMode.LOOP));
         // Load idle animation
         idleAnimation.add(
-                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions("idle_back"), Animation.PlayMode.LOOP),
-                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions("idle_right"), Animation.PlayMode.LOOP),
-                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions("idle_front"), Animation.PlayMode.LOOP),
-                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions("idle_left"), Animation.PlayMode.LOOP)
+                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions(avatar + "_idle_back"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions(avatar + "_idle_right"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions(avatar + "_idle_front"), Animation.PlayMode.LOOP),
+                new Animation<TextureRegion>(0.40f, playerAtlas.findRegions(avatar + "_idle_left"), Animation.PlayMode.LOOP)
         );
 
         collidables = new Array<GameObject>();
