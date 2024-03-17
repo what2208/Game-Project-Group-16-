@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.HashMap;
-
 /**
  * A class to display a dialogue box for text and options on the screen
  */
@@ -20,6 +18,7 @@ public class DialogueBox {
     private SelectBox selectBox;
     private Array<String> textLines;
     private int linePointer = 0;
+    private boolean fadeOut;
 
 
 
@@ -294,6 +293,13 @@ public class DialogueBox {
     }
 
     /**
+     * @param fade If true, the game will display a fade in from black when the next text is closed
+     */
+    public void fadeOutAfter(boolean fade) {
+        fadeOut = fade;
+    }
+
+    /**
      * Makes the dialogue box visible, along with any elements that need to be shown
      */
     public void show() {
@@ -316,18 +322,26 @@ public class DialogueBox {
         if (selectBox.isVisible()) {
             selectBox.hide();
             eventManager.event(selectBox.getChoice());
+            if (fadeOut) {
+                eventManager.fadeOut();
+                fadeOut = false;
+            }
         } else {
-            advanceText();
+            advanceText(eventManager);
         }
     }
 
     /**
      * Continues on to the next bit of text, or closes the window if the end is reached
      */
-    public void advanceText() {
+    private void advanceText(EventManager eventManager) {
         linePointer += 1;
         if (linePointer >= textLines.size) {
             hide();
+            if (fadeOut) {
+                eventManager.fadeOut();
+                fadeOut = false;
+            }
         } else {
             textLabel.setText(textLines.get(linePointer));
         }

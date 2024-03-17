@@ -1,5 +1,7 @@
 package com.skloch.game;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
@@ -41,7 +43,7 @@ public class EventManager {
         objectInteractions.put("tree", "Speak to the tree?");
 
         // Some random topics that can be chatted about
-        String[] topics = {"dogs", "cats", "exams", "celebrities", "flatmates", "video games", "sports", "food", "fashion"};
+        String[] topics = {"Dogs", "Cats", "Exams", "Celebrities", "Flatmates", "Video games", "Sports", "Food", "Fashion"};
         talkTopics = new Array<String>(topics);
     }
 
@@ -141,7 +143,7 @@ public class EventManager {
         } else {
             // Say that the player chatted about this topic for 1-3 hours
             int hours = ThreadLocalRandom.current().nextInt(1, 4);
-            game.dialogueBox.setText(String.format("You talked about %s for %d hours!", args[1], hours));
+            game.dialogueBox.setText(String.format("You talked about %s for %d hours!", args[1].toLowerCase(), hours));
             game.decreaseEnergy(energyCost * hours);
             game.passTime(hours * 60); // in seconds
         }
@@ -204,12 +206,44 @@ public class EventManager {
     }
 
     /**
-     * The event called when sleeping in your accomodation, advances time 8 hours and restores your energy
+     * Lets the player go to sleep, calls game.fadeToBlack to fade the screen out then show some text
+     * @see GameScreen fadeToBlack function
      * @param args Unused currently
      */
     public void accomEvent(String[] args) {
-        game.setEnergy(100);
-        game.passTime(60*8); // in seconds
-        game.dialogueBox.setText("You slept for 8 hours!\nYour energy was restored!");
+        game.setSleeping(true);
+        game.dialogueBox.hide();
+        fadeToBlack("You slept for 8 hours!\nYour energy was restored!");
+    }
+
+    /**
+     * Fades the screen to black then displays some text on the dialogue box
+     * @param text The text to display
+     */
+    public void fadeToBlack(String text) {
+        // Queue up a fade to black, and then set text function
+        RunnableAction setTextAction = new RunnableAction();
+        setTextAction.setRunnable(new Runnable() {
+            @Override
+            public void run() {
+                game.dialogueBox.show();
+                game.dialogueBox.setText(text);
+                game.dialogueBox.fadeOutAfter(true);
+                if (game.getSleeping()) {
+                    game.setEnergy(100);
+                    game.passTime(60*8); // in seconds
+                }
+            }
+        });
+
+        game.blackScreen.addAction(Actions.sequence(Actions.fadeIn(3f), setTextAction));
+    }
+
+    /**
+     * Fades the screen back in, usually called after some text is closed in the dialogue box
+     */
+    public void fadeOut() {
+        game.blackScreen.addAction(Actions.fadeOut(3f));
+        game.setSleeping(false);
     }
 }

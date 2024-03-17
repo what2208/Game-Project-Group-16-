@@ -13,11 +13,15 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -50,6 +54,8 @@ public class GameScreen implements Screen {
     private Table uiTable;
     private Image energyBar;
     public DialogueBox dialogueBox;
+    public final Image blackScreen;
+    private boolean sleeping = false;
 
 
     /**
@@ -76,9 +82,16 @@ public class GameScreen implements Screen {
 
         // Create a stage for the user interface to be on
         uiStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
+        // Add a black image over everything first
+        blackScreen = new Image(new Texture(Gdx.files.internal("Sprites/black_square.png")));
+        blackScreen.setSize(viewport.getWorldWidth(), viewport.getWorldHeight());
+        blackScreen.addAction(Actions.alpha(0f));
+
+        // UI table to put everything in
         uiTable = new Table();
         uiTable.setSize(game.WIDTH, game.HEIGHT);
         uiStage.addActor(uiTable);
+
 
 
 
@@ -104,7 +117,6 @@ public class GameScreen implements Screen {
 
         // Interaction label to prompt player
         interactionLabel = new Label("E - Interact", game.skin, "default");
-        uiTable.add(interactionLabel).padTop(300);
 
         // Dialogue box
         dialogueBox = new DialogueBox(game.skin);
@@ -112,9 +124,8 @@ public class GameScreen implements Screen {
                 (viewport.getWorldWidth() - dialogueBox.getWidth()) / 2f,
                 15f);
         dialogueBox.hide();
-        // Add the dialogue box and its elements to the stage
-        uiTable.addActor(dialogueBox.getWindow());
-        uiTable.addActor(dialogueBox.getSelectBox().getWindow());
+
+
 
 
         // Load energy bar elements
@@ -127,7 +138,6 @@ public class GameScreen implements Screen {
         energyGroup.addActor(energyBar);
         energyGroup.addActor(energyBarOutline);
 
-        uiTable.addActor(energyGroup);
 
         // Set initial time
         daySeconds = (8*60); // 8:00 am
@@ -141,7 +151,15 @@ public class GameScreen implements Screen {
         timeTable.row();
         timeTable.add(dayLabel).uniformX().left().padTop(2);
         timeTable.top().left().padLeft(10).padTop(10);
+
+        // Set the order of rendered UI elements
+        uiTable.add(interactionLabel).padTop(300);
+        uiStage.addActor(energyGroup);
         uiStage.addActor(timeTable);
+        uiStage.addActor(blackScreen);
+        uiStage.addActor(dialogueBox.getWindow());
+        uiStage.addActor(dialogueBox.getSelectBox().getWindow());
+
 
 
         // Start music
@@ -247,7 +265,7 @@ public class GameScreen implements Screen {
         timeLabel.setText(formatTime((int) daySeconds));
 
         // Freeze the player's movement for this frame if any menus are visible
-        if (escapeMenu.isVisible() || dialogueBox.isVisible()) {
+        if (escapeMenu.isVisible() || dialogueBox.isVisible() || sleeping) {
             player.setFrozen(true);
         } else {
             player.setFrozen(false);
@@ -291,7 +309,7 @@ public class GameScreen implements Screen {
 
         // Check if the interaction (press e to use) label needs to be drawn
         interactionLabel.setVisible(false);
-        if (!dialogueBox.isVisible() && !escapeMenu.isVisible()) {
+        if (!dialogueBox.isVisible() && !escapeMenu.isVisible() && !sleeping) {
             if (player.nearObject()) {
                 interactionLabel.setVisible(true);
             }
@@ -547,7 +565,7 @@ public class GameScreen implements Screen {
                         dialogueBox.enter(eventManager);
                         game.soundManager.playButton();
 
-                    } else if(player.nearObject()) {
+                    } else if(player.nearObject() && !sleeping) {
                         // Show a dialogue menu asking if they want to do an interaction with the object
                         dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
                         if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
@@ -648,5 +666,20 @@ public class GameScreen implements Screen {
             // Nothing is served between 10:00pm and 6:59am
             return null;
         }
+    }
+
+
+    /**
+     * @param sleeping Sets the value of sleeping
+     */
+    public void setSleeping(boolean sleeping) {
+        this.sleeping = sleeping;
+    }
+
+    /**
+     * @return true if the player is sleeping
+     */
+    public boolean getSleeping() {
+        return sleeping;
     }
 }
