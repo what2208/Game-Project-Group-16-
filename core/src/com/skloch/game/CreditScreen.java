@@ -23,7 +23,6 @@ public class CreditScreen implements Screen{
 
     private HustleGame game;
     private Stage creditStage;
-    private Window creditMenu;
     private OrthographicCamera camera;
     private Viewport viewport;
 
@@ -46,7 +45,7 @@ public class CreditScreen implements Screen{
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
         // Create the window
-        creditMenu = new Window("", game.skin);
+        Window creditMenu = new Window("", game.skin);
         creditStage.addActor(creditMenu);
         creditMenu.setModal(true);
 
@@ -99,7 +98,6 @@ public class CreditScreen implements Screen{
             }
         });
 
-        game.shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
     /**
@@ -110,14 +108,7 @@ public class CreditScreen implements Screen{
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // Draw blue background
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(0.53f, 0.81f, 0.92f, 1);
-        game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
-        game.shapeRenderer.end();
-
-        camera.update();
-        // game.batch.setProjectionMatrix(camera.combined);
+        game.blueBackground.draw();
 
         creditStage.act(delta);
         creditStage.draw();

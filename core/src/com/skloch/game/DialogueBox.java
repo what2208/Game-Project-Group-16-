@@ -18,7 +18,7 @@ public class DialogueBox {
     private SelectBox selectBox;
     private Array<String> textLines;
     private int linePointer = 0;
-    private boolean fadeOut;
+    private String eventKey = null;
 
 
 
@@ -221,12 +221,24 @@ public class DialogueBox {
         );
     }
 
-    /**
-     * Sets the text on the dialogue box
-     *
-     * @param text The text to display
-     */
     public void setText(String text) {
+        initialiseLabelText(text);
+    }
+    public void setText(String text, String eventKey) {
+        initialiseLabelText(text);
+        this.eventKey = eventKey;
+
+    }
+
+    /**
+     * Formats the text to be displayed on a label widget. Adds a newline character every MAXCHARS num of characters
+     * accounts for any occuring linebreaks to take use of the size of the most space possible.
+     * Stores the formatted text in 3 chunks, which are then queued up to be pushed to the label whenever the user
+     * presses e.
+     *
+     * @param text The text to format and push to the label
+     */
+    public void initialiseLabelText(String text) {
         // Add a newline every 36 chars
         String newString = "";
         int lastSpace = 0;
@@ -286,17 +298,12 @@ public class DialogueBox {
                 numBreaks += 1;
             }
         }
-        textLines.add(subString);
+        if (subString != "") {
+            textLines.add(subString);
+        }
 
         textLabel.setText(textLines.get(0));
         linePointer = 0;
-    }
-
-    /**
-     * @param fade If true, the game will display a fade in from black when the next text is closed
-     */
-    public void fadeOutAfter(boolean fade) {
-        fadeOut = fade;
     }
 
     /**
@@ -322,10 +329,6 @@ public class DialogueBox {
         if (selectBox.isVisible()) {
             selectBox.hide();
             eventManager.event(selectBox.getChoice());
-            if (fadeOut) {
-                eventManager.fadeOut();
-                fadeOut = false;
-            }
         } else {
             advanceText(eventManager);
         }
@@ -338,9 +341,9 @@ public class DialogueBox {
         linePointer += 1;
         if (linePointer >= textLines.size) {
             hide();
-            if (fadeOut) {
-                eventManager.fadeOut();
-                fadeOut = false;
+            if (eventKey != null) {
+                eventManager.event(eventKey);
+                eventKey = null;
             }
         } else {
             textLabel.setText(textLines.get(linePointer));

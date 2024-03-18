@@ -14,14 +14,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
-import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -36,8 +33,7 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int energy = 100;
-    private int[] hoursStudiedPerDay = new int[7];
-    private int[] hoursRecreationalPerDay = new int[7];
+    private int hoursStudied, hoursRecreational, hoursSlept;
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
     private Label timeLabel, dayLabel;
@@ -70,6 +66,8 @@ public class GameScreen implements Screen {
         this.game.gameScreen = this;
         eventManager = new EventManager(this);
 
+        // Scores
+        hoursStudied = hoursRecreational = hoursSlept = 0;
 
 
         // Camera and viewport settings
@@ -226,6 +224,7 @@ public class GameScreen implements Screen {
                         layer0.getHeight()*50
                 )
         );
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
 
     }
 
@@ -263,7 +262,9 @@ public class GameScreen implements Screen {
 
 
         // Increment the time and possibly day
-        passTime(Gdx.graphics.getDeltaTime());
+        if (!escapeMenu.isVisible() && !sleeping) {
+            passTime(Gdx.graphics.getDeltaTime());
+        }
         timeLabel.setText(formatTime((int) daySeconds));
 
         // Freeze the player's movement for this frame if any menus are visible
@@ -505,6 +506,10 @@ public class GameScreen implements Screen {
             day += 1;
             dayLabel.setText(String.format("Day %s", day));
         }
+
+        if (day >= 8) {
+            GameOver();
+        }
     }
 
     /**
@@ -542,11 +547,6 @@ public class GameScreen implements Screen {
             public boolean keyDown (int keycode) {
                 // SHOW ESCAPE MENU CODE
                 if (keycode == Input.Keys.ESCAPE) {
-                    if (dialogueBox.isVisible()) {
-                        dialogueBox.hide();
-                        return true;
-                    }
-
                     if (escapeMenu.isVisible()) {
                         game.soundManager.playButton();
                         game.soundManager.playOverworldMusic();
@@ -562,28 +562,30 @@ public class GameScreen implements Screen {
 
                 // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
-                    // If a dialogue box is visible, choose an option or advance text
-                    if (dialogueBox.isVisible()) {
-                        dialogueBox.enter(eventManager);
-                        game.soundManager.playButton();
+                    if (!escapeMenu.isVisible()) {
+                        // If a dialogue box is visible, choose an option or advance text
+                        if (dialogueBox.isVisible()) {
+                            dialogueBox.enter(eventManager);
+                            game.soundManager.playButton();
 
-                    } else if(player.nearObject() && !sleeping) {
-                        // Show a dialogue menu asking if they want to do an interaction with the object
-                        dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                        if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
-                            dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
-                        } else {
-                            dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                        } else if (player.nearObject() && !sleeping) {
+                            // Show a dialogue menu asking if they want to do an interaction with the object
+                            dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
+                            if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
+                                dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
+                            } else {
+                                dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                            }
+                            dialogueBox.show();
+                            dialogueBox.getSelectBox().show();
+                            game.soundManager.playDialogueOpen();
                         }
-                        dialogueBox.show();
-                        dialogueBox.getSelectBox().show();
-                        game.soundManager.playDialogueOpen();
+                        return true;
                     }
-                    return true;
                 }
 
                 // If an option dialogue is open it should soak up all keypresses
-                if (dialogueBox.isVisible() && dialogueBox.getSelectBox().isVisible()) {
+                if (dialogueBox.isVisible() && dialogueBox.getSelectBox().isVisible() && !escapeMenu.isVisible()) {
                     // Up or down
                     if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
                         dialogueBox.getSelectBox().choiceUp();
@@ -609,6 +611,9 @@ public class GameScreen implements Screen {
      */
     public void setEnergy(int energy) {
         this.energy = energy;
+        if (this.energy > 100) {
+            this.energy = 100;
+        }
         energyBar.setScaleY(100f / energy);
     }
 
@@ -635,11 +640,11 @@ public class GameScreen implements Screen {
     // Functions related to game score and requirements
 
     /**
-     * Adds an amount of hours studied to the total studied for the current day
+     * Adds an amount of hours studied to the total hours studied
      * @param hours The amount of hours to add
      */
     public void addStudyHours(int hours) {
-        hoursStudiedPerDay[day] = hoursStudiedPerDay[day] + hours;
+        hoursStudied += hours;
     }
 
     /**
@@ -647,7 +652,7 @@ public class GameScreen implements Screen {
      * @param hours The amount of hours to add
      */
     public void addRecreationalHours(int hours) {
-        hoursRecreationalPerDay[day] = hoursRecreationalPerDay[day] + hours;
+        hoursRecreational += hours;
     }
 
     /**
@@ -655,6 +660,7 @@ public class GameScreen implements Screen {
      */
     public String getMeal() {
         int hours = Math.floorDiv((int) daySeconds, 60);
+        day = 7;
         if (hours >= 7 && hours <= 10) {
             //Breakfast between 7:00-10:59am
             return "breakfast";
@@ -683,5 +689,26 @@ public class GameScreen implements Screen {
      */
     public boolean getSleeping() {
         return sleeping;
+    }
+
+    /**
+     * @param hours Add this amount of hours to the total hours slept
+     */
+    public void addSleptHours(int hours) {
+        hoursSlept += hours;
+    }
+
+    /**
+     * @return The number of seconds elapsed in the day
+     */
+    public float getSeconds() {
+        return daySeconds;
+    }
+
+    /**
+     * Ends the game, called at the end of the 7th day, switches to a screen that displays a score
+     */
+    public void GameOver() {
+        game.setScreen(new GameOverScreen(game, hoursStudied, hoursRecreational, hoursSlept));
     }
 }

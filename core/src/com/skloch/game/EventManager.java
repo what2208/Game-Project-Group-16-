@@ -38,7 +38,7 @@ public class EventManager {
         objectInteractions.put("chest", "Open the chest?");
         objectInteractions.put("comp_sci", "Study in the Computer Science building?");
         objectInteractions.put("piazza", "Meet your friends at the Piazza?");
-        objectInteractions.put("accomodation", "Go to sleep for the night?");
+        objectInteractions.put("accomodation", "Go to sleep for the night?\nYour alarm is set for 8am.");
         objectInteractions.put("ron_cooke", null); // Changes, dynamically returned in getObjectInteraction
         objectInteractions.put("tree", "Speak to the tree?");
 
@@ -49,6 +49,17 @@ public class EventManager {
 
     public void event (String eventKey) {
         String[] args = eventKey.split("-");
+
+        // Important functions, most likely called after displaying text
+        if (args[0] == "fadefromblack") {
+            fadeFromBlack();
+        } else if (args[0] == "fadetoblack") {
+            fadeToBlack();
+        } else if (args[0] == "gameover") {
+            game.GameOver();
+        }
+
+        // Events related to objects
         switch (args[0]) {
             case "tree":
                 treeEvent();
@@ -146,6 +157,7 @@ public class EventManager {
             game.dialogueBox.setText(String.format("You talked about %s for %d hours!", args[1].toLowerCase(), hours));
             game.decreaseEnergy(energyCost * hours);
             game.passTime(hours * 60); // in seconds
+            game.addRecreationalHours(hours);
         }
     }
 
@@ -178,7 +190,7 @@ public class EventManager {
         } else if (args.length == 1) {
             // If the player has not yet chosen how many hours, ask
             game.dialogueBox.setText("Study for how long?");
-            game.dialogueBox.getSelectBox().setOptions(new String[]{"2 Hours (20)", "3 Hours (30)", "4 Hours (40)"}, new String[]{"piazza-2", "piazza-3", "piazza-4"});
+            game.dialogueBox.getSelectBox().setOptions(new String[]{"2 Hours (20)", "3 Hours (30)", "4 Hours (40)"}, new String[]{"comp_sci-2", "comp_sci-3", "comp_sci-4"});
         } else {
             int hours = Integer.parseInt(args[1]);
             // If the player does not have enough energy for the selected hours
@@ -199,50 +211,72 @@ public class EventManager {
         if (game.getEnergy() < energyCost) {
             game.dialogueBox.setText("You are too tired to eat right now!");
         } else {
-            game.dialogueBox.setText(String.format("You took an hour to eat %s at the Piazza!\nYou lost %d energy!", game.getMeal(), energyCost));
+            game.dialogueBox.setText(String.format("You took an hour to eat %s at the Ron Cooke Hub!\nYou lost %d energy!", game.getMeal(), energyCost));
             game.decreaseEnergy(energyCost);
             game.passTime(60); // in seconds
         }
+
     }
 
     /**
-     * Lets the player go to sleep, calls game.fadeToBlack to fade the screen out then show some text
+     * Lets the player go to sleep, fades the screen to black then shows a dialogue about the amount of sleep
+     * the player gets
+     * Then queues up fadeFromBlack to be called when this dialogue closes
      * @see GameScreen fadeToBlack function
      * @param args Unused currently
      */
     public void accomEvent(String[] args) {
         game.setSleeping(true);
         game.dialogueBox.hide();
-        fadeToBlack("You slept for 8 hours!\nYour energy was restored!");
-    }
 
-    /**
-     * Fades the screen to black then displays some text on the dialogue box
-     * @param text The text to display
-     */
-    public void fadeToBlack(String text) {
-        // Queue up a fade to black, and then set text function
+        // Calculate the hours slept to the nearest hour
+        // Wakes the player up at 8am
+        float secondsSlept;
+        if (game.getSeconds() < 60*8) {
+            secondsSlept = (60*8 - game.getSeconds());
+        } else {
+            // Account for the wakeup time being in the next day
+            secondsSlept = (((60*8) + 1440) - game.getSeconds());
+        }
+        int hoursSlept = Math.round(secondsSlept / 60f);
+
         RunnableAction setTextAction = new RunnableAction();
         setTextAction.setRunnable(new Runnable() {
             @Override
             public void run() {
-                game.dialogueBox.show();
-                game.dialogueBox.setText(text);
-                game.dialogueBox.fadeOutAfter(true);
                 if (game.getSleeping()) {
-                    game.setEnergy(100);
-                    game.passTime(60*8); // in seconds
+                    game.dialogueBox.show();
+                    game.dialogueBox.setText(String.format("You slept for %d hours!\nYou recovered %d energy!", hoursSlept, hoursSlept*13), "fadefromblack");
+                    // Restore energy and pass time
+                    game.setEnergy(hoursSlept*13);
+                    game.passTime(secondsSlept);
+                    game.addSleptHours(hoursSlept);
                 }
             }
         });
 
-        game.blackScreen.addAction(Actions.sequence(Actions.fadeIn(3f), setTextAction));
+        fadeToBlack(setTextAction);
     }
 
     /**
-     * Fades the screen back in, usually called after some text is closed in the dialogue box
+     * Fades the screen to black
      */
-    public void fadeOut() {
+    public void fadeToBlack() {
+        game.blackScreen.addAction(Actions.fadeIn(3f));
+    }
+
+    /**
+     * Fades the screen to black, then runs a runnable after it is done
+     * @param runnable A runnable to execute after fading is finished
+     */
+    public void fadeToBlack(RunnableAction runnable) {
+        game.blackScreen.addAction(Actions.sequence(Actions.fadeIn(3f), runnable));
+    }
+
+    /**
+     * Fades the screen back in from black
+     */
+    public void fadeFromBlack() {
         game.blackScreen.addAction(Actions.fadeOut(3f));
         game.setSleeping(false);
     }

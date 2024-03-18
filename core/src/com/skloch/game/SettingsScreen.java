@@ -92,10 +92,6 @@ public class SettingsScreen implements Screen {
                 previousScreen.resume();
             }
         });
-
-        game.shapeRenderer.setProjectionMatrix(camera.combined);
-
-
     }
 
 
@@ -104,10 +100,7 @@ public class SettingsScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1);
 
         // Draw blue background
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(0.53f, 0.81f, 0.92f, 1);
-        game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
-        game.shapeRenderer.end();
+        game.blueBackground.draw();
 
         optionStage.act(delta);
         optionStage.draw();
