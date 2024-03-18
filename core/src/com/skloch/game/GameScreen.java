@@ -648,7 +648,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     * Adds an amount of recretional hours to the total amount for the current day
+     * Adds an amount of recreational hours to the total amount for the current day
      * @param hours The amount of hours to add
      */
     public void addRecreationalHours(int hours) {
