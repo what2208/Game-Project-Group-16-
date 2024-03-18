@@ -172,11 +172,14 @@ public class Player {
         float distance = -1;
         closestObject = null;
         for (GameObject object : this.collidables) {
-            if (eventHitbox.overlaps(object)) {
-                // Check if this is the closest object to the player
-                if (distance == -1 || distanceFrom(object) < distance) {
-                    closestObject = object;
-                    distance = distanceFrom(object);
+            // Check if this object is even interactable
+            if (object.get("event") != null) {
+                if (eventHitbox.overlaps(object)) {
+                    // Check if this is the closest object to the player
+                    if (distance == -1 || distanceFrom(object) < distance) {
+                        closestObject = object;
+                        distance = distanceFrom(object);
+                    }
                 }
             }
         }

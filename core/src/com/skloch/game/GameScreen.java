@@ -41,7 +41,6 @@ public class GameScreen implements Screen {
     private Window escapeMenu;
     private Viewport viewport;
     public OrthogonalTiledMapRenderer mapRenderer;
-    private int[] backgroundLayers, foregroundLayers, objectLayers;;
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
@@ -182,25 +181,18 @@ public class GameScreen implements Screen {
 
 
         // Setup map
-        float unitScale = 50 / 16f;
+        float unitScale = game.mapScale / game.mapSquareSize;
         mapRenderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
 
         // Set the player to the middle of the map
         // Get the dimensions of the top layer
         TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
-        player.setPos((float) layer0.getWidth()*50 / 2, (float) layer0.getHeight()*50 / 2);
+        player.setPos(layer0.getWidth()*game.mapScale / 2f, layer0.getHeight()*game.mapScale / 2f);
         // Put camera on player
         camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
-        // Define background, foreground and object layers
-        // IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
-        // Bottom most layer on 'layers' tab is 0
-        backgroundLayers = new int[] {0, 1}; // Rendered behind player
-        foregroundLayers = new int[] {3}; // Rendered in front of player
-        objectLayers = new int[] {2}; // Rectangles for the player to collide with
-
         // Give objects to player
-        for (int layer : objectLayers) {
+        for (int layer : game.objectLayers) {
             // Get all objects on the layer
             MapObjects objects = game.map.getLayers().get(layer).getObjects();
 
@@ -220,8 +212,8 @@ public class GameScreen implements Screen {
                 new Rectangle(
                         0,
                         0,
-                        layer0.getWidth()*50,
-                        layer0.getHeight()*50
+                        game.mapProperties.get("width", Integer.class) * game.mapScale,
+                        game.mapProperties.get("height", Integer.class) * game.mapScale
                 )
         );
         game.shapeRenderer.setProjectionMatrix(camera.combined);
@@ -289,7 +281,7 @@ public class GameScreen implements Screen {
         // Update the map's render position
         mapRenderer.setView(camera);
         // Draw the background layer
-        mapRenderer.render(backgroundLayers);
+        mapRenderer.render(game.backgroundLayers);
 
         // Begin the spritebatch to draw the player on the screen
         game.batch.setProjectionMatrix(camera.combined);
@@ -307,7 +299,7 @@ public class GameScreen implements Screen {
         game.batch.end();
 
         // Render map foreground layers
-        mapRenderer.render(foregroundLayers);
+        mapRenderer.render(game.foregroundLayers);
 
 
         // Check if the interaction (press e to use) label needs to be drawn

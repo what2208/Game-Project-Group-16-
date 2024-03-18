@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -25,6 +26,10 @@ public class HustleGame extends Game {
 	public ShapeRenderer shapeRenderer;
 	public SoundManager soundManager;
 	public Stage blueBackground;
+	public int[] backgroundLayers, foregroundLayers, objectLayers;
+	public int mapSquareSize;
+	public float mapScale;
+	public MapProperties mapProperties;
 
 
 	// Constructor to grab width and height of the game
@@ -37,7 +42,19 @@ public class HustleGame extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
-		map = new TmxMapLoader().load("Test Map/testmap.tmx");
+		// Map
+		map = new TmxMapLoader().load("East Campus/east_campus.tmx");
+		mapProperties = map.getProperties();
+
+		// Define background, foreground and object layers
+		// IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
+		// Bottom most layer on 'layers' tab is 0
+		backgroundLayers = new int[] {0, 1, 2, 3, 4, 5, 6}; // Rendered behind player
+		foregroundLayers = new int[] {7}; // Rendered in front of player
+		objectLayers = new int[] {8}; // Rectangles for the player to collide with
+		mapSquareSize = mapProperties.get("tilewidth", Integer.class);
+		mapScale = 70f;
+
 		shapeRenderer = new ShapeRenderer();
 		soundManager = new SoundManager();
 

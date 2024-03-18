@@ -39,7 +39,7 @@ public class EventManager {
         objectInteractions.put("comp_sci", "Study in the Computer Science building?");
         objectInteractions.put("piazza", "Meet your friends at the Piazza?");
         objectInteractions.put("accomodation", "Go to sleep for the night?\nYour alarm is set for 8am.");
-        objectInteractions.put("ron_cooke", null); // Changes, dynamically returned in getObjectInteraction
+        objectInteractions.put("rch", null); // Changes, dynamically returned in getObjectInteraction
         objectInteractions.put("tree", "Speak to the tree?");
 
         // Some random topics that can be chatted about
@@ -73,7 +73,7 @@ public class EventManager {
             case "comp_sci":
                 compSciEvent(args);
                 break;
-            case "ron_cooke":
+            case "rch":
                 ronCookeEvent(args);
                 break;
             case "accomodation":
@@ -97,7 +97,7 @@ public class EventManager {
      * @return The object interaction text
      */
     public String getObjectInteraction(String key) {
-        if (key.equals("ron_cooke")) {
+        if (key.equals("rch")) {
             return String.format("Eat %s at the Ron Cooke Hub?", game.getMeal());
         } else {
             return objectInteractions.get(key);
