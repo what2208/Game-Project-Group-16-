@@ -46,7 +46,7 @@ W95FA(3)
   orig: 506, 271
   offset: 0, 0
   index: -1
-avatar1
+avatar2
   rotate: false
   xy: 1, 641
   size: 144, 240
@@ -144,7 +144,7 @@ window
   orig: 144, 144
   offset: 0, 0
   index: -1
-avatar2
+avatar1
   rotate: false
   xy: 1, 399
   size: 144, 240

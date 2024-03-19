@@ -5,8 +5,8 @@
     },
     "activeFile": "east_campus.tmx",
     "expandedProjectPaths": [
-        ".",
-        "Tilemaps"
+        "Tilemaps",
+        "."
     ],
     "fileStates": {
         "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/TX Plant.tsx": {
@@ -62,10 +62,10 @@
                 3
             ],
             "scale": 0.5,
-            "selectedLayer": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 2509,
-                "y": 1940
+                "x": 2987,
+                "y": 1972
             }
         }
     },

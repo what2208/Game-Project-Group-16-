@@ -3,7 +3,7 @@ atlasData: {
 	atlasCurrent: true
 	drawables: [
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/button_disabled.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/button_disabled.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -23,7 +23,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/button_over.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/button_over.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -43,7 +43,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/button_pressed.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/button_pressed.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -63,7 +63,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/button_up.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/button_up.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -83,7 +83,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/scroll_bar.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/scroll_bar.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -103,7 +103,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/scroll_bar_v.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/scroll_bar_v.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -123,7 +123,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/slider_bar.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/slider_bar.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -143,7 +143,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/slider_button.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/slider_button.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -163,7 +163,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/window.9.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/window.9.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -183,27 +183,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/avatar1.png
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: avatar1
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: TEXTURE
-			hidden: false
-		}
-		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Sprites/avatar2.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/avatar2.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -222,10 +202,30 @@ atlasData: {
 			type: TEXTURE
 			hidden: false
 		}
+		{
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Sprites/avatar1.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: avatar1
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: TEXTURE
+			hidden: false
+		}
 	]
 	fontDrawables: [
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(1).png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/W95FA(1).png
 			bgColor: {
 				r: 1
 				g: 1
@@ -245,7 +245,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(2).png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/W95FA(2).png
 			bgColor: {
 				r: 1
 				g: 1
@@ -265,7 +265,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/PixeloidMono edited(1).png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/PixeloidMono edited(1).png
 			bgColor: {
 				r: 1
 				g: 1
@@ -285,7 +285,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/PixeloidMono edited(2).png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/PixeloidMono edited(2).png
 			bgColor: {
 				r: 1
 				g: 1
@@ -305,7 +305,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/nk57-monospace.rg-bold(1).png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/nk57-monospace.rg-bold(1).png
 			bgColor: {
 				r: 1
 				g: 1
@@ -325,7 +325,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/nk57-monospace.rg-bold.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/nk57-monospace.rg-bold.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -345,7 +345,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/MotorolaScreentype.png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/MotorolaScreentype.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -365,7 +365,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(3).png
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/W95FA(3).png
 			bgColor: {
 				r: 1
 				g: 1
@@ -466,7 +466,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(1).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/W95FA(1).fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -474,7 +474,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(2).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/W95FA(2).fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -482,7 +482,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/PixeloidMono edited(1).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/PixeloidMono edited(1).fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -490,7 +490,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/PixeloidMono edited(2).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/PixeloidMono edited(2).fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -498,7 +498,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/nk57-monospace.rg-bold(1).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/nk57-monospace.rg-bold(1).fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -506,7 +506,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/nk57-monospace.rg-bold.fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/nk57-monospace.rg-bold.fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -514,7 +514,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/MotorolaScreentype.fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/MotorolaScreentype.fnt
 		}
 		{
 			class: com.ray3k.skincomposer.data.FontData
@@ -522,7 +522,7 @@ jsonData: {
 			flip: false
 			markupEnabled: false
 			scaling: -1
-			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface_data/W95FA(3).fnt
+			file: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface_data/W95FA(3).fnt
 		}
 	]
 	freeTypeFonts: []
@@ -2559,7 +2559,7 @@ jsonData: {
 preferences: {
 	id: {
 		class: java.lang.Integer
-		value: 315811122
+		value: 797680263
 	}
 	last-import-export-path: {
 		class: java.lang.String
@@ -2574,7 +2574,7 @@ preferences: {
 		value: 30
 	}
 }
-saveFile: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/Blockyinterface.scmp
+saveFile: C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Interface/BlockyInterface.scmp
 version: 57
 sceneComposer: null
 }

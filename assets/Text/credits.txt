@@ -10,7 +10,8 @@ LibGDX Texture Packer
 Tiled Map Editor
 
 Assets:
-Player sprite - https://cuddle-bug.itch.io/apocalypse
+Male Player sprite - https://cuddle-bug.itch.io/apocalypse
+Female Player sprite - E.Giles
 Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download
 Map sprites - https://kerrielake.itch.io/star-realms-cozy-forest-pack
 

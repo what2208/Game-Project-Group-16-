@@ -13,7 +13,8 @@ For making maps:
 https://thorbjorn.itch.io/tiled
 
 Assets:
-Player sprite - https://cuddle-bug.itch.io/apocalypse
+Player sprite (Male) - https://cuddle-bug.itch.io/apocalypse (recoloured)
+Player sprite (Female) - E.Giles - Adapted from male sprite
 Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download (These have been resized and may be edited)
 Map sprites - https://kerrielake.itch.io/star-realms-cozy-forest-pack
 
