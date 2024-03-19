@@ -12,7 +12,7 @@ Tiled Map Editor
 Assets:
 Player sprite - https://cuddle-bug.itch.io/apocalypse
 Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download
-Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
+Map sprites - https://kerrielake.itch.io/star-realms-cozy-forest-pack
 
 Fonts:
 https://www.dafont.com/w95fa.font

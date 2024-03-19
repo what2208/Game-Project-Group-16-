@@ -200,9 +200,15 @@ public class GameScreen implements Screen {
             for (int i = 0; i < objects.getCount(); i++) {
                 // Get the properties of each object
                 MapProperties properties = objects.get(i).getProperties();
-                // Make a new gameObject with these properties, passing along the scale the map is rendered
-                // at for accurate coordinates
-                player.addCollidable(new GameObject(properties, unitScale));
+                // If this is the spawn object, move the player there and don't collide
+                if (properties.get("spawn") != null) {
+                    player.setPos(((float) properties.get("x")) *unitScale, ((float) properties.get("y"))*unitScale);
+                    camera.position.set(player.getPosAsVec3());
+                } else {
+                    // Make a new gameObject with these properties, passing along the scale the map is rendered
+                    // at for accurate coordinates
+                    player.addCollidable(new GameObject(properties, unitScale));
+                }
             }
         }
 
@@ -217,6 +223,10 @@ public class GameScreen implements Screen {
                 )
         );
         game.shapeRenderer.setProjectionMatrix(camera.combined);
+
+        // Display a little good morning message
+        dialogueBox.show();
+        dialogueBox.setText(getWakeUpMessage());
 
     }
 
@@ -307,6 +317,12 @@ public class GameScreen implements Screen {
         if (!dialogueBox.isVisible() && !escapeMenu.isVisible() && !sleeping) {
             if (player.nearObject()) {
                 interactionLabel.setVisible(true);
+                // Change text whether pressing E will interact or just read text
+                if (player.getClosestObject().get("event") != null) {
+                    interactionLabel.setText("E - Interact");
+                } else if (player.getClosestObject().get("text") != null) {
+                    interactionLabel.setText("E - Read Sign");
+                }
             }
         }
 
@@ -561,16 +577,25 @@ public class GameScreen implements Screen {
                             game.soundManager.playButton();
 
                         } else if (player.nearObject() && !sleeping) {
-                            // Show a dialogue menu asking if they want to do an interaction with the object
-                            dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                            if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
-                                dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
-                            } else {
-                                dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                            // If the object has an event associated with it
+                            if (player.getClosestObject().get("event") != null) {
+                                // Show a dialogue menu asking if they want to do an interaction with the object
+                                dialogueBox.show();
+                                dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
+                                if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
+                                    dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
+                                } else {
+                                    dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                                }
+                                dialogueBox.show();
+                                dialogueBox.getSelectBox().show();
+                                game.soundManager.playDialogueOpen();
+
+                            } else if (player.getClosestObject().get("text") != null) {
+                                // Otherwise, if it is a text object, just display its text
+                                dialogueBox.show();
+                                dialogueBox.setText((String) player.getClosestObject().get("text"));
                             }
-                            dialogueBox.show();
-                            dialogueBox.getSelectBox().show();
-                            game.soundManager.playDialogueOpen();
                         }
                         return true;
                     }
@@ -606,7 +631,7 @@ public class GameScreen implements Screen {
         if (this.energy > 100) {
             this.energy = 100;
         }
-        energyBar.setScaleY(100f / energy);
+        energyBar.setScaleY(this.energy / 100f);
     }
 
     /**
@@ -652,7 +677,6 @@ public class GameScreen implements Screen {
      */
     public String getMeal() {
         int hours = Math.floorDiv((int) daySeconds, 60);
-        day = 7;
         if (hours >= 7 && hours <= 10) {
             //Breakfast between 7:00-10:59am
             return "breakfast";
@@ -665,6 +689,18 @@ public class GameScreen implements Screen {
         } else {
             // Nothing is served between 10:00pm and 6:59am
             return null;
+        }
+    }
+
+    /**
+     * @return A wake up message based on the time left until the exam
+     */
+    public String getWakeUpMessage() {
+        int daysLeft = 8 - day;
+        if (daysLeft != 1) {
+            return String.format("You have %d days left until your exam!\nRemember to eat, study and have fun, but don't overwork yourself!", daysLeft);
+        } else {
+            return "Your exam is tomorrow! I hope you've been studying! Remember not to overwork yourself and get enough sleep!";
         }
     }
 

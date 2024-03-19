@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -173,7 +174,7 @@ public class Player {
         closestObject = null;
         for (GameObject object : this.collidables) {
             // Check if this object is even interactable
-            if (object.get("event") != null) {
+            if (object.get("event") != null || object.get("text") != null) {
                 if (eventHitbox.overlaps(object)) {
                     // Check if this is the closest object to the player
                     if (distance == -1 || distanceFrom(object) < distance) {
@@ -205,12 +206,13 @@ public class Player {
     }
 
     /**
-     * Sets the player's state to moving or not moving, a not moving character will just display an idle animation
+     * Returns whether the player's eventHitbox overlaps an object
+     * Call getClosestObject to get the nearest
      *
-     * @param moving The boolean to set moving to
+     * @return true if a player is near enough an object to interact with it
      */
-    public void setMoving(boolean moving) {
-        this.moving = moving;
+    public boolean nearObject() {
+        return closestObject != null;
     }
 
     /**
@@ -232,14 +234,14 @@ public class Player {
     }
 
     /**
-     * Returns whether the player's eventHitbox overlaps an object
-     * Call getClosestObject to get the nearest
+     * Sets the player's state to moving or not moving, a not moving character will just display an idle animation
      *
-     * @return true if a player is near enough an object to interact with it
+     * @param moving The boolean to set moving to
      */
-    public boolean nearObject() {
-        return closestObject != null;
+    public void setMoving(boolean moving) {
+        this.moving = moving;
     }
+
 
     /**
      * Returns the current frame the player's animation is on
@@ -293,6 +295,17 @@ public class Player {
      */
     public float getCentreY () {
         return centreY;
+    }
+
+    /**
+     * @return The Vector3 representation of the bottom left corner of the player's sprite hitbox
+     */
+    public Vector3 getPosAsVec3() {
+        return new Vector3(
+                sprite.getX(),
+                sprite.getY(),
+                0
+        );
     }
 
     /**

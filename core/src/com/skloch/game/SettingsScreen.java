@@ -2,6 +2,7 @@ package com.skloch.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -24,6 +25,11 @@ public class SettingsScreen implements Screen {
     public Screen previousScreen;
 
 
+    /**
+     * Handles the configuration of Music and Sound effect volume using two sliders
+     * @param game An instance of HustleGame
+     * @param previousScreen The previous screen to return to when the exit button is rpessed
+     */
     public SettingsScreen(final HustleGame game, Screen previousScreen) {
         // An option screen to let the player adjust the volume of music and sound effects
         this.game = game;
@@ -67,7 +73,7 @@ public class SettingsScreen implements Screen {
         sliderTable.add(sfxTitle).padRight(20).right();
         sliderTable.add(sfxSlider).prefWidth(250);
 
-        // Window UI elements
+        // Add all the UI elements to the table in the window
         optionTable.add(title).top().padTop(40).padBottom(50);
         optionTable.row();
         optionTable.add(sliderTable).fillX();
@@ -95,9 +101,14 @@ public class SettingsScreen implements Screen {
     }
 
 
+    /**
+     * Renders a settings screen to let the player configure music and sound volume
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Draw blue background
         game.blueBackground.draw();
@@ -114,6 +125,11 @@ public class SettingsScreen implements Screen {
     }
 
 
+    /**
+     * Correctly resizes the settings screen
+     * @param width
+     * @param height
+     */
     @Override
     public void resize(int width, int height) {
         optionStage.getViewport().update(width, height);
@@ -137,6 +153,9 @@ public class SettingsScreen implements Screen {
     public void resume() {
     }
 
+    /**
+     * Disposes of the option settings stage
+     */
     @Override
     public void dispose() {
         optionStage.dispose();

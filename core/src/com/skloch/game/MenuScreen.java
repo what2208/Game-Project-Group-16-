@@ -21,8 +21,17 @@ public class MenuScreen implements Screen {
     OrthographicCamera camera;
     private Viewport viewport;
     private Image titleImage;
-    private boolean drawTitleTexture = true;
 
+    /**
+     * A class to display a menu screen, initially gives the player 4 options, Start, Settings, Credits, Quit
+     * Upon hitting start, a tutorial window is shown, and then an avatar select screen is shown, and then it is
+     * switched to GameScreen.
+     * Settings switches to SettingsScreen
+     * Credits switches to CreditsScreen
+     * Quit exits the game
+     *
+     * @param game An instance of HustleGame with loaded variables
+     */
     public MenuScreen(final HustleGame game) {
         this.game = game;
         this.game.menuScreen = this;
@@ -34,16 +43,18 @@ public class MenuScreen implements Screen {
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
-        // Set the size of the background to the viewport size
+        // Set the size of the background to the viewport size, only need to do this once, this is then used by all
+        // screens as an easy way of having a blue background
         game.blueBackground.getRoot().findActor("blue image").setSize(viewport.getWorldWidth(), viewport.getWorldHeight());
 
+        // Title image
         titleImage = new Image(new Texture(Gdx.files.internal("title.png")));
         titleImage.setPosition((viewport.getWorldWidth() / 2f) - (titleImage.getWidth() / 2f), 500);
         menuStage.addActor(titleImage);
 
-
         // Play menu music
         game.soundManager.playMenuMusic();
+
 
         // Make avatar select table
         Table avatarSelectTable = makeAvatarSelectTable();
@@ -57,10 +68,8 @@ public class MenuScreen implements Screen {
         tutorialWindow.setVisible(false);
 
 
-
         // Make table to draw buttons and title
         Table buttonTable = new Table();
-//        table.setDebug(true);
         buttonTable.setFillParent(true);
         menuStage.addActor(buttonTable);
 
@@ -124,6 +133,8 @@ public class MenuScreen implements Screen {
                @Override
                public void changed(ChangeEvent event, Actor actor) {
                    game.soundManager.playButton();
+                   game.dispose();
+                   dispose();
                    Gdx.app.exit();
                }
            }
@@ -133,11 +144,14 @@ public class MenuScreen implements Screen {
 
     }
 
+    /**
+     * Renders the main menu, and any windows that are displaying information
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 
         camera.update();
 
@@ -150,6 +164,11 @@ public class MenuScreen implements Screen {
 
     }
 
+    /**
+     * Correctly resizes the menu screen
+     * @param width
+     * @param height
+     */
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -170,6 +189,10 @@ public class MenuScreen implements Screen {
     }
 
     @Override
+    /**
+     * Correctly sizes the game when resuming it after a pause or switching screens
+     * Fixes a small graphical bug
+     */
     public void resume() {
         Gdx.input.setInputProcessor(menuStage);
 
@@ -177,6 +200,9 @@ public class MenuScreen implements Screen {
         Gdx.input.setCursorPosition(Gdx.input.getX(), Gdx.input.getY());
     }
 
+    /**
+     * Dispose of all menu assets
+     */
     @Override
     public void dispose() {
         menuStage.dispose();
@@ -184,6 +210,7 @@ public class MenuScreen implements Screen {
 
     /**
      * Generates a window to teach the player how to play the game
+     * Displays the tutorial text shown in Text/tutorial_text.txt
      *
      * @return A small window to explain the game
      */
@@ -283,10 +310,6 @@ public class MenuScreen implements Screen {
                 dispose();
             }
         });
-
-
-
-
 
         return table;
     }

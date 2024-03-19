@@ -22,6 +22,15 @@ public class GameOverScreen implements Screen {
     Viewport viewport;
     OrthographicCamera camera;
 
+    /**
+     * A screen to display a 'Game Over' screen when the player finishes their exams
+     * Currently does not calculate a score, just shows the player's stats to them, as requested in assessment 1
+     *
+     * @param game An instance of HustleGame
+     * @param hoursStudied The hours studied in the playthrough
+     * @param hoursRecreational The hours of fun had in the playthrough
+     * @param hoursSlept The hours slept in the playthrough
+     */
     public GameOverScreen (final HustleGame game, int hoursStudied, int hoursRecreational, int hoursSlept) {
         this.game = game;
         gameOverStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
@@ -89,7 +98,10 @@ public class GameOverScreen implements Screen {
     }
 
 
-
+    /**
+     * Renders the screen and the background each frame
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);

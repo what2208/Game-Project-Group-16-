@@ -9,10 +9,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 // Used to call certain events when an object is interacted with/ events in general
 public class EventManager {
-    private GameScreen game;
+    private final GameScreen game;
     public HashMap<String, Integer> activityEnergies;
-    private HashMap<String, String> objectInteractions;
-    private Array<String> talkTopics;
+    private final HashMap<String, String> objectInteractions;
+    private final Array<String> talkTopics;
 
     /**
      * A class that maps Object's event strings to actual Java functions.
@@ -181,6 +181,11 @@ public class EventManager {
         return topics.toArray(String.class);
     }
 
+    /**
+     * The event to be run when interacting with the computer science building
+     * Gives the player the option to study for 2, 3 or 4 hours
+     * @param args
+     */
     public void compSciEvent(String[] args) {
         int energyCost = activityEnergies.get("studying");
         // If the player is too tired for any studying:
@@ -206,6 +211,12 @@ public class EventManager {
         }
     }
 
+
+    /**
+     * The event to be run when the player interacts with the ron cooke hub
+     * Gives the player the choice to eat breakfast, lunch or dinner depending on the time of day
+     * @param args
+     */
     public void ronCookeEvent(String[] args) {
         int energyCost = activityEnergies.get("eating");
         if (game.getEnergy() < energyCost) {
@@ -246,7 +257,7 @@ public class EventManager {
             public void run() {
                 if (game.getSleeping()) {
                     game.dialogueBox.show();
-                    game.dialogueBox.setText(String.format("You slept for %d hours!\nYou recovered %d energy!", hoursSlept, hoursSlept*13), "fadefromblack");
+                    game.dialogueBox.setText(String.format("You slept for %d hours!\nYou recovered %d energy!", hoursSlept, Math.min(100, hoursSlept*13)), "fadefromblack");
                     // Restore energy and pass time
                     game.setEnergy(hoursSlept*13);
                     game.passTime(secondsSlept);
@@ -274,10 +285,28 @@ public class EventManager {
     }
 
     /**
-     * Fades the screen back in from black
+     * Fades the screen back in from black, displays a good morning message if the player was sleeping
      */
     public void fadeFromBlack() {
-        game.blackScreen.addAction(Actions.fadeOut(3f));
-        game.setSleeping(false);
+        // If the player is sleeping, queue up a message to be sent
+        if (game.getSleeping()) {
+            RunnableAction setTextAction = new RunnableAction();
+            setTextAction.setRunnable(new Runnable() {
+                  @Override
+                  public void run() {
+                      if (game.getSleeping()) {
+                          game.dialogueBox.show();
+                          // Show a text displaying how many days they have left in the game
+                          game.dialogueBox.setText(game.getWakeUpMessage());
+                          game.setSleeping(false);
+                      }
+                  }
+              });
+
+            // Queue up events
+            game.blackScreen.addAction(Actions.sequence(Actions.fadeOut(3f), setTextAction));
+        } else {
+            game.blackScreen.addAction(Actions.fadeOut(3f));
+        }
     }
 }

@@ -15,7 +15,7 @@ https://thorbjorn.itch.io/tiled
 Assets:
 Player sprite - https://cuddle-bug.itch.io/apocalypse
 Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download (These have been resized and may be edited)
-Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
+Map sprites - https://kerrielake.itch.io/star-realms-cozy-forest-pack
 
 Fonts:
 Font on the buttons - https://www.dafont.com/w95fa.font

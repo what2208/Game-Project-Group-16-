@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Tilemaps/StarRealmsCozyForestPack24x24.tsx",
+    "activeFile": "east_campus.tmx",
     "expandedProjectPaths": [
         ".",
         "Tilemaps"
@@ -62,10 +62,10 @@
                 3
             ],
             "scale": 0.5,
-            "selectedLayer": 8,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 2481,
-                "y": 1730
+                "x": 2509,
+                "y": 1940
             }
         }
     },
@@ -82,13 +82,14 @@
         "Tilemaps/StarRealmsCozyForestPack24x24.tsx"
     ],
     "project": "Campus East.tiled-project",
+    "property.type": "string",
     "recentFiles": [
-        "east_campus.tmx",
-        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/testmap.tmx",
-        "Tilemaps/RCH.tsx",
-        "Tilemaps/compsci.tsx",
-        "Tilemaps/piazza.tsx",
         "Tilemaps/StarRealmsCozyForestPack24x24.tsx",
+        "Tilemaps/piazza.tsx",
+        "Tilemaps/compsci.tsx",
+        "Tilemaps/RCH.tsx",
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/testmap.tmx",
+        "east_campus.tmx",
         "Tilemaps/StarRealmsCozyForestPack48x48.tsx",
         "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/test_piazza.tsx",
         "Tilemaps/StarRealmsCozyForestPack TERRAIN.tsx"
