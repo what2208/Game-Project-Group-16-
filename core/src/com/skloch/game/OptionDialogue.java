@@ -16,6 +16,20 @@ public class OptionDialogue {
     boolean visible = false;
     boolean choice = false;
     private SoundManager soundManager;
+
+    /**
+     * @deprecated
+     *
+     * Creates a small window that can be shown or hidden to prompt the user for a yes/no input.
+     * Became redundant when dialogue got selection boxes, but the code may still be useful to
+     * those continuing the project.
+     *
+     *
+     * @param question A question to display
+     * @param width Width of the window
+     * @param skin The game skin to use
+     * @param soundManager An instance of soundManager to play sounds
+     */
     public OptionDialogue (String question, int width, Skin skin, SoundManager soundManager) {
         // Create an option dialogue to prompt the player for an input
         // Attempted to make it as adaptable as possible
@@ -59,45 +73,82 @@ public class OptionDialogue {
 
     }
 
+    /**
+     * @return The optionDialogue window to be added to a screen in GameScreen
+     */
     public Window getWindow () {
         return this.window;
     }
 
-    public void setPos(float posX, float posY) {
-        window.setX(posX);
-        window.setY(posY);
+    /**
+     * Set the position of the window
+     * @param x
+     * @param y
+     */
+    public void setPos(float x, float y) {
+        window.setX(x);
+        window.setY(y);
     }
 
-    public void setQuestionText (String text) {
-        questionLabel.setText(text);
-    }
-
+    /**
+     * Set the width of the window
+     * @param x
+     */
     public void setWidth (int x) {
         window.setWidth(x);
         window.setX(((float) Gdx.graphics.getWidth() / 2) - (window.getWidth() / 2));
         window.setY(((float) Gdx.graphics.getHeight() / 2) - (window.getHeight() / 2) - 150);
     }
 
+    /**
+     * Sets the text to be displayed on the window, usually a question
+     * @param text
+     */
+    public void setQuestionText (String text) {
+        questionLabel.setText(text);
+    }
+
+    /**
+     * Sets the window's visible variable, used to hide/unhide
+     * @param visible
+     */
     public void setVisible (boolean visible) {
         this.visible = visible;
         window.setVisible(visible);
     }
 
+    /**
+     * @return Returns true if the window is visible
+     */
     public boolean isVisible () {
         return visible;
     }
 
-    public boolean select() {
-        // Returns the result of the choice of the player
-        return choice;
-    }
-
+    /**
+     * Gets the choice that the user has selected on the menu
+     * @return true for yes and false for no
+     */
     public boolean getChoice() {
         return choice;
     }
 
+    /**
+     * Sets the choice to a certain value
+     * @param choice true for yes and false for no
+     */
+    public void setChoice (Boolean choice) {
+        this.choice = choice;
+        updateArrow();
+    }
 
-    public void act(int keycode, final HustleGame game) {
+
+    /**
+     * Takes a keycode input, and switches which value is pointed to on the dialogue.
+     * If yes is pointed to, and d is pressed, no will be selected
+     * This would usually be called inside an InputHandler
+     * @param keycode An integer keycode
+     */
+    public void act(int keycode) {
         // Reacts to keypress to change which option is selected
         if (choice == true && (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT)) {
             choice = false;
@@ -109,6 +160,10 @@ public class OptionDialogue {
         soundManager.playDialogueOption();
     }
 
+    /**
+     * Sets the pointer arrow to point to a different label depending on what the user's current choice is
+     * if choice == true the arrow will point to 'yes'
+     */
     private void updateArrow () {
         // Updates which arrow is pointed at
         if (choice == true) {
@@ -119,11 +174,4 @@ public class OptionDialogue {
             leftArrow.setVisible(false);
         }
     }
-
-    public void setChoice (Boolean choice, final HustleGame game) {
-        this.choice = choice;
-        updateArrow();
-    }
-
-
 }

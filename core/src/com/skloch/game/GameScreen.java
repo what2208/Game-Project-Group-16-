@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -14,6 +13,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -33,6 +33,7 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int energy = 100;
+    private int hoursStudied, hoursRecreational, hoursSlept;
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
     private Label timeLabel, dayLabel;
@@ -40,7 +41,6 @@ public class GameScreen implements Screen {
     private Window escapeMenu;
     private Viewport viewport;
     public OrthogonalTiledMapRenderer mapRenderer;
-    private int[] backgroundLayers, foregroundLayers, objectLayers;;
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
@@ -49,14 +49,24 @@ public class GameScreen implements Screen {
     private Table uiTable;
     private Image energyBar;
     public DialogueBox dialogueBox;
+    public final Image blackScreen;
+    private boolean sleeping = false;
 
 
+    /**
+     *
+     * @param game An instance of the class HustleGame containing variables that only need to be loaded or
+     *             initialised once.
+     * @param avatarChoice Which avatar the player has picked, 0 for the more masculine avatar, 1 for the more feminine
+     */
     public GameScreen(final HustleGame game, int avatarChoice) {
         // Important game variables
         this.game = game;
         this.game.gameScreen = this;
         eventManager = new EventManager(this);
 
+        // Scores
+        hoursStudied = hoursRecreational = hoursSlept = 0;
 
 
         // Camera and viewport settings
@@ -69,6 +79,12 @@ public class GameScreen implements Screen {
 
         // Create a stage for the user interface to be on
         uiStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
+        // Add a black image over everything first
+        blackScreen = new Image(new Texture(Gdx.files.internal("Sprites/black_square.png")));
+        blackScreen.setSize(viewport.getWorldWidth(), viewport.getWorldHeight());
+        blackScreen.addAction(Actions.alpha(0f));
+
+        // UI table to put everything in
         uiTable = new Table();
         uiTable.setSize(game.WIDTH, game.HEIGHT);
         uiStage.addActor(uiTable);
@@ -76,13 +92,15 @@ public class GameScreen implements Screen {
 
 
         // Create a player class
-        player = new Player();
+        if (avatarChoice == 1) {
+            player = new Player("avatar1");
+        } else {
+            player = new Player("avatar2");
+        }
 
 
 
-        // User interface elements
-        // Escape menu
-        setupEscapeMenu(uiTable);
+        // USER INTERFACE
 
         // Create and center the yes/no box that appears when interacting with objects
 //        optionDialogue = new OptionDialogue("", 400, this.game.skin, game.soundManager);
@@ -96,8 +114,7 @@ public class GameScreen implements Screen {
 //        optionDialogue.setVisible(false);
 
         // Interaction label to prompt player
-        interactionLabel = new Label("Press E to interact", game.skin, "default");
-        uiTable.add(interactionLabel).padTop(300);
+        interactionLabel = new Label("E - Interact", game.skin, "default");
 
         // Dialogue box
         dialogueBox = new DialogueBox(game.skin);
@@ -105,9 +122,8 @@ public class GameScreen implements Screen {
                 (viewport.getWorldWidth() - dialogueBox.getWidth()) / 2f,
                 15f);
         dialogueBox.hide();
-        // Add the dialogue box and its elements to the stage
-        uiTable.addActor(dialogueBox.getWindow());
-        uiTable.addActor(dialogueBox.getSelectBox().getWindow());
+
+
 
 
         // Load energy bar elements
@@ -120,7 +136,6 @@ public class GameScreen implements Screen {
         energyGroup.addActor(energyBar);
         energyGroup.addActor(energyBarOutline);
 
-        uiTable.addActor(energyGroup);
 
         // Set initial time
         daySeconds = (8*60); // 8:00 am
@@ -134,7 +149,16 @@ public class GameScreen implements Screen {
         timeTable.row();
         timeTable.add(dayLabel).uniformX().left().padTop(2);
         timeTable.top().left().padLeft(10).padTop(10);
+
+        // Set the order of rendered UI elements
+        uiTable.add(interactionLabel).padTop(300);
+        uiStage.addActor(energyGroup);
         uiStage.addActor(timeTable);
+        uiStage.addActor(blackScreen);
+        uiStage.addActor(dialogueBox.getWindow());
+        uiStage.addActor(dialogueBox.getSelectBox().getWindow());
+        setupEscapeMenu(uiStage);
+
 
 
         // Start music
@@ -157,25 +181,18 @@ public class GameScreen implements Screen {
 
 
         // Setup map
-        float unitScale = 50 / 16f;
+        float unitScale = game.mapScale / game.mapSquareSize;
         mapRenderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
 
         // Set the player to the middle of the map
         // Get the dimensions of the top layer
         TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
-        player.setPos((float) layer0.getWidth()*50 / 2, (float) layer0.getHeight()*50 / 2);
+        player.setPos(layer0.getWidth()*game.mapScale / 2f, layer0.getHeight()*game.mapScale / 2f);
         // Put camera on player
         camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
-        // Define background, foreground and object layers
-        // IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
-        // Bottom most layer on 'layers' tab is 0
-        backgroundLayers = new int[] {0, 1, 2, 3, 4}; // Rendered behind player
-        foregroundLayers = new int[] {6}; // Rendered in front of player
-        objectLayers = new int[] {5}; // Rectangles for the player to collide with
-
         // Give objects to player
-        for (int layer : objectLayers) {
+        for (int layer : game.objectLayers) {
             // Get all objects on the layer
             MapObjects objects = game.map.getLayers().get(layer).getObjects();
 
@@ -183,9 +200,15 @@ public class GameScreen implements Screen {
             for (int i = 0; i < objects.getCount(); i++) {
                 // Get the properties of each object
                 MapProperties properties = objects.get(i).getProperties();
-                // Make a new gameObject with these properties, passing along the scale the map is rendered
-                // at for accurate coordinates
-                player.addCollidable(new GameObject(properties, unitScale));
+                // If this is the spawn object, move the player there and don't collide
+                if (properties.get("spawn") != null) {
+                    player.setPos(((float) properties.get("x")) *unitScale, ((float) properties.get("y"))*unitScale);
+                    camera.position.set(player.getPosAsVec3());
+                } else {
+                    // Make a new gameObject with these properties, passing along the scale the map is rendered
+                    // at for accurate coordinates
+                    player.addCollidable(new GameObject(properties, unitScale));
+                }
             }
         }
 
@@ -195,10 +218,15 @@ public class GameScreen implements Screen {
                 new Rectangle(
                         0,
                         0,
-                        layer0.getWidth()*50,
-                        layer0.getHeight()*50
+                        game.mapProperties.get("width", Integer.class) * game.mapScale,
+                        game.mapProperties.get("height", Integer.class) * game.mapScale
                 )
         );
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
+
+        // Display a little good morning message
+        dialogueBox.show();
+        dialogueBox.setText(getWakeUpMessage());
 
     }
 
@@ -207,6 +235,12 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     * Renders the player, updates sound, renders the map and updates any UI elements
+     * Called every frame
+     *
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render (float delta) {
         // Clear screen
@@ -230,30 +264,34 @@ public class GameScreen implements Screen {
 
 
         // Increment the time and possibly day
-        updateTime(Gdx.graphics.getDeltaTime());
+        if (!escapeMenu.isVisible() && !sleeping) {
+            passTime(Gdx.graphics.getDeltaTime());
+        }
         timeLabel.setText(formatTime((int) daySeconds));
+
+        // Freeze the player's movement for this frame if any menus are visible
+        if (escapeMenu.isVisible() || dialogueBox.isVisible() || sleeping) {
+            player.setFrozen(true);
+        } else {
+            player.setFrozen(false);
+        }
 
 
         // Let the player move to keyboard presses if not frozen
         // Player.move() handles player collision
         // Also play a footstep sound if they are moving
-        if (!player.isFrozen() && !dialogueBox.isVisible()) {
-            player.move(delta);
-            if (player.isMoving()) {
-                game.soundManager.playFootstep();
-            } else {
-                game.soundManager.footstepBool = false;
-            }
+        player.move(delta);
+        if (player.isMoving()) {
+            game.soundManager.playFootstep();
         } else {
-            player.updateAnimation();
-            player.setMoving(false);
+            game.soundManager.footstepBool = false;
         }
 
 
         // Update the map's render position
         mapRenderer.setView(camera);
         // Draw the background layer
-        mapRenderer.render(backgroundLayers);
+        mapRenderer.render(game.backgroundLayers);
 
         // Begin the spritebatch to draw the player on the screen
         game.batch.setProjectionMatrix(camera.combined);
@@ -271,15 +309,20 @@ public class GameScreen implements Screen {
         game.batch.end();
 
         // Render map foreground layers
-        mapRenderer.render(foregroundLayers);
+        mapRenderer.render(game.foregroundLayers);
 
 
         // Check if the interaction (press e to use) label needs to be drawn
         interactionLabel.setVisible(false);
-        if (!dialogueBox.isVisible() && !escapeMenu.isVisible()) {
+        if (!dialogueBox.isVisible() && !escapeMenu.isVisible() && !sleeping) {
             if (player.nearObject()) {
-                interactionLabel.setText("E - Interact with " + player.getClosestObject().get("event"));
                 interactionLabel.setVisible(true);
+                // Change text whether pressing E will interact or just read text
+                if (player.getClosestObject().get("event") != null) {
+                    interactionLabel.setText("E - Interact");
+                } else if (player.getClosestObject().get("text") != null) {
+                    interactionLabel.setText("E - Read Sign");
+                }
             }
         }
 
@@ -316,11 +359,18 @@ public class GameScreen implements Screen {
     }
 
 
-    public void setupEscapeMenu(Table interfaceTable) {
+    /**
+     * Configures everything needed to display the escape menu window when the player presses 'escape'
+     * Doesn't return anything as the variable escapeMenu is used to store the window
+     * Takes a table already added to the uiStage
+     *
+     * @param interfaceStage The stage that the escapeMenu should be added to
+     */
+    public void setupEscapeMenu(Stage interfaceStage) {
         // Configures an escape menu to display when hitting 'esc'
         // Escape menu
         escapeMenu = new Window("", game.skin);
-        interfaceTable.addActor(escapeMenu);
+        interfaceStage.addActor(escapeMenu);
         escapeMenu.setModal(true);
 
         Table escapeTable = new Table();
@@ -356,7 +406,6 @@ public class GameScreen implements Screen {
                     game.soundManager.playButton();
                     game.soundManager.playOverworldMusic();
                     escapeMenu.setVisible(false);
-                    player.setFrozen(false);
                 }
             }
         });
@@ -380,6 +429,7 @@ public class GameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (escapeMenu.isVisible()) {
                     game.soundManager.playButton();
+                    game.soundManager.stopOverworldMusic();
                     dispose();
                     game.setScreen(new MenuScreen(game));
                 }
@@ -401,6 +451,9 @@ public class GameScreen implements Screen {
     public void pause() {
     }
 
+    /**
+     * Called when switching back to this gameScreen
+     */
     @Override
     public void resume() {
         // Set the input multiplexer back to this stage
@@ -420,11 +473,19 @@ public class GameScreen implements Screen {
     public void hide() {
     }
 
+    /**
+     * Disposes of certain elements, called when the game is closed
+     */
     @Override
     public void dispose () {
         uiStage.dispose();
+        mapRenderer.dispose();
     }
 
+    /**
+     * DEBUG - Draws the player's 3 hitboxes
+     * Uncomment use at the bottom of render to use
+     */
     public void drawHitboxes () {
         game.shapeRenderer.setProjectionMatrix(camera.combined);
         game.shapeRenderer.begin(ShapeType.Line);
@@ -439,17 +500,32 @@ public class GameScreen implements Screen {
         game.shapeRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
         game.shapeRenderer.end();
     }
-    
 
-    public void updateTime(float delta) {
+
+    /**
+     * Add a number of seconds to the time elapsed in the day
+     *
+     * @param delta The time in seconds to add
+     */
+    public void passTime(float delta) {
         daySeconds += delta;
-        if (daySeconds >= 1440) {
+        while (daySeconds >= 1440) {
             daySeconds -= 1440;
             day += 1;
             dayLabel.setText(String.format("Day %s", day));
         }
+
+        if (day >= 8) {
+            GameOver();
+        }
     }
 
+    /**
+     * Takes a time in seconds and formats it a time in the format HH:MMam/pm
+     *
+     * @param seconds The seconds elapsed in a day
+     * @return A formatted time on a 12 hour clock
+     */
     public String formatTime(int seconds) {
         // Takes a number of seconds and converts it into a 12 hour clock time
         int hour = Math.floorDiv(seconds, 60);
@@ -479,21 +555,13 @@ public class GameScreen implements Screen {
             public boolean keyDown (int keycode) {
                 // SHOW ESCAPE MENU CODE
                 if (keycode == Input.Keys.ESCAPE) {
-                    if (dialogueBox.isVisible()) {
-                        dialogueBox.hide();
-                        player.setFrozen(false);
-                        return true;
-                    }
-
                     if (escapeMenu.isVisible()) {
                         game.soundManager.playButton();
                         game.soundManager.playOverworldMusic();
-                        player.setFrozen(false);
                         escapeMenu.setVisible(false);
                     } else {
                         // game.soundManager.pauseOverworldMusic();
                         game.soundManager.playButton();
-                        player.setFrozen(true);
                         escapeMenu.setVisible(true);
                     }
                     // Return true to indicate the keydown event was handled
@@ -502,28 +570,39 @@ public class GameScreen implements Screen {
 
                 // SHOW OPTION MENU / ACT ON OPTION MENU CODE
                 if (keycode == Input.Keys.E || keycode == Input.Keys.ENTER || keycode == Input.Keys.SPACE) {
-                    // If a dialogue box is visible, choose an option or advance text
-                    if (dialogueBox.isVisible()) {
-                        dialogueBox.enter(eventManager);
-                        game.soundManager.playButton();
+                    if (!escapeMenu.isVisible()) {
+                        // If a dialogue box is visible, choose an option or advance text
+                        if (dialogueBox.isVisible()) {
+                            dialogueBox.enter(eventManager);
+                            game.soundManager.playButton();
 
-                    } else if(player.nearObject()) {
-                        // Show a dialogue menu asking if they want to do an interaction with the object
-                        dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                        if (eventManager.objectInteractions.containsKey((String) player.getClosestObject().get("event"))) {
-                            dialogueBox.setText(eventManager.objectInteractions.get((String) player.getClosestObject().get("event")));
-                        } else {
-                            dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                        } else if (player.nearObject() && !sleeping) {
+                            // If the object has an event associated with it
+                            if (player.getClosestObject().get("event") != null) {
+                                // Show a dialogue menu asking if they want to do an interaction with the object
+                                dialogueBox.show();
+                                dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
+                                if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
+                                    dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
+                                } else {
+                                    dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                                }
+                                dialogueBox.show();
+                                dialogueBox.getSelectBox().show();
+                                game.soundManager.playDialogueOpen();
+
+                            } else if (player.getClosestObject().get("text") != null) {
+                                // Otherwise, if it is a text object, just display its text
+                                dialogueBox.show();
+                                dialogueBox.setText((String) player.getClosestObject().get("text"));
+                            }
                         }
-                        dialogueBox.show();
-                        dialogueBox.getSelectBox().show();
-                        game.soundManager.playDialogueOpen();
+                        return true;
                     }
-                    return true;
                 }
 
                 // If an option dialogue is open it should soak up all keypresses
-                if (dialogueBox.isVisible() && dialogueBox.getSelectBox().isVisible()) {
+                if (dialogueBox.isVisible() && dialogueBox.getSelectBox().isVisible() && !escapeMenu.isVisible()) {
                     // Up or down
                     if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
                         dialogueBox.getSelectBox().choiceUp();
@@ -549,14 +628,115 @@ public class GameScreen implements Screen {
      */
     public void setEnergy(int energy) {
         this.energy = energy;
-        energyBar.setScaleY(100f / energy);
+        if (this.energy > 100) {
+            this.energy = 100;
+        }
+        energyBar.setScaleY(this.energy / 100f);
     }
 
+    /**
+     * @return The player's energy out of 100
+     */
+    public int getEnergy() {
+        return this.energy;
+    }
+
+    /**
+     * Decreases the player's energy by a certain amount
+     *
+     * @param energy The energy to decrement
+     */
     public void decreaseEnergy(int energy) {
         this.energy = this.energy - energy;
         if (this.energy < 0) {
             this.energy = 0;
         }
         energyBar.setScaleY(this.energy / 100f);
+    }
+
+    // Functions related to game score and requirements
+
+    /**
+     * Adds an amount of hours studied to the total hours studied
+     * @param hours The amount of hours to add
+     */
+    public void addStudyHours(int hours) {
+        hoursStudied += hours;
+    }
+
+    /**
+     * Adds an amount of recreational hours to the total amount for the current day
+     * @param hours The amount of hours to add
+     */
+    public void addRecreationalHours(int hours) {
+        hoursRecreational += hours;
+    }
+
+    /**
+     * @return Returns 'breakfast', 'lunch' or 'dinner' depending on the time of day
+     */
+    public String getMeal() {
+        int hours = Math.floorDiv((int) daySeconds, 60);
+        if (hours >= 7 && hours <= 10) {
+            //Breakfast between 7:00-10:59am
+            return "breakfast";
+        } else if (hours > 10 && hours <= 16) {
+            // Lunch between 10:00am and 4:59pm
+            return "lunch";
+        } else if (hours > 16 && hours <= 21) {
+            // Dinner served between 4:00pm and 9:59pm
+            return "dinner";
+        } else {
+            // Nothing is served between 10:00pm and 6:59am
+            return null;
+        }
+    }
+
+    /**
+     * @return A wake up message based on the time left until the exam
+     */
+    public String getWakeUpMessage() {
+        int daysLeft = 8 - day;
+        if (daysLeft != 1) {
+            return String.format("You have %d days left until your exam!\nRemember to eat, study and have fun, but don't overwork yourself!", daysLeft);
+        } else {
+            return "Your exam is tomorrow! I hope you've been studying! Remember not to overwork yourself and get enough sleep!";
+        }
+    }
+
+
+    /**
+     * @param sleeping Sets the value of sleeping
+     */
+    public void setSleeping(boolean sleeping) {
+        this.sleeping = sleeping;
+    }
+
+    /**
+     * @return true if the player is sleeping
+     */
+    public boolean getSleeping() {
+        return sleeping;
+    }
+
+    /**
+     * @param hours Add this amount of hours to the total hours slept
+     */
+    public void addSleptHours(int hours) {
+        hoursSlept += hours;
+    }
+
+    /**
+     * @return The number of seconds elapsed in the day
+     */
+    public float getSeconds() {
+        return daySeconds;
+    }
+
+    /**
+     * Ends the game, called at the end of the 7th day, switches to a screen that displays a score
+     */
+    public void GameOver() {
+        game.setScreen(new GameOverScreen(game, hoursStudied, hoursRecreational, hoursSlept));
     }
 }

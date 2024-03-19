@@ -1,8 +1,8 @@
 package com.skloch.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -12,21 +12,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.audio.Sound;
-
-import javax.swing.text.View;
-import java.awt.*;
 
 public class CreditScreen implements Screen{
 
     private HustleGame game;
     private Stage creditStage;
-    private Window creditMenu;
     private OrthographicCamera camera;
     private Viewport viewport;
 
+    /**
+     * A scene2d window consisting of a title, a scrollable widget and an exit button.
+     * Credits are loaded from assets/Text/credits.txt and displayed in the scrollable widget
+     * Thus any changes to assets or licenses must be reflected in credits.txt
+     *
+     * @param game An instance of the HustleGame class
+     * @param previousScreen The screen to return to when the exit button is pressed
+     */
     public CreditScreen (final HustleGame game, Screen previousScreen) {
 
         // Basically all the same code as the settings menu
@@ -39,7 +41,7 @@ public class CreditScreen implements Screen{
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
         // Create the window
-        creditMenu = new Window("", game.skin);
+        Window creditMenu = new Window("", game.skin);
         creditStage.addActor(creditMenu);
         creditMenu.setModal(true);
 
@@ -82,6 +84,7 @@ public class CreditScreen implements Screen{
         creditMenu.setX((viewport.getWorldWidth() / 2) - (creditMenu.getWidth() / 2));
         creditMenu.setY((viewport.getWorldHeight() / 2) - (creditMenu.getHeight() / 2));
 
+        // Listener for the exit button
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -92,21 +95,18 @@ public class CreditScreen implements Screen{
             }
         });
 
-        game.shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
+    /**
+     * Renders the credits window
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render (float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Draw blue background
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(0.53f, 0.81f, 0.92f, 1);
-        game.shapeRenderer.rect(0, 0, game.WIDTH, game.HEIGHT);
-        game.shapeRenderer.end();
-
-        camera.update();
-        // game.batch.setProjectionMatrix(camera.combined);
+        game.blueBackground.draw();
 
         creditStage.act(delta);
         creditStage.draw();
@@ -115,13 +115,18 @@ public class CreditScreen implements Screen{
     }
 
 
+    /**
+     * Correctly resizes the onscreen elements when the window is resized
+     * @param width
+     * @param height
+     */
     @Override
     public void resize(int width, int height) {
         creditStage.getViewport().update(width, height);
         viewport.update(width, height);
     }
 
-    // Other required methods
+    // Other required methods from Screen
     @Override
     public void show() {
     }

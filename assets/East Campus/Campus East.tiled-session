@@ -1,0 +1,108 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "east_campus.tmx",
+    "expandedProjectPaths": [
+        "Tilemaps",
+        "."
+    ],
+    "fileStates": {
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/TX Plant.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/TX Props.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/TX Tileset Grass.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/TX Tileset Stone Ground.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/test_piazza.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/testmap.tmx": {
+            "scale": 8,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 392.375,
+                "y": 399.9375
+            }
+        },
+        "Tilemaps/Constantine.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Tilemaps/RCH.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "Tilemaps/StarRealmsCozyForestPack TERRAIN.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Tilemaps/StarRealmsCozyForestPack24x24.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 3
+        },
+        "Tilemaps/StarRealmsCozyForestPack48x48.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Tilemaps/compsci.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tilemaps/piazza.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "east_campus.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 4,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 1486.375,
+                "y": 1984
+            }
+        }
+    },
+    "last.imagePath": "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/East Campus/Textures",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 24,
+    "map.tileWidth": 24,
+    "openFiles": [
+        "east_campus.tmx",
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/testmap.tmx",
+        "Tilemaps/RCH.tsx",
+        "Tilemaps/compsci.tsx",
+        "Tilemaps/piazza.tsx",
+        "Tilemaps/StarRealmsCozyForestPack24x24.tsx",
+        "Tilemaps/Constantine.tsx"
+    ],
+    "project": "Campus East.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "Tilemaps/Constantine.tsx",
+        "Tilemaps/StarRealmsCozyForestPack24x24.tsx",
+        "Tilemaps/piazza.tsx",
+        "Tilemaps/compsci.tsx",
+        "Tilemaps/RCH.tsx",
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/testmap.tmx",
+        "east_campus.tmx",
+        "Tilemaps/StarRealmsCozyForestPack48x48.tsx",
+        "C:/Users/Sam/Documents/Game-Project-Group-16-/assets/Test Map/Tilesets/test_piazza.tsx",
+        "Tilemaps/StarRealmsCozyForestPack TERRAIN.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 24,
+        "width": 24
+    }
+}

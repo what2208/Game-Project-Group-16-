@@ -10,9 +10,10 @@ LibGDX Texture Packer
 Tiled Map Editor
 
 Assets:
-Player sprite - https://cuddle-bug.itch.io/apocalypse
+Male Player sprite - https://cuddle-bug.itch.io/apocalypse
+Female Player sprite - E.Giles
 Buttons - https://paperhatlizard.itch.io/cryos-mini-gui?download
-Map sprites - https://cainos.itch.io/pixel-art-top-down-basic
+Map sprites - https://kerrielake.itch.io/star-realms-cozy-forest-pack
 
 Fonts:
 https://www.dafont.com/w95fa.font
@@ -20,7 +21,7 @@ https://www.dafont.com/motorola-screentype.font?fpp=100&text=Heslington+Hustle
 https://www.1001fonts.com/nk57-monospace-font.html
 
 Music:
-Main menu music - https://uppbeat.io/track/sulyya/mirthaflare
+Main menu music - [Streetlights] https://jdsherbert.itch.io/minigame-music-pack
 Overworld music - https://pixabay.com/music/pulses-blippy-trance-127685/
 
 Sounds:

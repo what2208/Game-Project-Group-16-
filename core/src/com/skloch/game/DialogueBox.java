@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.HashMap;
-
 /**
  * A class to display a dialogue box for text and options on the screen
  */
@@ -20,17 +18,21 @@ public class DialogueBox {
     private SelectBox selectBox;
     private Array<String> textLines;
     private int linePointer = 0;
+    private String eventKey = null;
 
 
 
     public DialogueBox (Skin skin) {
+        // Define some key values
         int WIDTH = 800;
         int HEIGHT = 200;
         MAXCHARS = 35;
         this.skin = skin;
 
+        // Create the window for the dialogue box
         dialogueWindow = new Window("", skin);
 
+        // Create the table for the text in the dialogue box
         dialogueTable = new Table();
         dialogueWindow.addActor(dialogueTable);
         dialogueTable.setFillParent(true);
@@ -43,6 +45,7 @@ public class DialogueBox {
         dialogueWindow.setWidth(WIDTH);
         dialogueWindow.setHeight(HEIGHT);
 
+        // Create selection box to allow user to make choices when interacting with objects (class defined below)
         this.selectBox = new SelectBox();
         selectBox.setOptions(new String[]{"Yes", "No"}, new String[]{"piazza", "close"});
 
@@ -117,6 +120,7 @@ public class DialogueBox {
 
             // Show first pointer
             setChoice(0);
+            show();
 
 
         }
@@ -128,6 +132,7 @@ public class DialogueBox {
         public void choiceUp () {
             optionPointers.get(choiceIndex).setVisible(false);
             choiceIndex -= 1;
+            // If statement to prevent the user from choosing outside the options range
             if (choiceIndex < 0) {
                 choiceIndex = 0;
             }
@@ -141,6 +146,7 @@ public class DialogueBox {
         public void choiceDown () {
             optionPointers.get(choiceIndex).setVisible(false);
             choiceIndex += 1;
+            // If statement to prevent the user from choosing outside the options range
             if (choiceIndex >= options.length) {
                 choiceIndex = options.length - 1;
             }
@@ -221,12 +227,24 @@ public class DialogueBox {
         );
     }
 
-    /**
-     * Sets the text on the dialogue box
-     *
-     * @param text The text to display
-     */
     public void setText(String text) {
+        initialiseLabelText(text);
+    }
+    public void setText(String text, String eventKey) {
+        initialiseLabelText(text);
+        this.eventKey = eventKey;
+
+    }
+
+    /**
+     * Formats the text to be displayed on a label widget. Adds a newline character every MAXCHARS num of characters
+     * accounts for any occuring linebreaks to take use of the size of the most space possible.
+     * Stores the formatted text in 3 chunks, which are then queued up to be pushed to the label whenever the user
+     * presses e.
+     *
+     * @param text The text to format and push to the label
+     */
+    public void initialiseLabelText(String text) {
         // Add a newline every 36 chars
         String newString = "";
         int lastSpace = 0;
@@ -286,7 +304,9 @@ public class DialogueBox {
                 numBreaks += 1;
             }
         }
-        textLines.add(subString);
+        if (subString != "") {
+            textLines.add(subString);
+        }
 
         textLabel.setText(textLines.get(0));
         linePointer = 0;
@@ -313,19 +333,24 @@ public class DialogueBox {
      */
     public void enter(EventManager eventManager) {
         if (selectBox.isVisible()) {
+            selectBox.hide();
             eventManager.event(selectBox.getChoice());
         } else {
-            advanceText();
+            advanceText(eventManager);
         }
     }
 
     /**
      * Continues on to the next bit of text, or closes the window if the end is reached
      */
-    public void advanceText() {
+    private void advanceText(EventManager eventManager) {
         linePointer += 1;
         if (linePointer >= textLines.size) {
             hide();
+            if (eventKey != null) {
+                eventManager.event(eventKey);
+                eventKey = null;
+            }
         } else {
             textLabel.setText(textLines.get(linePointer));
         }
