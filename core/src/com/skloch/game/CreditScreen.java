@@ -24,6 +24,7 @@ public class CreditScreen implements Screen{
     /**
      * A scene2d window consisting of a title, a scrollable widget and an exit button.
      * Credits are loaded from assets/Text/credits.txt and displayed in the scrollable widget
+     * Thus any changes to assets or licenses must be reflected in credits.txt
      *
      * @param game An instance of the HustleGame class
      * @param previousScreen The screen to return to when the exit button is pressed
@@ -83,6 +84,7 @@ public class CreditScreen implements Screen{
         creditMenu.setX((viewport.getWorldWidth() / 2) - (creditMenu.getWidth() / 2));
         creditMenu.setY((viewport.getWorldHeight() / 2) - (creditMenu.getHeight() / 2));
 
+        // Listener for the exit button
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

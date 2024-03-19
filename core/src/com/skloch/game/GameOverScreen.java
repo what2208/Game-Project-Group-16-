@@ -25,6 +25,7 @@ public class GameOverScreen implements Screen {
     /**
      * A screen to display a 'Game Over' screen when the player finishes their exams
      * Currently does not calculate a score, just shows the player's stats to them, as requested in assessment 1
+     * Tracking them now will make win conditions easier to implement for assessment 2
      *
      * @param game An instance of HustleGame
      * @param hoursStudied The hours studied in the playthrough

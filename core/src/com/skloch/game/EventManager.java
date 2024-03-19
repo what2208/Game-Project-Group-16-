@@ -153,6 +153,7 @@ public class EventManager {
             game.dialogueBox.getSelectBox().setOptions(topics, new String[]{"piazza-"+topics[0], "piazza-"+topics[1], "piazza-"+topics[2]});
         } else {
             // Say that the player chatted about this topic for 1-3 hours
+            // RNG factor adds a slight difficulty (may consume too much energy to study)
             int hours = ThreadLocalRandom.current().nextInt(1, 4);
             game.dialogueBox.setText(String.format("You talked about %s for %d hours!", args[1].toLowerCase(), hours));
             game.decreaseEnergy(energyCost * hours);
@@ -171,6 +172,7 @@ public class EventManager {
 
         for (int i = 0;i<amount;i++) {
             String choice = talkTopics.random();
+            // If statement to ensure topic hasn't already been selected
             if (!topics.contains(choice, false)) {
                 topics.add(choice);
             } else {

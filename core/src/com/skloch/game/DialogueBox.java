@@ -23,13 +23,16 @@ public class DialogueBox {
 
 
     public DialogueBox (Skin skin) {
+        // Define some key values
         int WIDTH = 800;
         int HEIGHT = 200;
         MAXCHARS = 35;
         this.skin = skin;
 
+        // Create the window for the dialogue box
         dialogueWindow = new Window("", skin);
 
+        // Create the table for the text in the dialogue box
         dialogueTable = new Table();
         dialogueWindow.addActor(dialogueTable);
         dialogueTable.setFillParent(true);
@@ -42,6 +45,7 @@ public class DialogueBox {
         dialogueWindow.setWidth(WIDTH);
         dialogueWindow.setHeight(HEIGHT);
 
+        // Create selection box to allow user to make choices when interacting with objects (class defined below)
         this.selectBox = new SelectBox();
         selectBox.setOptions(new String[]{"Yes", "No"}, new String[]{"piazza", "close"});
 
@@ -128,6 +132,7 @@ public class DialogueBox {
         public void choiceUp () {
             optionPointers.get(choiceIndex).setVisible(false);
             choiceIndex -= 1;
+            // If statement to prevent the user from choosing outside the options range
             if (choiceIndex < 0) {
                 choiceIndex = 0;
             }
@@ -141,6 +146,7 @@ public class DialogueBox {
         public void choiceDown () {
             optionPointers.get(choiceIndex).setVisible(false);
             choiceIndex += 1;
+            // If statement to prevent the user from choosing outside the options range
             if (choiceIndex >= options.length) {
                 choiceIndex = options.length - 1;
             }
