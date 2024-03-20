@@ -688,7 +688,7 @@ public class GameScreen implements Screen {
             return "dinner";
         } else {
             // Nothing is served between 10:00pm and 6:59am
-            return null;
+            return "food";
         }
     }
 

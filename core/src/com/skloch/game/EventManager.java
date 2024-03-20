@@ -141,24 +141,28 @@ public class EventManager {
      * @param args Arguments to be passed, should contain the hours the player wants to study. E.g. ["piazza", "1"]
      */
     public void piazzaEvent(String[] args) {
-        int energyCost = activityEnergies.get("meet_friends");
-        // If the player is too tired to meet friends
-        if (game.getEnergy() < energyCost) {
-            game.dialogueBox.setText("You are too tired to meet your friends right now!");
+        if (game.getSeconds() > 8*60) {
+            int energyCost = activityEnergies.get("meet_friends");
+            // If the player is too tired to meet friends
+            if (game.getEnergy() < energyCost) {
+                game.dialogueBox.setText("You are too tired to meet your friends right now!");
 
-        } else if (args.length == 1) {
-            // Ask the player to chat about something (makes no difference)
-            String[] topics = randomTopics(3);
-            game.dialogueBox.setText("What do you want to chat about?");
-            game.dialogueBox.getSelectBox().setOptions(topics, new String[]{"piazza-"+topics[0], "piazza-"+topics[1], "piazza-"+topics[2]});
+            } else if (args.length == 1) {
+                // Ask the player to chat about something (makes no difference)
+                String[] topics = randomTopics(3);
+                game.dialogueBox.setText("What do you want to chat about?");
+                game.dialogueBox.getSelectBox().setOptions(topics, new String[]{"piazza-"+topics[0], "piazza-"+topics[1], "piazza-"+topics[2]});
+            } else {
+                // Say that the player chatted about this topic for 1-3 hours
+                // RNG factor adds a slight difficulty (may consume too much energy to study)
+                int hours = ThreadLocalRandom.current().nextInt(1, 4);
+                game.dialogueBox.setText(String.format("You talked about %s for %d hours!", args[1].toLowerCase(), hours));
+                game.decreaseEnergy(energyCost * hours);
+                game.passTime(hours * 60); // in seconds
+                game.addRecreationalHours(hours);
+            }
         } else {
-            // Say that the player chatted about this topic for 1-3 hours
-            // RNG factor adds a slight difficulty (may consume too much energy to study)
-            int hours = ThreadLocalRandom.current().nextInt(1, 4);
-            game.dialogueBox.setText(String.format("You talked about %s for %d hours!", args[1].toLowerCase(), hours));
-            game.decreaseEnergy(energyCost * hours);
-            game.passTime(hours * 60); // in seconds
-            game.addRecreationalHours(hours);
+            game.dialogueBox.setText("It's too early in the morning to meet your friends, go to bed!");
         }
     }
 
@@ -189,27 +193,31 @@ public class EventManager {
      * @param args
      */
     public void compSciEvent(String[] args) {
-        int energyCost = activityEnergies.get("studying");
-        // If the player is too tired for any studying:
-        if (game.getEnergy() < energyCost) {
-            game.dialogueBox.hideSelectBox();
-            game.dialogueBox.setText("You are too tired to study right now!");
-        } else if (args.length == 1) {
-            // If the player has not yet chosen how many hours, ask
-            game.dialogueBox.setText("Study for how long?");
-            game.dialogueBox.getSelectBox().setOptions(new String[]{"2 Hours (20)", "3 Hours (30)", "4 Hours (40)"}, new String[]{"comp_sci-2", "comp_sci-3", "comp_sci-4"});
-        } else {
-            int hours = Integer.parseInt(args[1]);
-            // If the player does not have enough energy for the selected hours
-            if (game.getEnergy() < hours*energyCost) {
-                game.dialogueBox.setText("You don't have the energy to study for this long!");
+        if (game.getSeconds() > 8*60) {
+            int energyCost = activityEnergies.get("studying");
+            // If the player is too tired for any studying:
+            if (game.getEnergy() < energyCost) {
+                game.dialogueBox.hideSelectBox();
+                game.dialogueBox.setText("You are too tired to study right now!");
+            } else if (args.length == 1) {
+                // If the player has not yet chosen how many hours, ask
+                game.dialogueBox.setText("Study for how long?");
+                game.dialogueBox.getSelectBox().setOptions(new String[]{"2 Hours (20)", "3 Hours (30)", "4 Hours (40)"}, new String[]{"comp_sci-2", "comp_sci-3", "comp_sci-4"});
             } else {
-                // If they do have the energy to study
-                game.dialogueBox.setText(String.format("You studied for %s hours!\nYou lost %d energy", args[1], hours*energyCost));
-                game.decreaseEnergy(energyCost * hours);
-                game.addStudyHours(hours);
-                game.passTime(hours * 60); // in seconds
+                int hours = Integer.parseInt(args[1]);
+                // If the player does not have enough energy for the selected hours
+                if (game.getEnergy() < hours*energyCost) {
+                    game.dialogueBox.setText("You don't have the energy to study for this long!");
+                } else {
+                    // If they do have the energy to study
+                    game.dialogueBox.setText(String.format("You studied for %s hours!\nYou lost %d energy", args[1], hours*energyCost));
+                    game.decreaseEnergy(energyCost * hours);
+                    game.addStudyHours(hours);
+                    game.passTime(hours * 60); // in seconds
+                }
             }
+        } else {
+            game.dialogueBox.setText("It's too early in the morning to study, go to bed!");
         }
     }
 
@@ -220,13 +228,17 @@ public class EventManager {
      * @param args
      */
     public void ronCookeEvent(String[] args) {
-        int energyCost = activityEnergies.get("eating");
-        if (game.getEnergy() < energyCost) {
-            game.dialogueBox.setText("You are too tired to eat right now!");
+        if (game.getSeconds() > 8*60) {
+            int energyCost = activityEnergies.get("eating");
+            if (game.getEnergy() < energyCost) {
+                game.dialogueBox.setText("You are too tired to eat right now!");
+            } else {
+                game.dialogueBox.setText(String.format("You took an hour to eat %s at the Ron Cooke Hub!\nYou lost %d energy!", game.getMeal(), energyCost));
+                game.decreaseEnergy(energyCost);
+                game.passTime(60); // in seconds
+            }
         } else {
-            game.dialogueBox.setText(String.format("You took an hour to eat %s at the Ron Cooke Hub!\nYou lost %d energy!", game.getMeal(), energyCost));
-            game.decreaseEnergy(energyCost);
-            game.passTime(60); // in seconds
+            game.dialogueBox.setText("It's too early in the morning to eat food, go to bed!");
         }
 
     }
