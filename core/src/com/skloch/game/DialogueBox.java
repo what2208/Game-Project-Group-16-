@@ -19,6 +19,8 @@ public class DialogueBox {
     private Array<String> textLines;
     private int linePointer = 0;
     private String eventKey = null;
+    private float textCounter = 0;
+    private boolean scrollingText = false;
 
 
 
@@ -227,13 +229,39 @@ public class DialogueBox {
         );
     }
 
+    /**
+     * Sets the text to be displayed on the dialogue box, automatically wraps it correctly
+     * @param text
+     */
     public void setText(String text) {
         initialiseLabelText(text);
+        scrollingText = true;
+        textCounter = 0;
     }
+
+    /**
+     * Sets the text to be displayed on the dialogue box, automatically wraps it correctly
+     * Additionally, schedules an event to be called after the text is done displaying
+     * @param text THe text to display
+     * @param eventKey The event key to be triggered
+     */
     public void setText(String text, String eventKey) {
         initialiseLabelText(text);
         this.eventKey = eventKey;
+        scrollingText = true;
+        textCounter = 0;
 
+    }
+
+    public void scrollText(float speed) {
+        if (scrollingText) {
+            textCounter += speed;
+            if (Math.round(textCounter) >= textLines.get(linePointer).length()) {
+                scrollingText = false;
+                textLabel.setText(textLines.get(linePointer));
+            }
+            textLabel.setText(textLines.get(linePointer).substring(0, Math.round(textCounter)));
+        }
     }
 
     /**
@@ -344,17 +372,27 @@ public class DialogueBox {
      * Continues on to the next bit of text, or closes the window if the end is reached
      */
     private void advanceText(EventManager eventManager) {
-        linePointer += 1;
-        if (linePointer >= textLines.size) {
-            hide();
-            if (eventKey != null) {
-                eventManager.event(eventKey);
-                eventKey = null;
-            }
-        } else {
+        if (scrollingText) {
+            scrollingText = false;
+            textCounter = 0;
             textLabel.setText(textLines.get(linePointer));
-        }
 
+        } else {
+            linePointer += 1;
+            if (linePointer >= textLines.size) {
+                hide();
+                scrollingText = false;
+                textCounter = 0;
+                if (eventKey != null) {
+                    eventManager.event(eventKey);
+                    eventKey = null;
+                }
+            } else {
+                textCounter = 0;
+                scrollingText = true;
+//            textLabel.setText(textLines.get(linePointer));
+            }
+        }
     }
 
     /**

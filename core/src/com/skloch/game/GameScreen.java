@@ -276,6 +276,8 @@ public class GameScreen implements Screen {
             player.setFrozen(false);
         }
 
+        dialogueBox.scrollText(0.8f);
+
 
         // Let the player move to keyboard presses if not frozen
         // Player.move() handles player collision
