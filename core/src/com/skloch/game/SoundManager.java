@@ -5,6 +5,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Disposable;
 
+/**
+ * A class handling loading, playing and disposing of sounds.
+ */
 public class SoundManager implements Disposable {
     public Music overworldMusic, menuMusic;
     private Sound footstep1, footstep2;

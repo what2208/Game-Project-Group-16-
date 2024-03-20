@@ -29,6 +29,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
+/**
+ * Handles the majority of the game logic, rendering and user inputs of the game.
+ * Responsible for rendering the player and the map, and calling events.
+ */
 public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;

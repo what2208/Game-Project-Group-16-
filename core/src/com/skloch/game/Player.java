@@ -310,8 +310,6 @@ public class Player {
 
     /**
      * Sets the x coordinate of the player, updating all 3 hitboxes at once as opposed to just the sprite rectangle
-     *
-     * @return The X coordinate to set the player to
      */
     public void setX (float x) {
         this.sprite.setX(x);
@@ -321,8 +319,6 @@ public class Player {
     }
     /**
      * Sets the Y coordinate of the player, updating all 3 hitboxes at once as opposed to just the sprite rectangle
-     *
-     * @return The Y coordinate to set the player to
      */
     public void setY (float y) {
         this.sprite.setY(y);

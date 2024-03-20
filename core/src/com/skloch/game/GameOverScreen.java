@@ -16,6 +16,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
 
+/**
+ * A screen that displays the player's stats at the end of the game.
+ * Currently doesn't calculate a score
+ */
 public class GameOverScreen implements Screen {
     private HustleGame game;
     Stage gameOverStage;

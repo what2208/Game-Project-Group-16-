@@ -3,6 +3,10 @@ package com.skloch.game;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.math.Rectangle;
 
+/**
+ * An object that stores a position and dimensions, but can also store extra properties when loaded from a tilemap.
+ * Player can interact and trigger events with these objects.
+ */
 public class GameObject extends Rectangle {
     public MapProperties properties;
 

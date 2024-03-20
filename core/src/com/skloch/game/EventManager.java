@@ -7,7 +7,9 @@ import com.badlogic.gdx.utils.Array;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-// Used to call certain events when an object is interacted with/ events in general
+/**
+ * A class that maps Object's event strings to actual Java functions.
+ */
 public class EventManager {
     private final GameScreen game;
     public HashMap<String, Integer> activityEnergies;

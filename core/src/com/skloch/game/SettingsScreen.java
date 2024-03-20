@@ -14,6 +14,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+/**
+ * A screen to display settings to the player, lets the player adjust sound and music volume
+ */
 public class SettingsScreen implements Screen {
     private HustleGame game;
     private Stage optionStage;

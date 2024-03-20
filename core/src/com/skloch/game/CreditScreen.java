@@ -14,6 +14,10 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+/**
+ * A scene2d window consisting of a title, a scrollable widget and an exit button.
+ * Used to display the assets used in the game
+ */
 public class CreditScreen implements Screen{
 
     private HustleGame game;

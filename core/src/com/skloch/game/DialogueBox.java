@@ -7,7 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Array;
 
 /**
- * A class to display a dialogue box for text and options on the screen
+ * A class to display a dialogue box for text and options on the screen.
+ *
  */
 public class DialogueBox {
     private Window dialogueWindow;
