@@ -3,10 +3,34 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "testmap.tmx",
+    "activeFile": "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/east_campus.tmx",
     "expandedProjectPaths": [
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/Tilemaps/Constantine.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/Tilemaps/RCH.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/Tilemaps/StarRealmsCozyForestPack24x24.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/Tilemaps/compsci.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/Tilemaps/piazza.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/east_campus.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 2604,
+                "y": 1594
+            }
+        },
         "Tilesets/TX Plant.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
@@ -21,12 +45,15 @@
         "Tilesets/TX Tileset Stone Ground.tsx": {
             "scaleInDock": 1
         },
+        "Tilesets/test_piazza.tsx": {
+            "scaleInDock": 1
+        },
         "testmap.tmx": {
             "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 425.33333333333337,
-                "y": 420.6666666666667
+                "x": 399.3333333333333,
+                "y": 399.33333333333326
             }
         }
     },
@@ -39,13 +66,15 @@
     "openFiles": [
         "testmap.tmx",
         "Tilesets/TX Tileset Grass.tsx",
-        "Tilesets/TX Plant.tsx"
+        "Tilesets/TX Plant.tsx",
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/east_campus.tmx"
     ],
     "project": "testmap.tiled-project",
     "recentFiles": [
-        "Tilesets/TX Plant.tsx",
+        "testmap.tmx",
         "Tilesets/TX Tileset Grass.tsx",
-        "testmap.tmx"
+        "Tilesets/TX Plant.tsx",
+        "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/east_campus.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

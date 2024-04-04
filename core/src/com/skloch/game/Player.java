@@ -41,8 +41,8 @@ public class Player {
         // Load the player's textures from the atlas
         TextureAtlas playerAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Player/player_sprites.atlas"));
 
-        walkingAnimation = new Array<Animation<TextureRegion>>();
-        idleAnimation = new Array<Animation<TextureRegion>>();
+        walkingAnimation = new Array<Animation<TextureRegion>>(4);
+        idleAnimation = new Array<Animation<TextureRegion>>(4);
 
         // Load walking animation from Sprite atlas
         walkingAnimation.add(

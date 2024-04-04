@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="200" height="150" tilewidth="24" tileheight="24" infinite="0" nextlayerid="16" nextobjectid="181">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="200" height="150" tilewidth="24" tileheight="24" infinite="0" nextlayerid="16" nextobjectid="183">
  <tileset firstgid="1" source="Tilemaps/StarRealmsCozyForestPack24x24.tsx"/>
  <tileset firstgid="529" source="Tilemaps/RCH.tsx"/>
  <tileset firstgid="649" source="Tilemaps/compsci.tsx"/>
@@ -1464,5 +1464,7 @@ Coming soon!</property>
     <property name="text" value="Accomodation Building"/>
    </properties>
   </object>
+  <object id="181" x="2472" y="1896" width="24" height="48"/>
+  <object id="182" x="2448" y="1920" width="24" height="24"/>
  </objectgroup>
 </map>

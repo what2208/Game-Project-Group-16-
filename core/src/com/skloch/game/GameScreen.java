@@ -231,7 +231,6 @@ public class GameScreen implements Screen {
         // Display a little good morning message
         dialogueBox.show();
         dialogueBox.setText(getWakeUpMessage());
-
     }
 
     @Override
@@ -353,7 +352,7 @@ public class GameScreen implements Screen {
 
 
         // Debug - Draw player hitboxes
-        // drawHitboxes();
+//         drawHitboxes();
 
         // Debug - print the event value of the closest object to the player if there is one
 //        if (player.getClosestObject() != null) {
@@ -502,7 +501,7 @@ public class GameScreen implements Screen {
         game.shapeRenderer.setColor(0, 0, 1, 1);
         game.shapeRenderer.rect(player.feet.x, player.feet.y, player.feet.width, player.feet.height);
         // Event hitbox
-        game.shapeRenderer.setColor(0, 1, 1, 1);
+        game.shapeRenderer.setColor(0, 1, 0, 1);
         game.shapeRenderer.rect(player.eventHitbox.x, player.eventHitbox.y, player.eventHitbox.width, player.eventHitbox.height);
         game.shapeRenderer.end();
     }
