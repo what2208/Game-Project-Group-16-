@@ -53,11 +53,11 @@ public class EventManager {
         String[] args = eventKey.split("-");
 
         // Important functions, most likely called after displaying text
-        if (args[0] == "fadefromblack") {
+        if (args[0].equals("fadefromblack")) {
             fadeFromBlack();
-        } else if (args[0] == "fadetoblack") {
+        } else if (args[0].equals("fadetoblack")) {
             fadeToBlack();
-        } else if (args[0] == "gameover") {
+        } else if (args[0].equals("gameover")) {
             game.GameOver();
         }
 
