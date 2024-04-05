@@ -24,11 +24,11 @@
             "scaleInDock": 1
         },
         "C:/Users/samha/Documents/Game-Project-Group-16-/assets/East Campus/east_campus.tmx": {
-            "scale": 0.25,
-            "selectedLayer": 8,
+            "scale": 4,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 2604,
-                "y": 1594
+                "x": 2592.75,
+                "y": 2331.625
             }
         },
         "Tilesets/TX Plant.tsx": {
