@@ -22,6 +22,7 @@ public class HustleGame extends Game {
 	public int WIDTH;
 	public int HEIGHT;
 	public Skin skin;
+	public Skin secondarySkin;
 	public TiledMap map;
 	public String credits, tutorialText;
 	public GameScreen gameScreen;
@@ -33,6 +34,9 @@ public class HustleGame extends Game {
 	public int mapSquareSize;
 	public float mapScale;
 	public MapProperties mapProperties;
+	public String playerName;
+
+	public Leaderboard leaderboard;
 
 
 	/**
@@ -63,6 +67,7 @@ public class HustleGame extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
+		secondarySkin = new Skin(Gdx.files.internal("Interface/PlainSkin/plain-james-ui.json"));
 		// Map
 		map = new TmxMapLoader().load("East Campus/east_campus.tmx");
 		mapProperties = map.getProperties();
@@ -89,6 +94,8 @@ public class HustleGame extends Game {
 		credits = readTextFile("Text/credits.txt");
 		tutorialText = readTextFile("Text/tutorial_text.txt");
 
+		leaderboard = new Leaderboard();
+
 		this.setScreen(new MenuScreen(this));
 	}
 
@@ -108,6 +115,7 @@ public class HustleGame extends Game {
 		batch.dispose();
 		blueBackground.dispose();
 		skin.dispose();
+		secondarySkin.dispose();
 		map.dispose();
 		shapeRenderer.dispose();
 		soundManager.dispose();

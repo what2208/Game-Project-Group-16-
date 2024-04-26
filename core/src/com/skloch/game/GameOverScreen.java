@@ -25,6 +25,7 @@ public class GameOverScreen implements Screen {
     Stage gameOverStage;
     Viewport viewport;
     OrthographicCamera camera;
+    LeaderboardWindow leaderboard;
 
     /**
      * A screen to display a 'Game Over' screen when the player finishes their exams
@@ -44,6 +45,8 @@ public class GameOverScreen implements Screen {
         camera = new OrthographicCamera();
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
+
+        leaderboard = new LeaderboardWindow(game.leaderboard, gameOverStage, game.skin, viewport);
 
         // Create the window
         Window gameOverWindow = new Window("", game.skin);
@@ -75,6 +78,17 @@ public class GameOverScreen implements Screen {
         scoresTable.row();
         scoresTable.add(new Label(String.valueOf(hoursSlept), game.skin, "button"));
 
+        // Leaderboard button
+        TextButton leaderboardButton = new TextButton("Leaderboard", game.skin);
+        gameOverTable.add(leaderboardButton).bottom().width(300).padTop(10);
+        gameOverTable.row();
+
+        leaderboardButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                leaderboard.show();
+            }
+        });
 
         // Exit button
         TextButton exitButton = new TextButton("Main Menu", game.skin);

@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
  * A screen to display the game menu to the player has the buttons "Start", "Settings", "Credits, "Exit"
- * ALso diaplays a tutorial window and an avatar select screen
+ * Also diaplays a tutorial window and an avatar select screen
  */
 public class MenuScreen implements Screen {
     final HustleGame game;
@@ -23,6 +23,7 @@ public class MenuScreen implements Screen {
     OrthographicCamera camera;
     private Viewport viewport;
     private Image titleImage;
+    private LeaderboardWindow leaderboardWindow;
 
     /**
      * A class to display a menu screen, initially gives the player 4 options, Start, Settings, Credits, Quit
@@ -45,6 +46,8 @@ public class MenuScreen implements Screen {
         viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
 
+        leaderboardWindow = new LeaderboardWindow(game.leaderboard, menuStage, game.skin, viewport);
+
         // Set the size of the background to the viewport size, only need to do this once, this is then used by all
         // screens as an easy way of having a blue background
         game.blueBackground.getRoot().findActor("blue image").setSize(viewport.getWorldWidth(), viewport.getWorldHeight());
@@ -57,41 +60,53 @@ public class MenuScreen implements Screen {
         // Play menu music
         game.soundManager.playMenuMusic();
 
-
         // Make avatar select table
         Table avatarSelectTable = makeAvatarSelectTable();
         menuStage.addActor(avatarSelectTable);
         avatarSelectTable.setVisible(false);
 
+        // Make name select table
+        Table nameSelectTable = makeNameSelectTable(avatarSelectTable);
+        menuStage.addActor(nameSelectTable);
+        nameSelectTable.setVisible(false);
 
         // Make tutorial window
-        Window tutorialWindow = makeTutorialWindow(avatarSelectTable);
+        Window tutorialWindow = makeTutorialWindow(nameSelectTable);
         menuStage.addActor(tutorialWindow);
         tutorialWindow.setVisible(false);
-
 
         // Make table to draw buttons and title
         Table buttonTable = new Table();
         buttonTable.setFillParent(true);
+        buttonTable.setWidth(600);
         menuStage.addActor(buttonTable);
 
 
         // Create the buttons
-//        Label title = new Label("Heslington Hustle", game.skin, "title"); // Old title, new uses a texture
         TextButton startButton = new TextButton("New Game", game.skin);
+        TextButton leaderboardButton = new TextButton("Leaderboard", game.skin);
         TextButton settingsButton = new TextButton("Settings", game.skin);
         TextButton creditsButton = new TextButton("Credits", game.skin);
         TextButton exitButton = new TextButton("Exit", game.skin);
 
-        // Add everything to the table using row() to go to a new line
+        // Set button widths
         int buttonWidth = 340;
-        buttonTable.add(startButton).uniformX().width(buttonWidth).padBottom(10).padTop(280);
+        settingsButton.setWidth(buttonWidth);
+        creditsButton.setWidth(buttonWidth);
+
+        // Add everything to the table using row() to go to a new line
+        buttonTable.add(startButton).padBottom(10).padTop(280).width(buttonWidth);
         buttonTable.row();
-        buttonTable.add(settingsButton).uniformX().width(buttonWidth).padBottom(10);
+        buttonTable.add(leaderboardButton).padBottom(10).width(buttonWidth);
         buttonTable.row();
-        buttonTable.add(creditsButton).uniformX().width(buttonWidth).padBottom(30);
+        // Adding settings and credits button on the same row
+        Table horizontalTable = new Table();
+        horizontalTable.add(settingsButton).width(buttonWidth).padRight(10);
+        horizontalTable.add(creditsButton).width(buttonWidth);
+        buttonTable.add(horizontalTable).center().padBottom(10);
         buttonTable.row();
-        buttonTable.add(exitButton).uniformX().width(buttonWidth);
+        // Exit
+        buttonTable.add(exitButton).center().width(buttonWidth);
         buttonTable.top();
 
         // Add listeners to the buttons so they do things when pressed
@@ -104,11 +119,18 @@ public class MenuScreen implements Screen {
                 buttonTable.setVisible(false);
                 titleImage.setVisible(false);
                 tutorialWindow.setVisible(true);
-
-//                dispose();
-//                game.setScreen(new GameScreen(game));
             }
         }
+        );
+
+        // LEARDBOARD BUTTON - Displays the leaderboard
+        leaderboardButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    game.soundManager.playButton();
+                    leaderboardWindow.show();
+                }
+            }
         );
 
         // SETTINGS BUTTON
@@ -263,9 +285,48 @@ public class MenuScreen implements Screen {
             }
         });
 
-
-
         return tutWindow;
+    }
+
+    /**
+     * Creates a name selection screen
+     *
+     * @return A table containing UI elements
+     */
+    public Table makeNameSelectTable (Table nextTable) {
+        Table table = new Table();
+        table.setFillParent(true);
+        table.top();
+
+        // Prompt
+        Label title = new Label("Enter your name", game.skin, "button");
+        table.add(title).padBottom(120).padTop(80);
+        table.row();
+
+        // Name input
+        TextField nameInput = new TextField("", game.secondarySkin);
+        table.add(nameInput).width(300).padBottom(20);
+        table.row();
+
+        // Exit button
+        TextButton continueButton = new TextButton("Continue", game.skin);
+        table.add(continueButton).bottom().width(300).padTop(10);
+
+        continueButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                String name = nameInput.getText();
+                if (name.equals("")) {
+                    return;
+                }
+                game.playerName = name;
+                game.soundManager.playButton();
+                table.setVisible(false);
+                nextTable.setVisible(true);
+            }
+        });
+
+        return table;
     }
 
 
