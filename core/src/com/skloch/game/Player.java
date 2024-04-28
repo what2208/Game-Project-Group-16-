@@ -107,34 +107,29 @@ public class Player {
             float [] changeInDirection= {0.0f,0.0f};
             // Move the player and their 2 other hitboxes
             moving = false;
-            boolean key_pressed = false;
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
                 changeInDirection[0] -= (speed * delta);
                 direction = 3;
                 moving = true;
-                key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
                 changeInDirection[0] += 1;
                 direction = 1;
                 moving = true;
-                key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
                 changeInDirection[1] += 1;
                 direction = 0;
                 moving = true;
-                key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
                 changeInDirection[1] -= 1;
                 direction = 2;
                 moving = true;
-                key_pressed = true;
             }
 
             // If at least one key has been pressed then make the changes.
-            if (key_pressed){
+            if (moving){
                 // Get the length of travel ie sqrt(x^2 + y^2)
                 float vector_length = (float) Math.pow(Math.pow(changeInDirection[0],2)+Math.pow(changeInDirection[1],2),0.5);
 
