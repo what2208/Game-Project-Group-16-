@@ -109,29 +109,24 @@ public class Player {
             moving = false;
             boolean key_pressed = false;
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-                //this.setX(sprite.getX() - speed * delta);
-                System.out.println("Change X by "+-(speed * delta));
                 changeInDirection[0] -= (speed * delta);
                 direction = 3;
                 moving = true;
                 key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-                System.out.println("Change X by "+speed * delta);
                 changeInDirection[0] += 1;
                 direction = 1;
                 moving = true;
                 key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-                System.out.println("Change Y by "+speed * delta);
                 changeInDirection[1] += 1;
                 direction = 0;
                 moving = true;
                 key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-                System.out.println("Change Y by "+-(speed * delta));
                 changeInDirection[1] -= 1;
                 direction = 2;
                 moving = true;
