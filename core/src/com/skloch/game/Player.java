@@ -101,30 +101,62 @@ public class Player {
         float oldY = sprite.y;
         float oldFeetX = feet.x;
 
+
         // If not frozen, react to keyboard input presses
         if (!frozen) {
+            float [] changeInDirection= {0.0f,0.0f};
             // Move the player and their 2 other hitboxes
             moving = false;
+            boolean key_pressed = false;
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-                this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
+                //this.setX(sprite.getX() - speed * delta);
+                System.out.println("Change X by "+-(speed * delta));
+                changeInDirection[0] -= (speed * delta);
                 direction = 3;
                 moving = true;
+                key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-                this.setX(sprite.getX() + speed * delta);
+                System.out.println("Change X by "+speed * delta);
+                changeInDirection[0] += 1;
                 direction = 1;
                 moving = true;
+                key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-                this.setY(sprite.getY() + speed * delta);
+                System.out.println("Change Y by "+speed * delta);
+                changeInDirection[1] += 1;
                 direction = 0;
                 moving = true;
+                key_pressed = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-                this.setY(sprite.getY() - speed * delta);
+                System.out.println("Change Y by "+-(speed * delta));
+                changeInDirection[1] -= 1;
                 direction = 2;
                 moving = true;
+                key_pressed = true;
             }
+
+            // If at least one key has been pressed then make the changes.
+            if (key_pressed){
+                // Get the length of travel ie sqrt(x^2 + y^2)
+                float vector_length = (float) Math.pow(Math.pow(changeInDirection[0],2)+Math.pow(changeInDirection[1],2),0.5);
+
+                // If the length isn't 0 then normalise the changes by devising by the length
+                if (vector_length != 0){
+                    for (int i = 0; i < 2; i++) {
+                        changeInDirection[i] = changeInDirection[i]/vector_length;
+                    }
+                }
+
+                // Update X and Y with the changes
+                // Note: Setting all the values with a constant delta removes hitbox desyncing issues
+                this.setX(sprite.getX() + changeInDirection[0] * speed * delta);
+                this.setY(sprite.getY() + changeInDirection[1] * speed * delta);
+            }
+
+
 
             // Check if the player's feet are inside an object, if they are, move them back in that axis
             for (GameObject object : this.collidables) {
