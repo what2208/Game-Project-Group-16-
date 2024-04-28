@@ -1,6 +1,9 @@
 Made By:
 ENG1 Group 2-16
 
+Improved By:
+ENG1 Group 2-20
+
 Game Engine:
 LibGDX
 
