@@ -13,8 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EventManager {
     private final GameScreen game;
-    public HashMap<String, Integer> activityEnergies;
-    private final HashMap<String, String> objectInteractions;
+    private final HashMap<String, Event> objectInteractions;
     private final Array<String> talkTopics;
 
     /**
@@ -29,21 +28,14 @@ public class EventManager {
     public EventManager (GameScreen game) {
         this.game = game;
 
-        // How much energy an hour of each activity should take
-        activityEnergies = new HashMap<String, Integer>();
-        activityEnergies.put("studying", 10);
-        activityEnergies.put("meet_friends", 10);
-        activityEnergies.put("eating", 10);
-
-
-        // Define what to say when interacting with an object who's text won't change
-        objectInteractions = new HashMap<String, String>();
-        objectInteractions.put("chest", "Open the chest?");
-        objectInteractions.put("comp_sci", "Study in the Computer Science building?");
-        objectInteractions.put("piazza", "Meet your friends at the Piazza?");
-        objectInteractions.put("accomodation", "Go to sleep for the night?\nYour alarm is set for 8am.");
-        objectInteractions.put("rch", null); // Changes, dynamically returned in getObjectInteraction
-        objectInteractions.put("tree", "Speak to the tree?");
+        // Define what to say when interacting with an object whose text won't change
+        objectInteractions = new HashMap<String, Event>();
+        objectInteractions.put("chest", new Event("chest", "Open the chest?", 0));
+        objectInteractions.put("comp_sci", new Event("comp_sci", "Study in the Computer Science building?", 10));
+        objectInteractions.put("piazza", new Event("piazza", "Meet your friends at the Piazza?", 10));
+        objectInteractions.put("accomodation", new Event("accomodation", "Go to sleep for the night?\nYour alarm is set for 8am.", 0));
+        objectInteractions.put("rch", new Event("rch", "", 10)); // Changes, dynamically returned in getObjectInteraction
+        objectInteractions.put("tree", new Event("tree", "Speak to the tree?", 0));
 
         // Some random topics that can be chatted about
         String[] topics = {"Dogs", "Cats", "Exams", "Celebrities", "Flatmates", "Video games", "Sports", "Food", "Fashion"};
@@ -54,12 +46,16 @@ public class EventManager {
         String[] args = eventKey.split("-");
 
         // Important functions, most likely called after displaying text
-        if (args[0].equals("fadefromblack")) {
-            fadeFromBlack();
-        } else if (args[0].equals("fadetoblack")) {
-            fadeToBlack();
-        } else if (args[0].equals("gameover")) {
-            game.GameOver();
+        switch (args[0]) {
+            case "fadefromblack":
+                fadeFromBlack();
+                break;
+            case "fadetoblack":
+                fadeToBlack();
+                break;
+            case "gameover":
+                game.GameOver();
+                break;
         }
 
         // Events related to objects
@@ -103,7 +99,7 @@ public class EventManager {
         if (key.equals("rch")) {
             return String.format("Eat %s at the Ron Cooke Hub?", game.getMeal());
         } else {
-            return objectInteractions.get(key);
+            return objectInteractions.get(key).getText();
         }
     }
 
@@ -145,7 +141,7 @@ public class EventManager {
      */
     public void piazzaEvent(String[] args) {
         if (game.getSeconds() > 8*60) {
-            int energyCost = activityEnergies.get("meet_friends");
+            int energyCost = objectInteractions.get("piazza").getEnergyCost();
             // If the player is too tired to meet friends
             if (game.getEnergy() < energyCost) {
                 game.dialogueBox.setText("You are too tired to meet your friends right now!");
@@ -197,7 +193,7 @@ public class EventManager {
      */
     public void compSciEvent(String[] args) {
         if (game.getSeconds() > 8*60) {
-            int energyCost = activityEnergies.get("studying");
+            int energyCost = objectInteractions.get("comp_sci").getEnergyCost();
             // If the player is too tired for any studying:
             if (game.getEnergy() < energyCost) {
                 game.dialogueBox.hideSelectBox();
@@ -232,7 +228,7 @@ public class EventManager {
      */
     public void ronCookeEvent(String[] args) {
         if (game.getSeconds() > 8*60) {
-            int energyCost = activityEnergies.get("eating");
+            int energyCost = objectInteractions.get("rch").getEnergyCost();
             if (game.getEnergy() < energyCost) {
                 game.dialogueBox.setText("You are too tired to eat right now!");
             } else {
