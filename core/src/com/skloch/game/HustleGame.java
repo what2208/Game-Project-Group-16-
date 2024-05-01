@@ -79,7 +79,7 @@ public class HustleGame extends Game {
 		foregroundLayers = new int[] {7}; // Rendered in front of player
 		objectLayers = new int[] {8}; // Rectangles for the player to collide with
 		mapSquareSize = mapProperties.get("tilewidth", Integer.class);
-		mapScale = 70f;
+		mapScale = 50f;
 
 		shapeRenderer = new ShapeRenderer();
 		soundManager = new SoundManager();
