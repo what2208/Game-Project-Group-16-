@@ -1,4 +1,4 @@
-package com.skloch.game;
+package screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -12,6 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.skloch.game.HustleGame;
+import screens.CreditScreen;
+import screens.GameScreen;
+import screens.LeaderboardWindow;
+import screens.SettingsScreen;
 
 /**
  * A screen to display the game menu to the player has the buttons "Start", "Settings", "Credits, "Exit"
@@ -358,7 +363,8 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.soundManager.playButton();
-                game.setScreen(new GameScreen(game, 1));
+                GameScreen gameScreen = new GameScreen(game, 1);
+                game.setScreen(gameScreen);
                 game.soundManager.stopMenuMusic();
                 dispose();
             }

@@ -6,6 +6,7 @@ leaderboard: [
 	"{name:Tom,score:2}"
 	"{name:Tom}"
 	"{name:Tom}"
+	"{name:Tom}"
 ]
 max_entries: 10
 }

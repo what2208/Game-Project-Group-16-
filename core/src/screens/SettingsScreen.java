@@ -1,4 +1,4 @@
-package com.skloch.game;
+package screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.skloch.game.HustleGame;
 
 /**
  * A screen to display settings to the player, lets the player adjust sound and music volume

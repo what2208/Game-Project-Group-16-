@@ -21,7 +21,7 @@ public class Player {
     private float stateTime = 0;
     private final Array<Animation<TextureRegion>> walkingAnimation, idleAnimation;
     // Stats
-    public float speed = 300f;
+    public float speed = 200f;
     public Array<GameObject> collidables;
     public int scale = 4;
     private Rectangle bounds;
@@ -105,26 +105,39 @@ public class Player {
         if (!frozen) {
             // Move the player and their 2 other hitboxes
             moving = false;
+            float deltaX = 0;
+            float deltaY = 0;
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-                this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
+                deltaX -= speed * delta;
+//                this.setX(sprite.getX() - speed * delta); // Note: Setting all the values with a constant delta removes hitbox desyncing issues
                 direction = 3;
                 moving = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-                this.setX(sprite.getX() + speed * delta);
+                deltaX += speed * delta;
+//                this.setX(sprite.getX() + speed * delta);
                 direction = 1;
                 moving = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-                this.setY(sprite.getY() + speed * delta);
+                deltaY += speed * delta;
+//                this.setY(sprite.getY() + speed * delta);
                 direction = 0;
                 moving = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-                this.setY(sprite.getY() - speed * delta);
+                deltaY -= speed * delta;
+//                this.setY(sprite.getY() - speed * delta);
                 direction = 2;
                 moving = true;
             }
+            // Use pythagoras to make sure the player moves at the same speed in the diagonals
+            if (deltaX != 0 && deltaY != 0) {
+                deltaX /= (float)Math.sqrt(2);
+                deltaY /= (float)Math.sqrt(2);
+            }
+            this.setX(sprite.getX() + deltaX);
+            this.setY(sprite.getY() + deltaY);
 
             // Check if the player's feet are inside an object, if they are, move them back in that axis
             for (GameObject object : this.collidables) {

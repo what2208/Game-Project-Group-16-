@@ -6,12 +6,11 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import screens.GameScreen;
+import screens.MenuScreen;
 
 /**
  * A class that is initially created by DesktopLauncher, loads consistent files at the start of the game and initialises lots of important classes.
@@ -23,7 +22,7 @@ public class HustleGame extends Game {
 	public int HEIGHT;
 	public Skin skin;
 	public Skin secondarySkin;
-	public TiledMap map;
+	public MapManager mapManager;
 	public String credits, tutorialText;
 	public GameScreen gameScreen;
 	public MenuScreen menuScreen;
@@ -31,9 +30,6 @@ public class HustleGame extends Game {
 	public SoundManager soundManager;
 	public Stage blueBackground;
 	public int[] backgroundLayers, foregroundLayers, objectLayers;
-	public int mapSquareSize;
-	public float mapScale;
-	public MapProperties mapProperties;
 	public String playerName;
 
 	public Leaderboard leaderboard;
@@ -41,7 +37,7 @@ public class HustleGame extends Game {
 
 	/**
 	 * A class to initialise a lot of the assets required for the game, including the map, sound and UI skin.
-	 * A instance of this object should be shared to most screens to allow resources to be shared and disposed of
+	 * An instance of this object should be shared to most screens to allow resources to be shared and disposed of
 	 * correctly.
 	 * Should be created in DesktopLauncher,
 	 *
@@ -68,21 +64,11 @@ public class HustleGame extends Game {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("Interface/BlockyInterface.json"));
 		secondarySkin = new Skin(Gdx.files.internal("Interface/PlainSkin/plain-james-ui.json"));
-		// Map
-		map = new TmxMapLoader().load("East Campus/east_campus.tmx");
-		mapProperties = map.getProperties();
-
-		// Define background, foreground and object layers
-		// IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
-		// Bottom most layer on 'layers' tab is 0
-		backgroundLayers = new int[] {0, 1, 2, 3, 4, 5, 6}; // Rendered behind player
-		foregroundLayers = new int[] {7}; // Rendered in front of player
-		objectLayers = new int[] {8}; // Rectangles for the player to collide with
-		mapSquareSize = mapProperties.get("tilewidth", Integer.class);
-		mapScale = 50f;
 
 		shapeRenderer = new ShapeRenderer();
 		soundManager = new SoundManager();
+		mapManager = new MapManager();
+		mapManager.loadMap("East Campus/east_campus.tmx");
 
 		// Make a stage with a blue background that any screen can draw
 		Image blueImage = new Image(new Texture(Gdx.files.internal("Sprites/white_square.png")));
@@ -116,9 +102,9 @@ public class HustleGame extends Game {
 		blueBackground.dispose();
 		skin.dispose();
 		secondarySkin.dispose();
-		map.dispose();
 		shapeRenderer.dispose();
 		soundManager.dispose();
+		mapManager.dispose();
 	}
 
 	/**

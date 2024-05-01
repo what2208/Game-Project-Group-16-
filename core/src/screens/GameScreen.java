@@ -1,33 +1,28 @@
-package com.skloch.game;
+package screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.skloch.game.*;
 
 /**
  * Handles the majority of the game logic, rendering and user inputs of the game.
@@ -44,7 +39,6 @@ public class GameScreen implements Screen {
     public Player player;
     private Window escapeMenu;
     private Viewport viewport;
-    public OrthogonalTiledMapRenderer mapRenderer;
     public Stage uiStage;
     private Label interactionLabel;
     private EventManager eventManager;
@@ -69,23 +63,22 @@ public class GameScreen implements Screen {
         this.game.gameScreen = this;
         eventManager = new EventManager(this);
 
+
         // Scores
         hoursStudied = hoursRecreational = hoursSlept = 0;
 
 
         // Camera and viewport settings
         camera = new OrthographicCamera();
-        viewport = new FitViewport(game.WIDTH, game.HEIGHT, camera);
+        viewport = new FitViewport(game.WIDTH/2, game.HEIGHT/2, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
         game.shapeRenderer.setProjectionMatrix(camera.combined);
-
-
 
         // Create a stage for the user interface to be on
         uiStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
         // Add a black image over everything first
         blackScreen = new Image(new Texture(Gdx.files.internal("Sprites/black_square.png")));
-        blackScreen.setSize(viewport.getWorldWidth(), viewport.getWorldHeight());
+        blackScreen.setSize(game.WIDTH, game.HEIGHT);
         blackScreen.addAction(Actions.alpha(0f));
 
         // UI table to put everything in
@@ -123,7 +116,7 @@ public class GameScreen implements Screen {
         // Dialogue box
         dialogueBox = new DialogueBox(game.skin);
         dialogueBox.setPos(
-                (viewport.getWorldWidth() - dialogueBox.getWidth()) / 2f,
+                (game.WIDTH - dialogueBox.getWidth()) / 2f,
                 15f);
         dialogueBox.hide();
 
@@ -135,7 +128,7 @@ public class GameScreen implements Screen {
         energyGroup.setDebug(true);
         energyBar = new Image(new Texture(Gdx.files.internal("Interface/Energy Bar/green_bar.png")));
         Image energyBarOutline = new Image(new Texture(Gdx.files.internal("Interface/Energy Bar/bar_outline.png")));
-        energyBarOutline.setPosition(viewport.getWorldWidth()-energyBarOutline.getWidth() - 15, 15);
+        energyBarOutline.setPosition(game.WIDTH-energyBarOutline.getWidth() - 15, 15);
         energyBar.setPosition(energyBarOutline.getX()+16, energyBarOutline.getY()+16);
         energyGroup.addActor(energyBar);
         energyGroup.addActor(energyBarOutline);
@@ -163,11 +156,8 @@ public class GameScreen implements Screen {
         uiStage.addActor(dialogueBox.getSelectBox().getWindow());
         setupEscapeMenu(uiStage);
 
-
-
         // Start music
         game.soundManager.playOverworldMusic();
-
 
         // Create the keyboard input adapter that defines events to be called based on
         // specific button presses
@@ -182,49 +172,24 @@ public class GameScreen implements Screen {
         inputMultiplexer.addProcessor(uiStage);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
-
-
-        // Setup map
-        float unitScale = game.mapScale / game.mapSquareSize;
-        mapRenderer = new OrthogonalTiledMapRenderer(game.map, unitScale);
-
         // Set the player to the middle of the map
-        // Get the dimensions of the top layer
-        TiledMapTileLayer layer0 = (TiledMapTileLayer) game.map.getLayers().get(0);
-        player.setPos(layer0.getWidth()*game.mapScale / 2f, layer0.getHeight()*game.mapScale / 2f);
+        player.setPos(game.mapManager.getMapDimensions().x / 2f, game.mapManager.getMapDimensions().y / 2f);
         // Put camera on player
         camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
-        // Give objects to player
-        for (int layer : game.objectLayers) {
-            // Get all objects on the layer
-            MapObjects objects = game.map.getLayers().get(layer).getObjects();
+        // Set player spawn
+        Vector2 spawn = game.mapManager.getSpawn();
+        player.setPos(spawn.x, spawn.y);
 
-            // Loop through each, handing them to the player
-            for (int i = 0; i < objects.getCount(); i++) {
-                // Get the properties of each object
-                MapProperties properties = objects.get(i).getProperties();
-                // If this is the spawn object, move the player there and don't collide
-                if (properties.get("spawn") != null) {
-                    player.setPos(((float) properties.get("x")) *unitScale, ((float) properties.get("y"))*unitScale);
-                    camera.position.set(player.getPosAsVec3());
-                } else {
-                    // Make a new gameObject with these properties, passing along the scale the map is rendered
-                    // at for accurate coordinates
-                    player.addCollidable(new GameObject(properties, unitScale));
-                }
-            }
+        for (GameObject object : game.mapManager.getObjects()) {
+            player.addCollidable(object);
         }
 
         // Set the player to not go outside the bounds of the map
         // Assumes the bottom left corner of the map is at 0, 0
-        player.setBounds(
-                new Rectangle(
-                        0,
-                        0,
-                        game.mapProperties.get("width", Integer.class) * game.mapScale,
-                        game.mapProperties.get("height", Integer.class) * game.mapScale
-                )
+        Vector2 mapPixelDimensions = game.mapManager.getMapPixelDimensions();
+        player.setBounds( //!TEMP
+                new Rectangle(0, 0, mapPixelDimensions.x, mapPixelDimensions.y)
         );
         game.shapeRenderer.setProjectionMatrix(camera.combined);
 
@@ -292,11 +257,10 @@ public class GameScreen implements Screen {
             game.soundManager.footstepBool = false;
         }
 
-
         // Update the map's render position
-        mapRenderer.setView(camera);
+        game.mapManager.setCamera(camera);
         // Draw the background layer
-        mapRenderer.render(game.backgroundLayers);
+        game.mapManager.renderBackground();
 
         // Begin the spritebatch to draw the player on the screen
         game.batch.setProjectionMatrix(camera.combined);
@@ -306,15 +270,15 @@ public class GameScreen implements Screen {
         game.batch.draw(
                 player.getCurrentFrame(),
                 player.sprite.x, player.sprite.y,
-                0, 0,
+                player.sprite.width/2, 0,
                 player.sprite.width, player.sprite.height,
-                1f, 1f, 1
+                0.5f, 0.5f, 1
         );
 
         game.batch.end();
 
         // Render map foreground layers
-        mapRenderer.render(game.foregroundLayers);
+        game.mapManager.renderForeground();
 
 
         // Check if the interaction (press e to use) label needs to be drawn
@@ -349,17 +313,6 @@ public class GameScreen implements Screen {
                 ),
                 delta*9
         );
-
-
-        // Debug - Draw player hitboxes
-//         drawHitboxes();
-
-        // Debug - print the event value of the closest object to the player if there is one
-//        if (player.getClosestObject() != null) {
-//            System.out.println(player.getClosestObject().get("event"));
-//        }
-
-
         camera.update();
     }
 
@@ -398,8 +351,8 @@ public class GameScreen implements Screen {
         // escapeMenu.setDebug(true);
 
         // Centre
-        escapeMenu.setX((viewport.getWorldWidth() / 2) - (escapeMenu.getWidth() / 2));
-        escapeMenu.setY((viewport.getWorldHeight() / 2) - (escapeMenu.getHeight() / 2));
+        escapeMenu.setX((game.WIDTH / 2) - (escapeMenu.getWidth() / 2));
+        escapeMenu.setY((game.HEIGHT / 2) - (escapeMenu.getHeight() / 2));
 
 
         // Create button listeners
@@ -484,7 +437,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose () {
         uiStage.dispose();
-        mapRenderer.dispose();
     }
 
     /**

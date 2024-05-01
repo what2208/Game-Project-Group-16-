@@ -38,14 +38,13 @@ public class GameObject extends Rectangle {
      * Sets x, y, width and height, as well as loading all other properties which can be fetched with get()
      *
      * @param objectProperties An instance of MapProperties loaded from an object layer
-     * @param scale How much do scale the object's coordinates by, if the map is also scaled up
      */
-    public GameObject(MapProperties objectProperties, float scale) {
+    public GameObject(MapProperties objectProperties) {
         super(
-                (float) objectProperties.get("x") * scale,
-                (float) objectProperties.get("y") * scale,
-                (float) objectProperties.get("width") * scale,
-                (float) objectProperties.get("height") * scale
+                (float) objectProperties.get("x"),
+                (float) objectProperties.get("y"),
+                (float) objectProperties.get("width"),
+                (float) objectProperties.get("height")
         );
         properties = objectProperties;
 

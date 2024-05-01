@@ -3,6 +3,7 @@ package com.skloch.game;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.utils.Array;
+import screens.GameScreen;
 
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;

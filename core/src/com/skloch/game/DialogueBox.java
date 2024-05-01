@@ -59,7 +59,7 @@ public class DialogueBox {
     /**
      * A class displaying a little selction box to the user when an input is needed in dialog
      */
-    class SelectBox {
+    public class SelectBox {
         private Window selectWindow;
         private Table selectTable;
         private int choiceIndex = 0;
