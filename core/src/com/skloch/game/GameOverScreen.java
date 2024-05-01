@@ -35,8 +35,9 @@ public class GameOverScreen implements Screen {
      * @param hoursStudied The hours studied in the playthrough
      * @param hoursRecreational The hours of fun had in the playthrough
      * @param hoursSlept The hours slept in the playthrough
+     * @param mealsEaten The number of meals eaten over a playthrough
      */
-    public GameOverScreen (final HustleGame game, int hoursStudied, int hoursRecreational, int hoursSlept) {
+    public GameOverScreen (final HustleGame game, int hoursStudied, int hoursRecreational, int hoursSlept,int mealsEaten) {
         this.game = game;
         gameOverStage = new Stage(new FitViewport(game.WIDTH, game.HEIGHT));
         Gdx.input.setInputProcessor(gameOverStage);
@@ -63,17 +64,21 @@ public class GameOverScreen implements Screen {
         gameOverTable.row();
 
         // Display scores
-        scoresTable.add(new Label("Hours Studied", game.skin, "interaction")).padBottom(5);
+        scoresTable.add(new Label("Hours Studied", game.skin, "interaction")).padBottom(3);
         scoresTable.row();
-        scoresTable.add(new Label(String.valueOf(hoursStudied), game.skin, "button")).padBottom(20);
+        scoresTable.add(new Label(String.valueOf(hoursStudied), game.skin, "button")).padBottom(7);
         scoresTable.row();
-        scoresTable.add(new Label("Recreational hours", game.skin, "interaction")).padBottom(5);
+        scoresTable.add(new Label("Recreational hours", game.skin, "interaction")).padBottom(3);
         scoresTable.row();
-        scoresTable.add(new Label(String.valueOf(hoursRecreational), game.skin, "button")).padBottom(20);
+        scoresTable.add(new Label(String.valueOf(hoursRecreational), game.skin, "button")).padBottom(7);
         scoresTable.row();
-        scoresTable.add(new Label("Hours Slept", game.skin, "interaction")).padBottom(5);
+        scoresTable.add(new Label("Hours Slept", game.skin, "interaction")).padBottom(3);
         scoresTable.row();
-        scoresTable.add(new Label(String.valueOf(hoursSlept), game.skin, "button"));
+        scoresTable.add(new Label(String.valueOf(hoursSlept), game.skin, "button")).padBottom(7);
+        scoresTable.row();
+        scoresTable.add(new Label("Meals Eaten", game.skin, "interaction")).padBottom(3);
+        scoresTable.row();
+        scoresTable.add(new Label(String.valueOf(mealsEaten), game.skin, "button"));
 
 
         // Exit button

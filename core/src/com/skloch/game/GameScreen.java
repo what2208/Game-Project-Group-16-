@@ -37,7 +37,7 @@ public class GameScreen implements Screen {
     final HustleGame game;
     private OrthographicCamera camera;
     private int energy = 100;
-    private int hoursStudied, hoursRecreational, hoursSlept;
+    private int hoursStudied, hoursRecreational, hoursSlept, mealsEaten;
     private float daySeconds = 0; // Current seconds elapsed in day
     private int day = 1; // What day the game is on
     private Label timeLabel, dayLabel;
@@ -70,7 +70,7 @@ public class GameScreen implements Screen {
         eventManager = new EventManager(this);
 
         // Scores
-        hoursStudied = hoursRecreational = hoursSlept = 0;
+        hoursStudied = hoursRecreational = hoursSlept = mealsEaten = 0;
 
 
         // Camera and viewport settings
@@ -678,6 +678,11 @@ public class GameScreen implements Screen {
     }
 
     /**
+     * Adds an amount of meals to the total number of meals
+     */
+    public void addMeal() {mealsEaten ++;}
+
+    /**
      * @return Returns 'breakfast', 'lunch' or 'dinner' depending on the time of day
      */
     public String getMeal() {
@@ -742,6 +747,6 @@ public class GameScreen implements Screen {
      * Ends the game, called at the end of the 7th day, switches to a screen that displays a score
      */
     public void GameOver() {
-        game.setScreen(new GameOverScreen(game, hoursStudied, hoursRecreational, hoursSlept));
+        game.setScreen(new GameOverScreen(game, hoursStudied, hoursRecreational, hoursSlept,mealsEaten));
     }
 }
