@@ -265,17 +265,14 @@ public class EventManager {
         int hoursSlept = Math.round(secondsSlept / 60f);
 
         RunnableAction setTextAction = new RunnableAction();
-        setTextAction.setRunnable(new Runnable() {
-            @Override
-            public void run() {
-                if (game.getSleeping()) {
-                    game.dialogueBox.show();
-                    game.dialogueBox.setText(String.format("You slept for %d hours!\nYou recovered %d energy!", hoursSlept, Math.min(100, hoursSlept*13)), "fadefromblack");
-                    // Restore energy and pass time
-                    game.setEnergy(hoursSlept*13);
-                    game.passTime(secondsSlept);
-                    game.addSleptHours(hoursSlept);
-                }
+        setTextAction.setRunnable(() -> {
+            if (game.getSleeping()) {
+                game.dialogueBox.show();
+                game.dialogueBox.setText(String.format("You slept for %d hours!\nYou recovered %d energy!", hoursSlept, Math.min(100, hoursSlept*13)), "fadefromblack");
+                // Restore energy and pass time
+                game.setEnergy(hoursSlept*13);
+                game.passTime(secondsSlept);
+                game.addSleptHours(hoursSlept);
             }
         });
 
@@ -304,17 +301,14 @@ public class EventManager {
         // If the player is sleeping, queue up a message to be sent
         if (game.getSleeping()) {
             RunnableAction setTextAction = new RunnableAction();
-            setTextAction.setRunnable(new Runnable() {
-                  @Override
-                  public void run() {
-                      if (game.getSleeping()) {
-                          game.dialogueBox.show();
-                          // Show a text displaying how many days they have left in the game
-                          game.dialogueBox.setText(game.getWakeUpMessage());
-                          game.setSleeping(false);
-                      }
-                  }
-              });
+            setTextAction.setRunnable(() -> {
+                if (game.getSleeping()) {
+                    game.dialogueBox.show();
+                    // Show a text displaying how many days they have left in the game
+                    game.dialogueBox.setText(game.getWakeUpMessage());
+                    game.setSleeping(false);
+                }
+            });
 
             // Queue up events
             game.blackScreen.addAction(Actions.sequence(Actions.fadeOut(3f), setTextAction));
