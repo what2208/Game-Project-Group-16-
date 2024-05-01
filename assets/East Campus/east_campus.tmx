@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="200" height="150" tilewidth="24" tileheight="24" infinite="0" nextlayerid="16" nextobjectid="183">
+ <properties>
+  <property name="backgroundLayers" value="0,1,2,3,4,5,6"/>
+  <property name="foregroundLayers" value="7"/>
+  <property name="objectLayers" value="8"/>
+ </properties>
  <tileset firstgid="1" source="Tilemaps/StarRealmsCozyForestPack24x24.tsx"/>
  <tileset firstgid="529" source="Tilemaps/RCH.tsx"/>
  <tileset firstgid="649" source="Tilemaps/compsci.tsx"/>

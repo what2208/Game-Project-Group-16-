@@ -69,6 +69,7 @@ public class HustleGame extends Game {
 		soundManager = new SoundManager();
 		mapManager = new MapManager();
 		mapManager.loadMap("East Campus/east_campus.tmx");
+//		mapManager.loadMap("MapAssetsV2/Maps/CSBuilding.tmx");
 
 		// Make a stage with a blue background that any screen can draw
 		Image blueImage = new Image(new Texture(Gdx.files.internal("Sprites/white_square.png")));

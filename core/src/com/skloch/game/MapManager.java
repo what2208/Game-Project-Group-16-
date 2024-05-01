@@ -21,7 +21,6 @@ public class MapManager {
     private TiledMap currentMap;
     private MapProperties mapProperties;
     private OrthogonalTiledMapRenderer mapRenderer;
-    private float mapScale;
     public int[] backgroundLayers, foregroundLayers, objectLayers;
     private int mapSquareSize;
 
@@ -29,15 +28,6 @@ public class MapManager {
     public MapManager() {
         mapLoader = new TmxMapLoader();
         loadedMaps = new HashMap<>();
-
-        // Define background, foreground and object layers
-        // IMPORTANT: CHANGE THESE WHEN UPDATING THE LAYERS IN YOUR EXPORTED MAP FROM TILED
-        // Bottom most layer on 'layers' tab is 0
-        backgroundLayers = new int[] {0, 1, 2, 3, 4, 5, 6}; // Rendered behind player
-        foregroundLayers = new int[] {7}; // Rendered in front of player
-        objectLayers = new int[] {8}; // Rectangles for the player to collide with
-//        mapSquareSize = mapProperties.get("tilewidth", Integer.class);
-        mapScale = 55f;
     }
 
     public TiledMap loadMap(String mapPath) {
@@ -59,8 +49,10 @@ public class MapManager {
         if (mapRenderer != null) {
             mapRenderer.dispose();
         }
-//        mapRenderer = new OrthogonalTiledMapRenderer(map, mapScale);
-        mapRenderer = new OrthogonalTiledMapRenderer(map); //!TEMP
+        mapRenderer = new OrthogonalTiledMapRenderer(map);
+        backgroundLayers = getLayerArrayFromMapProperties("backgroundLayers");
+        foregroundLayers = getLayerArrayFromMapProperties("foregroundLayers");
+        objectLayers = getLayerArrayFromMapProperties("objectLayers");
         return map;
     }
 
@@ -116,7 +108,7 @@ public class MapManager {
                 }
             }
         }
-        return null;
+        throw new RuntimeException("Spawn not set");
     }
 
     public void setCamera(OrthographicCamera camera) {
@@ -137,5 +129,27 @@ public class MapManager {
             map.dispose();
         }
         mapRenderer.dispose();
+    }
+
+    private int[] getLayerArrayFromMapProperties(String key) {
+        // The map should have a property called for example "backgroundLayers" which is a comma separated list of integers.
+        // Put these integers into an int array
+        try {
+            String[] layersString = mapProperties.get(key, String.class).split(",");
+            if (layersString.length == 0 || layersString[0].isEmpty()) {
+                return new int[0];
+            } else {
+                int[] layers = new int[layersString.length];
+                for (int i = 0; i < layersString.length; i++) {
+                    if (layersString[i].isEmpty()) {
+                        continue;
+                    }
+                    layers[i] = Integer.parseInt(layersString[i]);
+                }
+                return layers;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error loading layer: "+key);
+        }
     }
 }
