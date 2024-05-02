@@ -4,6 +4,7 @@ public class Event {
     private final String name;
     private final String text;
     private final int energyCost;
+    private int streak;
 
     public Event(String name, String text, int energyCost) {
         this.name = name;
@@ -22,5 +23,17 @@ public class Event {
 
     public int getEnergyCost() {
         return energyCost;
+    }
+
+    public int getStreak() {
+        return streak;
+    }
+
+    public void perform() {
+        streak++;
+    }
+
+    public void resetStreak() {
+        streak = 0;
     }
 }
