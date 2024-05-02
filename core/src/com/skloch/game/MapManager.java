@@ -1,14 +1,13 @@
 package com.skloch.game;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,13 +20,16 @@ public class MapManager {
     private TiledMap currentMap;
     private MapProperties mapProperties;
     private OrthogonalTiledMapRenderer mapRenderer;
-    public int[] backgroundLayers, foregroundLayers, objectLayers;
-    private int mapSquareSize;
+    public int[] backgroundLayers, foregroundLayers;
+    public int collisionLayer, interactLayer;
+    private Float viewportScalar;
+    private GameScreen game;
 
 
-    public MapManager() {
+    public MapManager(GameScreen game) {
         mapLoader = new TmxMapLoader();
         loadedMaps = new HashMap<>();
+        this.game = game;
     }
 
     public TiledMap loadMap(String mapPath) {
@@ -50,9 +52,9 @@ public class MapManager {
             mapRenderer.dispose();
         }
         mapRenderer = new OrthogonalTiledMapRenderer(map);
-        backgroundLayers = getLayerArrayFromMapProperties("backgroundLayers");
-        foregroundLayers = getLayerArrayFromMapProperties("foregroundLayers");
-        objectLayers = getLayerArrayFromMapProperties("objectLayers");
+        getLayers();
+        viewportScalar = mapProperties.get("viewportScalar", Float.class);
+        game.teleported();
         return map;
     }
 
@@ -78,34 +80,27 @@ public class MapManager {
         );
     }
 
-    public List<GameObject> getObjects() {
-        List<GameObject> allObjects = new ArrayList<>();
-        for (int layer : objectLayers) {
-            // Get all objects on the layer
-            MapObjects objects = currentMap.getLayers().get(layer).getObjects();
-            // Loop through each, handing them to the player
-            for (int i = 0; i < objects.getCount(); i++) {
-                // Get the properties of each object
-                MapProperties properties = objects.get(i).getProperties();
-                allObjects.add(new GameObject(properties));
-            }
-        }
-        return allObjects;
+    public List<GameObject> getCollisionObjects() {
+        int[] layers = new int[]{collisionLayer};
+        List<GameObject> collisionObjects = getObjectsFromLayers(layers);
+        return collisionObjects;
+    }
+
+    public List<GameObject> getInteractObjects() {
+        int[] layers = new int[]{interactLayer};
+        List<GameObject> collisionObjects = getObjectsFromLayers(layers);
+        return collisionObjects;
     }
 
     public Vector2 getSpawn() {
-        for (int layer : objectLayers) {
-            // Get all objects on the layer
-            MapObjects objects = currentMap.getLayers().get(layer).getObjects();
-            // Loop through each, handing them to the player
-            for (int i = 0; i < objects.getCount(); i++) {
-                // Get the properties of each object
-                MapProperties properties = objects.get(i).getProperties();
-                if (properties.get("spawn") != null) {
-                    float x = (float)properties.get("x");
-                    float y = (float)properties.get("y");
-                    return new Vector2(x, y);
-                }
+        int[] layers = new int[]{interactLayer};
+        List<GameObject> collisionObjects = getObjectsFromLayers(layers);
+        for (GameObject object : collisionObjects) {
+            MapProperties properties = object.properties;
+            if (properties.get("spawn") != null) {
+                float x = (float)properties.get("x");
+                float y = (float)properties.get("y");
+                return new Vector2(x, y);
             }
         }
         throw new RuntimeException("Spawn not set");
@@ -123,12 +118,30 @@ public class MapManager {
         mapRenderer.render(backgroundLayers);
     }
 
+    public float getViewportScalar() {
+        if (viewportScalar == null) {
+            return 1;
+        }
+        return viewportScalar;
+    }
+
     public void dispose() {
         // Iterate through all the maps and dispose of them
         for (TiledMap map : loadedMaps.values()) {
             map.dispose();
         }
         mapRenderer.dispose();
+    }
+
+    private void getLayers() {
+        try {
+            backgroundLayers = getLayerArrayFromMapProperties("backgroundLayers");
+            foregroundLayers = getLayerArrayFromMapProperties("foregroundLayers");
+            collisionLayer = mapProperties.get("collisionLayer", Integer.class);
+            interactLayer = mapProperties.get("interactLayer", Integer.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error loading layers");
+        }
     }
 
     private int[] getLayerArrayFromMapProperties(String key) {
@@ -151,5 +164,19 @@ public class MapManager {
         } catch (Exception e) {
             throw new RuntimeException("Error loading layer: "+key);
         }
+    }
+
+    private List<GameObject> getObjectsFromLayers(int[] layers) {
+        List<GameObject> allObjects = new ArrayList<>();
+        for (int layer : layers) {
+            // Get all objects on the layer
+            MapObjects layerObjects = currentMap.getLayers().get(layer).getObjects();
+            for (int i = 0; i < layerObjects.getCount(); i++) {
+                // Get the properties of each object
+                MapProperties properties = layerObjects.get(i).getProperties();
+                allObjects.add(new GameObject(properties));
+            }
+        }
+        return allObjects;
     }
 }
