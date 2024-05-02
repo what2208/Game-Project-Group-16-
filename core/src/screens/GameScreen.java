@@ -196,9 +196,8 @@ public class GameScreen implements Screen {
         // Put camera on player
         camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
-        for (GameObject object : mapManager.getObjects()) {
-            player.addCollidable(object);
-        }
+        player.setCollidables(mapManager.getCollisionObjects());
+        player.setInteractables(mapManager.getInteractObjects());
 
         // Set the player to not go outside the bounds of the map
         // Assumes the bottom left corner of the map is at 0, 0

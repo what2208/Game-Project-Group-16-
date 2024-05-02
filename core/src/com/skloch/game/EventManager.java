@@ -303,6 +303,7 @@ public class EventManager {
                 gameScreen.mapManager.loadMap(mapPath);
                 gameScreen.player.setPos(x, y);
             }
+            gameScreen.dialogueBox.hide();
         } catch (Exception e) {
             gameScreen.dialogueBox.setText("Teleport failed!");
         }

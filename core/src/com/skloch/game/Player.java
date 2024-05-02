@@ -1,5 +1,6 @@
 package com.skloch.game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -8,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class handling everything needed to control and draw a player, including animation, movement and collision
@@ -22,7 +26,7 @@ public class Player {
     private final Array<Animation<TextureRegion>> walkingAnimation, idleAnimation;
     // Stats
     public float speed = 250f;
-    public Array<GameObject> collidables;
+    public List<GameObject> collidables, interactables;
     public int scale = 4;
     private Rectangle bounds;
     private GameObject closestObject;
@@ -58,7 +62,8 @@ public class Player {
                 new Animation<TextureRegion>(0.40f, playerAtlas.findRegions(avatar + "_idle_left"), Animation.PlayMode.LOOP)
         );
 
-        collidables = new Array<GameObject>();
+        collidables = new ArrayList<GameObject>() {};
+        interactables = new ArrayList<GameObject>() {};
 
         // Sprite is a rectangle covering the whole player
         sprite = new Rectangle(0, 0, 17*scale, 28*scale);
@@ -185,7 +190,7 @@ public class Player {
         recalcCentre(); // Just recalculates the centre of the player now we have moved them
         float distance = -1;
         closestObject = null;
-        for (GameObject object : this.collidables) {
+        for (GameObject object : this.interactables) {
             // Check if this object is even interactable
             if (object.get("event") != null || object.get("text") != null) {
                 if (eventHitbox.overlaps(object)) {
@@ -271,17 +276,17 @@ public class Player {
      *
      * @param collidables An array of GameObjects that the player should collide with
      */
-    public void setCollidables (Array<GameObject> collidables) {
+    public void setCollidables (List<GameObject> collidables) {
         this.collidables = collidables;
     }
 
     /**
-     * Adds a GameObeject to the player's list of collidable objects
+     * Sets the objects the player cannot move into as an Array of GameObjects
      *
-     * @param object a GameObject for the player to collide with
+     * @param interactables An array of GameObjects that the player should be able to interact with
      */
-    public void addCollidable (GameObject object) {
-        this.collidables.add(object);
+    public void setInteractables (List<GameObject> interactables) {
+        this.interactables = interactables;
     }
 
     /**

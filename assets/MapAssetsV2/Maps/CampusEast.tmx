@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="160" height="112" tilewidth="48" tileheight="48" infinite="0" nextlayerid="11" nextobjectid="243">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="160" height="112" tilewidth="48" tileheight="48" infinite="0" nextlayerid="11" nextobjectid="246">
  <properties>
   <property name="backgroundLayers" value="0,1,2,3"/>
+  <property name="collisionLayer" type="int" value="4"/>
   <property name="foregroundLayers" value=""/>
-  <property name="objectLayers" value="4,5"/>
+  <property name="interactLayer" type="int" value="5"/>
   <property name="viewportScalar" type="float" value="2"/>
  </properties>
  <tileset firstgid="1" source="../Tilesets/Tileset_28_MV.tsx"/>
@@ -559,7 +560,7 @@
   <object id="84" x="5136" y="1488" width="192" height="192"/>
   <object id="85" x="5568" y="1488" width="192" height="192"/>
   <object id="86" x="5376" y="1104" width="384" height="384"/>
-  <object id="87" x="5376" y="1488" width="48" height="192"/>
+  <object id="87" x="5376" y="1488" width="203" height="192"/>
   <object id="88" x="5760" y="1104" width="144" height="576"/>
   <object id="89" x="5760" y="1872" width="144" height="432"/>
   <object id="90" x="5376" y="1824" width="336" height="432"/>
@@ -608,11 +609,7 @@
   <object id="147" x="1296" y="2400" width="240" height="720"/>
   <object id="148" x="1920" y="2400" width="192" height="624"/>
   <object id="150" x="1536" y="2400" width="192" height="624"/>
-  <object id="151" x="1728" y="2775.76" width="192" height="200.242">
-   <properties>
-    <property name="event" value="teleport-MapAssetsV2/Maps/CSBuilding.tmx-288,288"/>
-   </properties>
-  </object>
+  <object id="151" x="1728" y="2775.76" width="192" height="200.242"/>
   <object id="154" x="2784" y="2448" width="144" height="672"/>
   <object id="155" x="2736" y="2592" width="240" height="48"/>
   <object id="156" x="2736" y="2832" width="240" height="48"/>
@@ -682,12 +679,27 @@
   <object id="242" x="4712" y="2544" width="170" height="88"/>
  </objectgroup>
  <objectgroup id="10" name="Interact">
-  <object id="163" x="5032" y="1589.33" width="56" height="56">
+  <object id="163" x="5032" y="1630.67" width="56" height="56">
    <properties>
     <property name="event" value="teleport-MapAssetsV2/Maps/Accomodation.tmx-370,280"/>
     <property name="spawn" type="bool" value="true"/>
    </properties>
   </object>
   <object id="238" x="3504" y="864" width="1008" height="192"/>
+  <object id="243" x="1743" y="2945" width="158" height="70">
+   <properties>
+    <property name="event" value="teleport-MapAssetsV2/Maps/CSBuilding.tmx-288,288"/>
+   </properties>
+  </object>
+  <object id="244" x="5316" y="4068" width="172" height="108">
+   <properties>
+    <property name="event" value="teleport-MapAssetsV2/Maps/PiazzaBuilding.tmx-768,288"/>
+   </properties>
+  </object>
+  <object id="245" x="1548" y="3816" width="192" height="184">
+   <properties>
+    <property name="event" value="tree"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
