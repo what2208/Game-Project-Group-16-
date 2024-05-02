@@ -5,6 +5,8 @@ public class Event {
     private final String text;
     private final int energyCost;
     private int streak;
+    private int timesPerformedToday;
+    private int timesPerformedTotal;
 
     public Event(String name, String text, int energyCost) {
         this.name = name;
@@ -30,10 +32,29 @@ public class Event {
     }
 
     public void perform() {
-        streak++;
+        if (timesPerformedToday < 1) {
+            streak++;
+        }
+        timesPerformedToday++;
+        timesPerformedTotal++;
     }
 
     public void resetStreak() {
         streak = 0;
+    }
+
+    public int getTimesPerformedTotal() {
+        return timesPerformedTotal;
+    }
+
+    public int getTimesPerformedToday() {
+        return timesPerformedToday;
+    }
+
+    public void dayAdvanced() {
+        if (timesPerformedToday == 0) {
+            resetStreak();
+        }
+        timesPerformedToday = 0;
     }
 }

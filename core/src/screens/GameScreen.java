@@ -33,7 +33,7 @@ public class GameScreen implements Screen {
     private int energy = 100;
     private int hoursStudied, hoursRecreational, hoursSlept;
     private float daySeconds = 0; // Current seconds elapsed in day
-    private int day = 7; // What day the game is on
+    private int day = 0; // What day the game is on
     private Label timeLabel, dayLabel;
     public Player player;
     private Window escapeMenu;
@@ -478,15 +478,7 @@ public class GameScreen implements Screen {
      */
     public void passTime(float delta) {
         daySeconds += delta;
-        while (daySeconds >= 1440) {
-            daySeconds -= 1440;
-            day += 1;
-            dayLabel.setText(String.format("Day %s", day));
-        }
-
-        if (day >= 8) {
-            GameOver();
-        }
+        advanceDay();
     }
 
     /**
@@ -512,6 +504,18 @@ public class GameScreen implements Screen {
         }
     }
 
+    private void advanceDay() {
+        while (daySeconds >= 1440) {
+            daySeconds -= 1440;
+            day += 1;
+            eventManager.advanceDay();
+            dayLabel.setText(String.format("Day %s", day));
+        }
+
+        if (day >= 8) {
+            GameOver();
+        }
+    }
 
     /**
      *  Generates an InputAdapter to handle game specific keyboard inputs
@@ -547,14 +551,15 @@ public class GameScreen implements Screen {
 
                         } else if (player.nearObject() && !sleeping) {
                             // If the object has an event associated with it
-                            if (player.getClosestObject().get("event") != null) {
+                            Object event = player.getClosestObject().get("event");
+                            if (event != null) {
                                 // Show a dialogue menu asking if they want to do an interaction with the object
                                 dialogueBox.show();
-                                dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) player.getClosestObject().get("event"), "exit"});
-                                if (eventManager.hasCustomObjectInteraction((String) player.getClosestObject().get("event"))) {
-                                    dialogueBox.setText(eventManager.getObjectInteraction((String) player.getClosestObject().get("event")));
+                                dialogueBox.getSelectBox().setOptions(new String[]{"Yes", "No"}, new String[]{(String) event, "exit"});
+                                if (eventManager.hasCustomObjectInteraction((String) event)) {
+                                    dialogueBox.setText(eventManager.getObjectInteraction((String) event));
                                 } else {
-                                    dialogueBox.setText("Interact with " + player.getClosestObject().get("event") + "?");
+                                    dialogueBox.setText("Interact with " + event + "?");
                                 }
                                 dialogueBox.show();
                                 dialogueBox.getSelectBox().show();

@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.Objects;
+
 /**
  * A class to display a dialogue box for text and options on the screen.
  *

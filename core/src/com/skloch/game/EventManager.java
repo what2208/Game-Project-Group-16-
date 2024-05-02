@@ -44,7 +44,7 @@ public class EventManager {
 
     public void event (String eventKey) {
         String[] args = eventKey.split("-");
-
+        System.out.println(eventKey);
         // Important functions, most likely called after displaying text
         switch (args[0]) {
             case "fadefromblack":
@@ -54,7 +54,7 @@ public class EventManager {
                 fadeToBlack();
                 break;
             case "gameover":
-                game.GameOver();
+                gameScreen.GameOver();
                 break;
         }
 
@@ -62,9 +62,15 @@ public class EventManager {
         switch (args[0]) {
             case "tree":
                 treeEvent();
+                if (objectInteractions.containsKey(args[0])) {
+                    objectInteractions.get(args[0]).perform();
+                }
                 break;
             case "chest":
                 chestEvent();
+                if (objectInteractions.containsKey(args[0])) {
+                    objectInteractions.get(args[0]).perform();
+                }
                 break;
             case "piazza":
                 piazzaEvent(args);
@@ -90,7 +96,12 @@ public class EventManager {
                 break;
 
         }
+    }
 
+    public void advanceDay() {
+        for (Event event : objectInteractions.values()) {
+            event.dayAdvanced();
+        }
     }
 
     /**
@@ -162,6 +173,9 @@ public class EventManager {
                 gameScreen.decreaseEnergy(energyCost * hours);
                 gameScreen.passTime(hours * 60); // in seconds
                 gameScreen.addRecreationalHours(hours);
+                if (objectInteractions.containsKey(args[0])) {
+                    objectInteractions.get(args[0]).perform();
+                }
             }
         } else {
             gameScreen.dialogueBox.setText("It's too early in the morning to meet your friends, go to bed!");
@@ -216,6 +230,9 @@ public class EventManager {
                     gameScreen.decreaseEnergy(energyCost * hours);
                     gameScreen.addStudyHours(hours);
                     gameScreen.passTime(hours * 60); // in seconds
+                    if (objectInteractions.containsKey(args[0])) {
+                        objectInteractions.get(args[0]).perform();
+                    }
                 }
             }
         } else {
@@ -238,6 +255,9 @@ public class EventManager {
                 gameScreen.dialogueBox.setText(String.format("You took an hour to eat %s at the Ron Cooke Hub!\nYou lost %d energy!", gameScreen.getMeal(), energyCost));
                 gameScreen.decreaseEnergy(energyCost);
                 gameScreen.passTime(60); // in seconds
+                if (objectInteractions.containsKey(args[0])) {
+                    objectInteractions.get(args[0]).perform();
+                }
             }
         } else {
             gameScreen.dialogueBox.setText("It's too early in the morning to eat food, go to bed!");
