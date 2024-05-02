@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -49,6 +48,7 @@ public class GameScreen implements Screen {
     public DialogueBox dialogueBox;
     public final Image blackScreen;
     private boolean sleeping = false;
+    public MapManager mapManager;
 
 
     /**
@@ -63,6 +63,7 @@ public class GameScreen implements Screen {
         this.game.gameScreen = this;
         eventManager = new EventManager(this);
 
+        mapManager = new MapManager(this);
 
         // Scores
         hoursStudied = hoursRecreational = hoursSlept = 0;
@@ -70,7 +71,7 @@ public class GameScreen implements Screen {
 
         // Camera and viewport settings
         camera = new OrthographicCamera();
-        viewport = new FitViewport(game.WIDTH/2, game.HEIGHT/2, camera);
+        viewport = new FitViewport(getViewportSize().x, getViewportSize().y, camera);
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
         game.shapeRenderer.setProjectionMatrix(camera.combined);
 
@@ -119,9 +120,6 @@ public class GameScreen implements Screen {
                 (game.WIDTH - dialogueBox.getWidth()) / 2f,
                 15f);
         dialogueBox.hide();
-
-
-
 
         // Load energy bar elements
         Group energyGroup = new Group();
@@ -172,30 +170,43 @@ public class GameScreen implements Screen {
         inputMultiplexer.addProcessor(uiStage);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
+        //		mapManager.loadMap("East Campus/east_campus.tmx");
+//		mapManager.loadMap("MapAssetsV2/Maps/CSBuilding.tmx");
+        mapManager.loadMap("MapAssetsV2/Maps/Accomodation.tmx");
+
         // Set the player to the middle of the map
-        player.setPos(game.mapManager.getMapDimensions().x / 2f, game.mapManager.getMapDimensions().y / 2f);
+        player.setPos(mapManager.getMapDimensions().x / 2f, mapManager.getMapDimensions().y / 2f);
         // Put camera on player
         camera.position.set(player.getCentreX(), player.getCentreY(), 0);
 
         // Set player spawn
-        Vector2 spawn = game.mapManager.getSpawn();
+        Vector2 spawn = mapManager.getSpawn();
         player.setPos(spawn.x, spawn.y);
 
-        for (GameObject object : game.mapManager.getObjects()) {
-            player.addCollidable(object);
-        }
-
-        // Set the player to not go outside the bounds of the map
-        // Assumes the bottom left corner of the map is at 0, 0
-        Vector2 mapPixelDimensions = game.mapManager.getMapPixelDimensions();
-        player.setBounds( //!TEMP
-                new Rectangle(0, 0, mapPixelDimensions.x, mapPixelDimensions.y)
-        );
         game.shapeRenderer.setProjectionMatrix(camera.combined);
 
         // Display a little good morning message
         dialogueBox.show();
         dialogueBox.setText(getWakeUpMessage());
+    }
+
+    public void teleported() {
+        // Set the player to the middle of the map
+        player.setPos(mapManager.getMapDimensions().x / 2f, mapManager.getMapDimensions().y / 2f);
+        // Put camera on player
+        camera.position.set(player.getCentreX(), player.getCentreY(), 0);
+
+        for (GameObject object : mapManager.getObjects()) {
+            player.addCollidable(object);
+        }
+
+        // Set the player to not go outside the bounds of the map
+        // Assumes the bottom left corner of the map is at 0, 0
+        Vector2 mapPixelDimensions = mapManager.getMapPixelDimensions();
+        player.setBounds( //!TEMP
+                new Rectangle(0, 0, mapPixelDimensions.x, mapPixelDimensions.y)
+        );
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
     }
 
     @Override
@@ -214,6 +225,7 @@ public class GameScreen implements Screen {
         // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        viewport.setWorldSize(getViewportSize().x, getViewportSize().y);
         viewport.apply(); // Update the viewport
 
 
@@ -258,9 +270,9 @@ public class GameScreen implements Screen {
         }
 
         // Update the map's render position
-        game.mapManager.setCamera(camera);
+        mapManager.setCamera(camera);
         // Draw the background layer
-        game.mapManager.renderBackground();
+        mapManager.renderBackground();
 
         // Begin the spritebatch to draw the player on the screen
         game.batch.setProjectionMatrix(camera.combined);
@@ -272,13 +284,13 @@ public class GameScreen implements Screen {
                 player.sprite.x, player.sprite.y,
                 player.sprite.width/2, 0,
                 player.sprite.width, player.sprite.height,
-                0.5f, 0.5f, 1
+                1f, 1f, 1
         );
 
         game.batch.end();
 
         // Render map foreground layers
-        game.mapManager.renderForeground();
+        mapManager.renderForeground();
 
 
         // Check if the interaction (press e to use) label needs to be drawn
@@ -437,6 +449,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose () {
         uiStage.dispose();
+        mapManager.dispose();
     }
 
     /**
@@ -697,5 +710,10 @@ public class GameScreen implements Screen {
         int score = (hoursStudied + hoursRecreational + hoursSlept) * 100;
         game.leaderboard.AddScore(game.playerName, score);
         game.setScreen(new GameOverScreen(game, hoursStudied, hoursRecreational, hoursSlept));
+    }
+
+    private Vector2 getViewportSize() {
+        float viewportScalar = mapManager.getViewportScalar();
+        return new Vector2((game.WIDTH/2)*viewportScalar, (game.HEIGHT/2)*viewportScalar);
     }
 }

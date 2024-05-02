@@ -1,14 +1,13 @@
 package com.skloch.game;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import screens.GameScreen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +21,14 @@ public class MapManager {
     private MapProperties mapProperties;
     private OrthogonalTiledMapRenderer mapRenderer;
     public int[] backgroundLayers, foregroundLayers, objectLayers;
-    private int mapSquareSize;
+    private Float viewportScalar;
+    private GameScreen game;
 
 
-    public MapManager() {
+    public MapManager(GameScreen game) {
         mapLoader = new TmxMapLoader();
         loadedMaps = new HashMap<>();
+        this.game = game;
     }
 
     public TiledMap loadMap(String mapPath) {
@@ -53,6 +54,8 @@ public class MapManager {
         backgroundLayers = getLayerArrayFromMapProperties("backgroundLayers");
         foregroundLayers = getLayerArrayFromMapProperties("foregroundLayers");
         objectLayers = getLayerArrayFromMapProperties("objectLayers");
+        viewportScalar = mapProperties.get("viewportScalar", Float.class);
+        game.teleported();
         return map;
     }
 
@@ -121,6 +124,13 @@ public class MapManager {
 
     public void renderBackground() {
         mapRenderer.render(backgroundLayers);
+    }
+
+    public float getViewportScalar() {
+        if (viewportScalar == null) {
+            return 1;
+        }
+        return viewportScalar;
     }
 
     public void dispose() {

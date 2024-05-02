@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="32" height="22" tilewidth="48" tileheight="48" infinite="0" nextlayerid="7" nextobjectid="68">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="32" height="22" tilewidth="48" tileheight="48" infinite="0" nextlayerid="7" nextobjectid="71">
  <properties>
   <property name="backgroundLayers" value="0,1,2"/>
   <property name="foregroundLayers" value=""/>
   <property name="objectLayers" value="3"/>
+  <property name="viewportScalar" type="float" value="2"/>
  </properties>
  <tileset firstgid="1" source="../Tilesets/Room_Builder_free_48x48.tsx"/>
  <tileset firstgid="392" source="../Tilesets/Interiors_free_48x48.tsx"/>
@@ -125,6 +126,21 @@
   <object id="67" x="194" y="534" width="42" height="38">
    <properties>
     <property name="spawn" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="68" x="192" y="850" width="290" height="38">
+   <properties>
+    <property name="event" value="teleport-MapAssetsV2/Maps/CampusEast.tmx-1790,2350"/>
+   </properties>
+  </object>
+  <object id="69" x="619" y="847" width="290" height="38">
+   <properties>
+    <property name="event" value="teleport-MapAssetsV2/Maps/CampusEast.tmx-1790,2350"/>
+   </properties>
+  </object>
+  <object id="70" x="1059" y="839" width="290" height="38">
+   <properties>
+    <property name="event" value="teleport-MapAssetsV2/Maps/CampusEast.tmx-1790,2350"/>
    </properties>
   </object>
  </objectgroup>
